@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://addons/nklbdev.tile_palette/reset_scaling.svg" type="Texture" id=1]
-[ext_resource path="res://addons/nklbdev.tile_palette/transform_indicator.svg" type="Texture" id=2]
-[ext_resource path="res://addons/nklbdev.tile_palette/Preview.gd" type="Script" id=3]
-[ext_resource path="res://addons/nklbdev.tile_palette/tile_palette.gd" type="Script" id=4]
-[ext_resource path="res://addons/TileCellManager/TileCells.tscn" type="PackedScene" id=5]
+[ext_resource path="res://addons/BottledTileMap/TilePalette/reset_scaling.svg" type="Texture" id=1]
+[ext_resource path="res://addons/BottledTileMap/TilePalette/transform_indicator.svg" type="Texture" id=2]
+[ext_resource path="res://addons/BottledTileMap/TilePalette/Preview.gd" type="Script" id=3]
+[ext_resource path="res://addons/BottledTileMap/TilePalette/TilePalette.gd" type="Script" id=4]
+[ext_resource path="res://addons/BottledTileMap/TileCellManager/TileCells.tscn" type="PackedScene" id=5]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 

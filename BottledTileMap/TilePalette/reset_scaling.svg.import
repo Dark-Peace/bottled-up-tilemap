@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/reset_scaling.svg-77cf6b48d1efff98f09018a4c4eed468.stex"
+path="res://.import/reset_scaling.svg-a53f143b0dcad528ac249815ba93212e.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/nklbdev.tile_palette/reset_scaling.svg"
-dest_files=[ "res://.import/reset_scaling.svg-77cf6b48d1efff98f09018a4c4eed468.stex" ]
+source_file="res://addons/BottledTileMap/TilePalette/reset_scaling.svg"
+dest_files=[ "res://.import/reset_scaling.svg-a53f143b0dcad528ac249815ba93212e.stex" ]
 
 [params]
 

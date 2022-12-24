@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/icon.png-12f5b2dc3df316712cb687328778ec5f.stex"
+path="res://.import/Placeholder_tiles.png-066ccb9d67391d81b30e945c4a621218.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/2D-To-3D/icon.png"
-dest_files=[ "res://.import/icon.png-12f5b2dc3df316712cb687328778ec5f.stex" ]
+source_file="res://addons/BottledTileMap/resources/Placeholder_tiles.png"
+dest_files=[ "res://.import/Placeholder_tiles.png-066ccb9d67391d81b30e945c4a621218.stex" ]
 
 [params]
 
@@ -28,6 +28,7 @@ process/fix_alpha_border=true
 process/premult_alpha=false
 process/HDR_as_SRGB=false
 process/invert_color=false
+process/normal_map_invert_y=false
 stream=false
 size_limit=0
 detect_3d=true

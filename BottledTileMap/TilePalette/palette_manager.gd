@@ -23,7 +23,7 @@ extends EditorPlugin
 #    @@11827:[ItemList:17221] name: @@11827, text: 
 #      @@11826:[VScrollBar:17222] name: @@11826, text: 
 
-const TileMapInspectorPlugin = preload("res://addons/nklbdev.tile_palette/tilemap_inspector-plugin.gd")
+var TileMapInspectorPlugin = load("res://addons/BottledTileMap/TilePalette/tilemap_inspector_plugin.gd")
 
 var _selection: EditorSelection
 var _tile_palette: Control
@@ -66,7 +66,7 @@ func _on_selection_changed():
 	var selected_nodes = _selection.get_selected_nodes()
 	if selected_nodes.size() == 1:
 		var selected_node = selected_nodes[0]
-		if selected_node is BottledTileMap:
+		if selected_node.get_class() == 'BottledTileMap':
 			_tile_palette.tilemap = selected_node #BottledTileMap
 			_tile_palette.tileset = selected_node.tile_set
 			make_bottom_panel_item_visible(_tile_palette)
@@ -82,7 +82,7 @@ func _print_tree(node: Node, indent = 0):
 		_print_tree(child, indent + 1)
 
 func _add_tile_palette():
-	_tile_palette = load("res://addons/nklbdev.tile_palette/tile_palette.tscn").instance()
+	_tile_palette = load("res://addons/BottledTileMap/TilePalette/TilePalette.tscn").instance()
 	_selection = get_editor_interface().get_selection()
 	_selection.connect("selection_changed", self, "_on_selection_changed")
 	add_control_to_bottom_panel(_tile_palette, "Tile Palette")
@@ -185,7 +185,7 @@ func _remove_tile_palette():
 	var selected_nodes = _selection.get_selected_nodes()
 	if selected_nodes.size() == 1:
 		var selected_node = selected_nodes[0]
-		if selected_node is BottledTileMap:
+		if selected_node.get_class() == 'BottledTileMap':
 			_tilemap_editor.visible = true
 			if _tile_list.is_anything_selected():
 				_tilemap_editor._palette_selected(_tile_list.get_selected_items()[0])

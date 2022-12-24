@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/transform_indicator.svg-94c6b52ebc43e2f22cb1bde25227947c.stex"
+path="res://.import/icon.png-de2f07d8094e574400537dac0bebb359.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/nklbdev.tile_palette/transform_indicator.svg"
-dest_files=[ "res://.import/transform_indicator.svg-94c6b52ebc43e2f22cb1bde25227947c.stex" ]
+source_file="res://addons/BottledTileMap/TilePalette/icon.png"
+dest_files=[ "res://.import/icon.png-de2f07d8094e574400537dac0bebb359.stex" ]
 
 [params]
 
