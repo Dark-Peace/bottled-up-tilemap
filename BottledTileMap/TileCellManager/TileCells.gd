@@ -1,15 +1,15 @@
-tool
+@tool
 extends Control
 
 # ******************************************************************************
 
-onready var icon = $"%Icon"
-onready var Name = $"%Name"
-onready var Id = $"%ID"
-onready var z_index = $"%Z"
-onready var Modulation = $"%Modulate"
-onready var shape = $"%Shape"
-onready var tex = $"%Tex"
+@onready var icon = $"%Icon"
+@onready var Name = $"%Name"
+@onready var Id = $"%ID"
+@onready var _z_index = $"%Z"
+@onready var Modulation = $"%Modulate"
+@onready var shape = $"%Shape3D"
+@onready var tex = $"%Tex"
 
 var active := false
 var tileset: TileSet
@@ -28,7 +28,7 @@ func populate_infos(info):
 	icon.set_item_icon_region(0, tileset.tile_get_region(id))
 	Name.text = tileset.tile_get_name(id)
 	Id.text = str(id)
-	z_index.value = tileset.tile_get_z_index(id)
+	_z_index.value = tileset.tile_get_z_index(id)
 	Modulation.color = tileset.tile_get_modulate(id)
 	shape.get_node("x").text = String(tileset.tile_get_shape_offset(id, 0).x)
 	shape.get_node("y").text = String(tileset.tile_get_shape_offset(id, 0).y)
@@ -50,7 +50,7 @@ func _on_LineEdit_text_changed(new_text):
 	tileset.tile_set_name(id, new_text)
 
 func _on_SpinBox_value_changed(value):
-	if not active or z_index.value == tileset.tile_get_z_index(id):
+	if not active or _z_index.value == tileset.tile_get_z_index(id):
 		return
 
 	tileset.tile_set_z_index(id, value)
@@ -133,7 +133,7 @@ func _on_SaveGroups_pressed() -> void:
 	for g in dict_g.keys():
 		if not g in tile_groups and id in dict_g[g]: # delete if needed (by group)
 			dict_g[g].erase(id)
-			if dict_g[g].empty(): 
+			if dict_g[g].is_empty(): 
 				dict_g.erase(g)
 	for g in tile_groups:
 		if not dict_g.has(g): 
