@@ -1,4 +1,4 @@
-tool
+@tool
 extends ScrollContainer
 
 enum DrawType {No, Pattern, Brush}
@@ -17,7 +17,7 @@ const SIZE_BRUSH = 100
 const START_BRUSH = 50
 
 var label = Label.new()
-var font = label.get_font("")
+var font = label.get_theme_font("")
 #var cell_size:float
 
 #func _process(delta: float) -> void:
@@ -44,13 +44,13 @@ func draw_pattern(curr_pattern:Array, x:float, y:float):
 		size = [size, curr_pattern.size(), curr_pattern[line].size()].max()
 	var _size = SIZE_Y/size
 	
-	var id; var texture:Texture; var region:Rect2;
+	var id; var texture:Texture2D; var region:Rect2;
 	for line in curr_pattern.size():
 		for col in curr_pattern[line].size():
 			id = curr_pattern[line][col]
 			if id == " ": continue
 			if id in ["x", "-1"]:
-				texture = get_icon("KeyInvalid", 'EditorIcons')
+				texture = theme.get_icon("KeyInvalid", 'EditorIcons')
 				region = Rect2(Vector2(0,0), texture.get_size())
 				draw_texture_rect_region(texture, Rect2(x+_size*col,y+_size*line, _size,_size), region)
 				continue
@@ -68,8 +68,8 @@ func draw_brush():
 	size *= 2
 	var _size = SIZE_BRUSH/size
 	
-	var color = Color.white
+	var color = Color.WHITE
 	for pos in brush_pos:
-		if pos == Vector2(0,0): color = Color.yellow
-		else: color = Color.white
+		if pos == Vector2(0,0): color = Color.YELLOW
+		else: color = Color.WHITE
 		draw_rect(Rect2(100+pos.x*_size,100+pos.y*_size,_size,_size), color)

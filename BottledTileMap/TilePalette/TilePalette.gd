@@ -1,36 +1,36 @@
-tool
+@tool
 extends Control
 
-export var single_tile_border_color: Color = Color("fce844")
-export var atlas_tile_border_color: Color = Color("c9cfd4")
-export var auto_tile_border_color: Color = Color("4490fc")
-export var subtile_border_color: Color = Color("4cb299")
-export var absent_subtile_border_color: Color = Color(1, 0, 0)
-export var absent_subtile_fill_color: Color = Color(1, 0, 0, 0.7)
-export var tile_selection_color: Color = Color(0, 0, 1, 0.7)
-export var tile_hint_label_font_color: Color = Color(0, 0, 0)
+@export var single_tile_border_color: Color = Color("fce844")
+@export var atlas_tile_border_color: Color = Color("c9cfd4")
+@export var auto_tile_border_color: Color = Color("4490fc")
+@export var subtile_border_color: Color = Color("4cb299")
+@export var absent_subtile_border_color: Color = Color(1, 0, 0)
+@export var absent_subtile_fill_color: Color = Color(1, 0, 0, 0.7)
+@export var tile_selection_color: Color = Color(0, 0, 1, 0.7)
+@export var tile_hint_label_font_color: Color = Color(0, 0, 0)
 var _tile_list: ItemList
 var _subtile_list: ItemList
 var _disable_autotile_check_box: CheckBox
 var _enable_priority_check_box: CheckBox
-var _rotate_left_button: ToolButton
-var _rotate_right_button: ToolButton
-var _flip_horizontally_button: ToolButton
-var _flip_vertically_button: ToolButton
-var _clear_transform_button: ToolButton
-onready var _texture_item_list: ItemList = $HSplitContainer/TextureListVBoxContainer/TextureItemList
-onready var _sprite = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/Sprite
-onready var _sprite_border = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/Sprite/SpriteBorder
-onready var _scaling_helper = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper
-onready var _selection_rect: ColorRect = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/Sprite/SelectionRect
-onready var _tools_container: HBoxContainer = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ToolsHBoxContainer
-onready var _panel: Panel = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel
-onready var _texture_list_scaler: HSlider = $HSplitContainer/TextureListVBoxContainer/ScaleHSlider
-onready var _texture_scaler: HSlider = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/ScaleHSlider
-onready var _transform_indicator: ToolButton = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ToolsHBoxContainer/TransformationIndicatorPlaceholderMarginContainer/TransformationIndicatorPlaceholderToolButton
-onready var _reset_scaling_button: ToolButton = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/ResetScalingToolButton
-onready var _show_tile_hints_check_box: CheckBox = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/ShowTileHintsCheckBox
-onready var _bg_holder: Control = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/Sprite/BgHolder
+var _rotate_left_button: Button
+var _rotate_right_button: Button
+var _flip_horizontally_button: Button
+var _flip_vertically_button: Button
+var _clear_transform_button: Button
+@onready var _texture_item_list: ItemList = $HSplitContainer/TextureListVBoxContainer/TextureItemList
+@onready var _sprite = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/Sprite2D
+@onready var _sprite_border = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/Sprite2D/SpriteBorder
+@onready var _scaling_helper = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper
+@onready var _selection_rect: ColorRect = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/Sprite2D/SelectionRect
+@onready var _tools_container: HBoxContainer = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ToolsHBoxContainer
+@onready var _panel: Panel = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel
+@onready var _texture_list_scaler: HSlider = $HSplitContainer/TextureListVBoxContainer/ScaleHSlider
+@onready var _texture_scaler: HSlider = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/ScaleHSlider
+@onready var _transform_indicator: Button = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ToolsHBoxContainer/TransformationIndicatorPlaceholderMarginContainer/TransformationIndicatorPlaceholderToolButton
+@onready var _reset_scaling_button: Button = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/ResetScalingToolButton
+@onready var _show_tile_hints_check_box: CheckBox = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/ShowTileHintsCheckBox
+@onready var _bg_holder: Control = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/Sprite2D/BgHolder
 var _dragging: bool = false
 var _editor_item_indices_by_tile_ids = {}
 var _previous_selected_texture_index: int = -1
@@ -51,7 +51,7 @@ var can_select = false
 enum VIEW {Tex, Group, List}
 var current_view = VIEW.Tex
 
-var tileset:TileSet setget _set_tileset
+var tileset:TileSet : set = _set_tileset
 func _set_tileset(value):
 	if tileset == value:
 		return
@@ -67,11 +67,11 @@ func set_tools(
 	tile_map_editor: Control,
 	disable_autotile_check_box: CheckBox,
 	enable_priority_check_box: CheckBox,
-	rotate_left_button: ToolButton,
-	rotate_right_button: ToolButton,
-	flip_horizontally_button: ToolButton,
-	flip_vertically_button: ToolButton,
-	clear_transform_button: ToolButton,
+	rotate_left_button: Button,
+	rotate_right_button: Button,
+	flip_horizontally_button: Button,
+	flip_vertically_button: Button,
+	clear_transform_button: Button,
 	interface_display_scale: float = 1):
 	
 	_tile_map_editor = tile_map_editor
@@ -97,17 +97,17 @@ func set_tools(
 		t.get_parent().remove_child(t)
 		_tools_container.add_child(t)
 	
-	_disable_autotile_check_box.connect("toggled", self, "_on_disable_autotile_check_box_toggled")
-	_enable_priority_check_box.connect("toggled", self, "_on_enable_priority_check_box_toggled")
+	_disable_autotile_check_box.connect("toggled",Callable(self,"_on_disable_autotile_check_box_toggled"))
+	_enable_priority_check_box.connect("toggled",Callable(self,"_on_enable_priority_check_box_toggled"))
 	
 	_on_clear_transform()
 	_tile_map_editor._clear_transform()
 	
-	_rotate_left_button.connect("pressed", self, "_on_rotate_counterclockwise")
-	_rotate_right_button.connect("pressed", self, "_on_rotate_clockwise")
-	_flip_horizontally_button.connect("pressed", self, "_on_flip_horizontally")
-	_flip_vertically_button.connect("pressed", self, "_on_flip_vertically")
-	_clear_transform_button.connect("pressed", self, "_on_clear_transform")
+	_rotate_left_button.connect("pressed",Callable(self,"_on_rotate_counterclockwise"))
+	_rotate_right_button.connect("pressed",Callable(self,"_on_rotate_clockwise"))
+	_flip_horizontally_button.connect("pressed",Callable(self,"_on_flip_horizontally"))
+	_flip_vertically_button.connect("pressed",Callable(self,"_on_flip_vertically"))
+	_clear_transform_button.connect("pressed",Callable(self,"_on_clear_transform"))
 	
 	_reset_scaling_button.icon = _resize_button_texture(_reset_scaling_button.icon, interface_display_scale / 4)
 	_transform_indicator.icon = _resize_button_texture(_transform_indicator.icon, interface_display_scale / 4)
@@ -115,28 +115,28 @@ func set_tools(
 	# Bottled TileMap
 	var next_button = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/NextTile
 	var previous_button = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/PreviousTile
-	next_button.icon = get_icon('MoveRight', 'EditorIcons')
-	previous_button.icon = get_icon('MoveLeft', 'EditorIcons')
-	next_button.connect("pressed", self, "go_to_tile", [1])
-	previous_button.connect("pressed", self, "go_to_tile", [-1])
-	$HSplitContainer/TextureVBoxContainer/BottledTools/Pattern.icon = get_icon('PackedDataContainer', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/Cursors.icon = get_icon('ToolSelect', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/All.icon = get_icon('ListSelect', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/Maps.icon = get_icon('TileSet', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/MultiSelect.icon = get_icon('ThemeSelectAll', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/CellManager.icon = get_icon('ProxyTexture', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/TurnIntoPattern.icon = get_icon('ToolAddNode', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/Brushes.icon = get_icon('EditKey', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/Scan.icon = get_icon('AssetLib', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/TileList.icon = get_icon('Filesystem', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/TmHints.icon = get_icon('Search', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/Old.icon = get_icon('TileMap', 'EditorIcons')
-	$"%Views".icon = get_icon('GuiVisibilityVisible', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/Selection.icon = get_icon('RegionEdit', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/EraseAll.icon = get_icon('ImportFail', 'EditorIcons')
-	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/TileCells/HBoxContainer4/Dupli.icon = get_icon("Duplicate","EditorIcons")
-	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/TileCells/HBoxContainer4/Erase.icon = get_icon("ImportFail","EditorIcons")
-	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/TileCells/ScrollContainer/VBoxContainer/HBoxContainer/Right/HBoxContainer/SaveGroups.icon = get_icon("Save","EditorIcons")
+	next_button.icon = theme.theme.get_icon('MoveRight', 'EditorIcons')
+	previous_button.icon = theme.get_icon('MoveLeft', 'EditorIcons')
+	next_button.connect("pressed",Callable(self,"go_to_tile").bind(1))
+	previous_button.connect("pressed",Callable(self,"go_to_tile").bind(-1))
+	$HSplitContainer/TextureVBoxContainer/BottledTools/Pattern.icon = theme.get_icon('PackedDataContainer', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/Cursors.icon = theme.get_icon('ToolSelect', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/All.icon = theme.get_icon('ListSelect', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/Maps.icon = theme.get_icon('TileSet', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/MultiSelect.icon = theme.get_icon('ThemeSelectAll', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/CellManager.icon = theme.get_icon('ProxyTexture', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/TurnIntoPattern.icon = theme.get_icon('ToolAddNode', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/Brushes.icon = theme.get_icon('EditKey', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/Scan.icon = theme.get_icon('AssetLib', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/TileList.icon = theme.get_icon('Filesystem', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/TmHints.icon = theme.get_icon('Search', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/Old.icon = theme.get_icon('TileMap', 'EditorIcons')
+	$"%Views".icon = theme.get_icon('GuiVisibilityVisible', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/Selection.icon = theme.get_icon('RegionEdit', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer/EraseAll.icon = theme.get_icon('ImportFail', 'EditorIcons')
+	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/TileCells/HBoxContainer4/Dupli.icon = theme.get_icon("Duplicate","EditorIcons")
+	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/TileCells/HBoxContainer4/Erase.icon = theme.get_icon("ImportFail","EditorIcons")
+	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/TileCells/ScrollContainer/VBoxContainer/HBoxContainer/Right/HBoxContainer/SaveGroups.icon = theme.get_icon("Save","EditorIcons")
 	
 	
 # Bottled TileMap
@@ -209,13 +209,13 @@ func pattern_list():
 	var new_pattern:CheckBox; var value:Array;
 	for c in tilemap.pattern_list.size():
 		value = tilemap.pattern_list[c]
-		if value.empty(): continue
+		if value.is_empty(): continue
 		new_pattern = $HSplitContainer/TextureVBoxContainer/Main/Preview/List/Template.duplicate()
 		new_pattern.visible = true
 		new_pattern.text = String(c)
 		new_pattern.set_meta("id", c)
-		new_pattern.rect_min_size.y = preview.SIZE_Y+preview.SPACE_Y
-		new_pattern.connect("pressed", self, "select", [c, "p_id"])
+		new_pattern.custom_minimum_size.y = preview.SIZE_Y+preview.SPACE_Y
+		new_pattern.connect("pressed",Callable(self,"select").bind(c, "p_id"))
 		$HSplitContainer/TextureVBoxContainer/Main/Preview/List.add_child(new_pattern)
 
 func cursor_list():
@@ -226,14 +226,14 @@ func cursor_list():
 		new_cursor = $HSplitContainer/TextureVBoxContainer/Main/Preview/List/Template.duplicate()
 		new_cursor.visible = true
 		match int(sign(value.x)):
-			1: new_cursor.text = "Right: "+String(value.x)
-			-1: new_cursor.text = "Left: "+String(value.x)
+			1: new_cursor.text = "Right: "+str(value.x)
+			-1: new_cursor.text = "Left: "+str(value.x)
 		new_cursor.text += "   "
 		match int(sign(value.y)):
-			1: new_cursor.text += "Down: "+String(value.y)
-			-1: new_cursor.text += "Up: "+String(value.y)
+			1: new_cursor.text += "Down: "+str(value.y)
+			-1: new_cursor.text += "Up: "+str(value.y)
 		new_cursor.set_meta("id", c)
-		new_cursor.connect("pressed", self, "select", [c, "c_use"])
+		new_cursor.connect("pressed",Callable(self,"select").bind(c, "c_use"))
 		$HSplitContainer/TextureVBoxContainer/Main/Preview/List.add_child(new_cursor)
 	
 func clear_preview_list():
@@ -246,34 +246,34 @@ func tilemap_list():
 		if tilemap.t_tilemap_list[c] == NodePath(): continue
 		new_map = $HSplitContainer/TextureVBoxContainer/Main/Preview/List/Template.duplicate()
 		new_map.visible = true
-		new_map.pressed = String(c) in tilemap.t_use.split(" ")
+		new_map.button_pressed = String(c) in tilemap.t_use.split(" ")
 		new_map.text = tilemap.get_node(tilemap.t_tilemap_list[c]).name
 		new_map.set_meta("id", c)
-		new_map.connect("pressed", self, "select", [c, "t_use"])
+		new_map.connect("pressed",Callable(self,"select").bind(c, "t_use"))
 		$HSplitContainer/TextureVBoxContainer/Main/Preview/List.add_child(new_map)
 
 func select(id, type):
 	var children = $HSplitContainer/TextureVBoxContainer/Main/Preview/List.get_children()
 	if type == "p_id":
 		for n in children:
-			if n.get_meta("id") != id: n.pressed = false
+			if n.get_meta("id") != id: n.button_pressed = false
 		tilemap.set(type, -1)
 		for checkbox in children:
 			if checkbox.pressed: tilemap.set(type, checkbox.get_meta("id"))
-		tilemap.property_list_changed_notify()
+		tilemap.notify_property_list_changed()
 		return
 		
 	if type == "t_use" and not can_multi_check: 
 		for n in children:
 			if n.get_meta("id") == id: continue
-			n.pressed = false
+			n.button_pressed = false
 	tilemap.set(type, "")
 	
 	for checkbox in children:
 		if not checkbox.pressed: continue
 		tilemap.set(type, tilemap.get(type)+" "+String(checkbox.get_meta("id")))
 		_set_tileset(tilemap.tile_set)
-	tilemap.property_list_changed_notify()
+	tilemap.notify_property_list_changed()
 
 func can_multi_select():
 	can_multi_check = !can_multi_check
@@ -287,20 +287,20 @@ func scan():
 func check_all():
 	var uncheck = true
 	for b in $HSplitContainer/TextureVBoxContainer/Main/Preview/List.get_children():
-		if not b.has_meta("id") or b.pressed == true: continue
-		b.pressed = true
+		if not b.has_meta("id") or b.button_pressed == true: continue
+		b.button_pressed = true
 		select(b.get_meta("id"), "c_use")
 		uncheck = false
 	if uncheck:
 		for b in $HSplitContainer/TextureVBoxContainer/Main/Preview/List.get_children():
 			if not b.has_meta("id"): continue
-			b.pressed = false
+			b.button_pressed = false
 			select(b.get_meta("id"), "c_use")
 
 func display_tile_hints():
 	tilemap.tm_hints.clear()
 	for tm in tilemap.t_tilemap_list:
-		if tilemap.get_node(tm).get_cellv(tilemap.world_to_map(tilemap.get_local_mouse_position())) != -1:
+		if tilemap.get_node(tm).get_cellv(tilemap.local_to_map(tilemap.get_local_mouse_position())) != -1:
 			tilemap.tm_hints.append(tilemap.get_node(tm))
 	tilemap.update()
 
@@ -328,7 +328,7 @@ func _find_tilemap_editor(node: Node) -> Node:
 
 
 
-func _resize_button_texture(texture: Texture, scale: float):
+func _resize_button_texture(texture: Texture2D, scale: float):
 	var image = texture.get_data() as Image
 	var new_size = image.get_size() * scale
 	image.resize(round(new_size.x), round(new_size.y))
@@ -337,35 +337,35 @@ func _resize_button_texture(texture: Texture, scale: float):
 	return new_texture
 
 func _on_rotate_counterclockwise():
-	_transform_indicator.rect_pivot_offset = _transform_indicator.rect_size / 2
-	_transform_indicator.rect_rotation -= 90
-	if _transform_indicator.rect_rotation < 0:
-		_transform_indicator.rect_rotation += 360
+	_transform_indicator.pivot_offset = _transform_indicator.size / 2
+	_transform_indicator.rotation -= 90
+	if _transform_indicator.rotation < 0:
+		_transform_indicator.rotation += 360
 
 func _on_rotate_clockwise():
-	_transform_indicator.rect_pivot_offset = _transform_indicator.rect_size / 2
-	_transform_indicator.rect_rotation += 90
-	if _transform_indicator.rect_rotation >= 360:
-		_transform_indicator.rect_rotation -= 360
+	_transform_indicator.pivot_offset = _transform_indicator.size / 2
+	_transform_indicator.rotation += 90
+	if _transform_indicator.rotation >= 360:
+		_transform_indicator.rotation -= 360
 
 func _on_flip_horizontally():
-	_transform_indicator.rect_pivot_offset = _transform_indicator.rect_size / 2
-	if _transform_indicator.rect_rotation == 0 or _transform_indicator.rect_rotation == 180:
-		_transform_indicator.rect_scale.x *= -1
+	_transform_indicator.pivot_offset = _transform_indicator.size / 2
+	if _transform_indicator.rotation == 0 or _transform_indicator.rotation == 180:
+		_transform_indicator.scale.x *= -1
 	else:
-		_transform_indicator.rect_scale.y *= -1
+		_transform_indicator.scale.y *= -1
 
 func _on_flip_vertically():
-	_transform_indicator.rect_pivot_offset = _transform_indicator.rect_size / 2
-	if _transform_indicator.rect_rotation == 0 or _transform_indicator.rect_rotation == 180:
-		_transform_indicator.rect_scale.y *= -1
+	_transform_indicator.pivot_offset = _transform_indicator.size / 2
+	if _transform_indicator.rotation == 0 or _transform_indicator.rotation == 180:
+		_transform_indicator.scale.y *= -1
 	else:
-		_transform_indicator.rect_scale.x *= -1
+		_transform_indicator.scale.x *= -1
 
 func _on_clear_transform():
-	_transform_indicator.rect_pivot_offset = _transform_indicator.rect_size / 2
-	_transform_indicator.rect_rotation = 0
-	_transform_indicator.rect_scale = Vector2.ONE
+	_transform_indicator.pivot_offset = _transform_indicator.size / 2
+	_transform_indicator.rotation = 0
+	_transform_indicator.scale = Vector2.ONE
 
 func _on_disable_autotile_check_box_toggled(pressed: bool):
 	var selected_items = _texture_item_list.get_selected_items()
@@ -395,8 +395,8 @@ func _ready():
 	$"%Views".clear()
 	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/GroupView/GroupList/GroupTemplate.visible = false
 	for v in VIEW.keys(): $"%Views".add_item(v, VIEW[v])
-#	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/GroupView.get_v_scrollbar().rect_pivot_offset = \
-#		Vector2(-$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/GroupView.rect_size.x,0)
+#	$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/GroupView.get_v_scroll_bar().pivot_offset = \
+#		Vector2(-$HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/GroupView.size.x,0)
 
 func _fill():
 	tilemap.tilecell = get_tilecell()
@@ -436,7 +436,7 @@ func create_group(g:String, group_content:Array):
 		list.add_item(String(id), tileset.tile_get_texture(id))
 		list.set_item_icon_region(list.get_item_count()-1,tileset.tile_get_region(id))
 		list.set_item_tooltip(list.get_item_count()-1,String(id)+" : "+tileset.tile_get_name(id))
-	list.connect("item_selected", self, "_on_tile_selected_from_group", [g])
+	list.connect("item_selected",Callable(self,"_on_tile_selected_from_group").bind(g))
 	$"%GroupList".call_deferred("add_child", new_g)
 
 func _fill_texture_view():
@@ -467,8 +467,8 @@ func _fill_texture_view():
 		for child in _bg_holder.get_children():
 			_bg_holder.remove_child(child)
 			child.queue_free()
-		if not tileset.is_connected("changed", self, "_on_tileset_changed"):
-			tileset.connect("changed", self, "_on_tileset_changed", [tileset])
+		if not tileset.is_connected("changed",Callable(self,"_on_tileset_changed")):
+			tileset.connect("changed",Callable(self,"_on_tileset_changed").bind(tileset))
 	if _texture_item_list.get_item_count() > 0:
 		_texture_item_list.select(0)
 		_on_TextureItemList_item_selected(0)
@@ -497,20 +497,20 @@ func _clear_texture_view():
 	_previous_selected_texture_index = -1
 	_texture_item_list.clear()
 	_sprite.texture = null
-	_sprite_border.rect_size = Vector2.ZERO
+	_sprite_border.size = Vector2.ZERO
 	for child in _sprite_border.get_children():
 		_sprite_border.remove_child(child)
 		child.queue_free()
 	for child in _bg_holder.get_children():
 		_bg_holder.remove_child(child)
 		child.queue_free()
-	_selection_rect.rect_size = Vector2.ZERO
-	_selection_rect.rect_position = Vector2.ZERO
+	_selection_rect.size = Vector2.ZERO
+	_selection_rect.position = Vector2.ZERO
 	_last_selected_tile = -1
 	_last_selected_subtile = -1
 	for connection in get_incoming_connections():
-		if connection.source is TileSet and connection.signal_name == "changed" and connection.method_name == "_on_tileset_changed":
-			connection.source.disconnect("changed", self, "_on_tileset_changed")
+		if connection["signal"].source is TileSet and connection["signal"].name == "changed" and connection.method_name == "_on_tileset_changed":
+			connection["signal"].source.disconnect("changed",Callable(self,"_on_tileset_changed"))
 
 func _on_tileset_changed(new_tileset: TileSet):
 	_clear()
@@ -519,28 +519,28 @@ func _on_tileset_changed(new_tileset: TileSet):
 func _create_tile_button(tile_id: int, tile_region: Rect2, subtile_index = -1, subtile_coord: Vector2 = Vector2.ZERO, inactive = false):
 	var tile_button = ReferenceRect.new()
 	_sprite_border.add_child(tile_button)
-	tile_button.rect_size = tile_region.size
-	tile_button.rect_position = tile_region.position
+	tile_button.size = tile_region.size
+	tile_button.position = tile_region.position
 	if subtile_index == null:
 		tile_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		tile_button.border_color = absent_subtile_border_color
 		var color_rect = ColorRect.new()
-		color_rect.rect_size = tile_region.size
-		color_rect.rect_position = tile_region.position
+		color_rect.size = tile_region.size
+		color_rect.position = tile_region.position
 		color_rect.color = absent_subtile_fill_color
 	else:
-		match tileset.tile_get_tile_mode(tile_id):
-			TileSet.SINGLE_TILE:
-				tile_button.border_color = single_tile_border_color
-			TileSet.AUTO_TILE:
-				tile_button.border_color = auto_tile_border_color if subtile_index < 0 else subtile_border_color
-			TileSet.ATLAS_TILE:
-				tile_button.border_color = atlas_tile_border_color if subtile_index < 0 else subtile_border_color
+#		match tileset.tile_get_tile_mode(tile_id):
+#			TileSet.SINGLE_TILE:
+#				tile_button.border_color = single_tile_border_color
+#			TileSet.AUTO_TILE:
+#				tile_button.border_color = auto_tile_border_color if subtile_index < 0 else subtile_border_color
+#			TileSet.ATLAS_TILE:
+#				tile_button.border_color = atlas_tile_border_color if subtile_index < 0 else subtile_border_color
 		tile_button.mouse_filter = Control.MOUSE_FILTER_IGNORE if inactive else Control.MOUSE_FILTER_PASS
 		tile_button.set_meta("inactive", inactive)
 		tile_button.set_meta("tile_id", tile_id)
 		tile_button.set_meta("subtile_index", subtile_index)
-		tile_button.connect("gui_input", self, "_on_ReferenceRect_gui_input", [tile_button])
+		tile_button.connect("gui_input",Callable(self,"_on_ReferenceRect_gui_input").bind(tile_button))
 		if not inactive and subtile_index != null:
 			var tile_bg = TextureRect.new()
 			var tex = AtlasTexture.new()
@@ -548,7 +548,7 @@ func _create_tile_button(tile_id: int, tile_region: Rect2, subtile_index = -1, s
 			tex.region = tile_region
 			tex.flags = tex.atlas.flags
 			tile_bg.texture = tex
-			tile_bg.rect_position = tile_button.rect_position
+			tile_bg.position = tile_button.position
 			tile_bg.show_behind_parent = true
 			tile_bg.mouse_filter = MOUSE_FILTER_IGNORE
 			_bg_holder.add_child(tile_bg)
@@ -556,8 +556,8 @@ func _create_tile_button(tile_id: int, tile_region: Rect2, subtile_index = -1, s
 			if (_last_selected_subtile == subtile_index) or \
 				(_last_selected_subtile == -1 and subtile_index == 0) or \
 				(_last_selected_subtile >= 0 and subtile_index == -1):
-				_selection_rect.rect_size = tile_button.rect_size
-				_selection_rect.rect_position = tile_button.rect_position
+				_selection_rect.size = tile_button.size
+				_selection_rect.position = tile_button.position
 				if subtile_index < 0:
 					_last_selected_subtile = -1
 
@@ -587,36 +587,36 @@ func _create_multiple_tile_button(tile_id: int, with_bitmask: bool = false):
 	_create_tile_button(tile_id, tile_region, -1, Vector2.ZERO, true)
 
 func _reset_scale(new_scale: float = 1):
-	_sprite_border.rect_size = _sprite.texture.get_size() if _sprite.texture else Vector2.ZERO
-	_scaling_helper.rect_position = Vector2.ZERO
-	_scaling_helper.rect_scale = Vector2.ONE * new_scale
-	_sprite.rect_position = Vector2.ZERO
+	_sprite_border.size = _sprite.texture.get_size() if _sprite.texture else Vector2.ZERO
+	_scaling_helper.position = Vector2.ZERO
+	_scaling_helper.scale = Vector2.ONE * new_scale
+	_sprite.position = Vector2.ZERO
 	_texture_scaler.value = new_scale
 
 func _create_tile_hint(tile_index: int, tile_id: int):
 	var tile_region = tileset.tile_get_region(tile_id)
 	var tile_name = tileset.tile_get_name(tile_id)
 	var tile_hint_label = Label.new()
-	tile_hint_label.add_color_override("font_color", tile_hint_label_font_color)
+	tile_hint_label.add_theme_color_override("font_color", tile_hint_label_font_color)
 	tile_hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var tile_hint_label_bg = ColorRect.new()
 	tile_hint_label_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tile_hint_label.add_child(tile_hint_label_bg)
 	tile_hint_label_bg.show_behind_parent = true
-	match tileset.tile_get_tile_mode(tile_id):
-		TileSet.SINGLE_TILE:
-			tile_hint_label.text = "%s:%s SINGLE %s" % [tile_index, tile_id, tile_name]
-			tile_hint_label_bg.color = single_tile_border_color
-		TileSet.AUTO_TILE:
-			tile_hint_label.text = "%s:%s AUTO %s" % [tile_index, tile_id, tile_name]
-			tile_hint_label_bg.color = auto_tile_border_color
-		TileSet.ATLAS_TILE:
-			tile_hint_label.text = "%s:%s ATLAS %s" % [tile_index, tile_id, tile_name]
-			tile_hint_label_bg.color = atlas_tile_border_color
+#	match tileset.tile_get_tile_mode(tile_id):
+#		TileSet.SINGLE_TILE:
+#			tile_hint_label.text = "%s:%s SINGLE %s" % [tile_index, tile_id, tile_name]
+#			tile_hint_label_bg.color = single_tile_border_color
+#		TileSet.AUTO_TILE:
+#			tile_hint_label.text = "%s:%s AUTO %s" % [tile_index, tile_id, tile_name]
+#			tile_hint_label_bg.color = auto_tile_border_color
+#		TileSet.ATLAS_TILE:
+#			tile_hint_label.text = "%s:%s ATLAS %s" % [tile_index, tile_id, tile_name]
+#			tile_hint_label_bg.color = atlas_tile_border_color
 	_sprite_border.add_child(tile_hint_label)
-	tile_hint_label.rect_position = tile_region.position
-	tile_hint_label_bg.rect_size = tile_hint_label.rect_size
-	tile_hint_label.hint_tooltip = "{tile index}:{tile id} {MODE} {name}"
+	tile_hint_label.position = tile_region.position
+	tile_hint_label_bg.size = tile_hint_label.size
+	tile_hint_label.tooltip_text = "{tile index}:{tile id} {MODE} {name}"
 
 func _on_TextureItemList_item_selected(index):
 	if current_view == VIEW.Tex:
@@ -634,20 +634,20 @@ func _on_TextureItemList_item_selected(index):
 		for child in _bg_holder.get_children():
 			_bg_holder.remove_child(child)
 			child.queue_free()
-		_selection_rect.rect_position = Vector2.ZERO
-		_selection_rect.rect_size = Vector2.ZERO
+		_selection_rect.position = Vector2.ZERO
+		_selection_rect.size = Vector2.ZERO
 		for tile in meta.tiles:
-			match tileset.tile_get_tile_mode(tile.id):
-				TileSet.SINGLE_TILE:
-					_create_single_tile_button(tile.id)
-				TileSet.ATLAS_TILE:
-					_create_single_tile_button(tile.id) \
-					if _enable_priority_check_box.pressed else \
-					_create_multiple_tile_button(tile.id)
-				TileSet.AUTO_TILE:
-					_create_multiple_tile_button(tile.id, true) \
-					if _disable_autotile_check_box.pressed else \
-					_create_single_tile_button(tile.id)
+#			match tileset.tile_get_tile_mode(tile.id):
+#				TileSet.SINGLE_TILE:
+#					_create_single_tile_button(tile.id)
+#				TileSet.ATLAS_TILE:
+#					_create_single_tile_button(tile.id) \
+#					if _enable_priority_check_box.pressed else \
+#					_create_multiple_tile_button(tile.id)
+#				TileSet.AUTO_TILE:
+#					_create_multiple_tile_button(tile.id, true) \
+#					if _disable_autotile_check_box.pressed else \
+#					_create_single_tile_button(tile.id)
 			_create_tile_hint(tile.index, tile.id)
 		_update_tile_hints()
 		_refresh_buttons_availibility()
@@ -659,7 +659,7 @@ func _on_tile_selected_from_group(index, group):
 	init_tilecell()
 	for g in $"%GroupList".get_children():
 		if g.name == group: continue
-		g.get_node("List").unselect_all()
+		g.get_node("List").deselect_all()
 
 func _on_ListView_item_selected(index: int) -> void:
 	current_tile = index
@@ -678,28 +678,28 @@ func _on_pressed_tile_button(tile_button: ReferenceRect):
 		_tile_list.select(tile_index)
 		_tile_map_editor._palette_selected(tile_index)
 		_last_selected_subtile = -1
-		match tileset.tile_get_tile_mode(current_tile):
-			TileSet.SINGLE_TILE:
-				_enable_priority_check_box.visible = false
-				_disable_autotile_check_box.visible = false
-			TileSet.ATLAS_TILE:
-				if not _enable_priority_check_box.pressed:
-					var subtile_index = tile_button.get_meta("subtile_index")
-					if subtile_index >= 0:
-						_last_selected_subtile = subtile_index
-						_subtile_to_select = subtile_index
-				_enable_priority_check_box.visible = true
-				_disable_autotile_check_box.visible = false
-			TileSet.AUTO_TILE:
-				if _disable_autotile_check_box.pressed:
-					var subtile_index = tile_button.get_meta("subtile_index")
-					if subtile_index >= 0:
-						_last_selected_subtile = subtile_index
-						_subtile_to_select = subtile_index
-				_enable_priority_check_box.visible = false
-				_disable_autotile_check_box.visible = true
-		_selection_rect.rect_position = tile_button.rect_position
-		_selection_rect.rect_size = tile_button.rect_size
+#		match tileset.tile_get_tile_mode(current_tile):
+#			TileSet.SINGLE_TILE:
+#				_enable_priority_check_box.visible = false
+#				_disable_autotile_check_box.visible = false
+#			TileSet.ATLAS_TILE:
+#				if not _enable_priority_check_box.pressed:
+#					var subtile_index = tile_button.get_meta("subtile_index")
+#					if subtile_index >= 0:
+#						_last_selected_subtile = subtile_index
+#						_subtile_to_select = subtile_index
+#				_enable_priority_check_box.visible = true
+#				_disable_autotile_check_box.visible = false
+#			TileSet.AUTO_TILE:
+#				if _disable_autotile_check_box.pressed:
+#					var subtile_index = tile_button.get_meta("subtile_index")
+#					if subtile_index >= 0:
+#						_last_selected_subtile = subtile_index
+#						_subtile_to_select = subtile_index
+#				_enable_priority_check_box.visible = false
+#				_disable_autotile_check_box.visible = true
+		_selection_rect.position = tile_button.position
+		_selection_rect.size = tile_button.size
 		_last_selected_tile = current_tile
 	
 	init_tilecell()
@@ -718,7 +718,7 @@ func _process(_delta: float):
 
 func _on_ReferenceRect_gui_input(event: InputEvent, tile_button: ReferenceRect):
 	if tile_button.get_meta("inactive") or not (event is InputEventMouseButton and event.pressed) \
-		or event.button_index != BUTTON_LEFT:
+		or event.button_index != MOUSE_BUTTON_LEFT:
 			return
 	_on_pressed_tile_button(tile_button)
 
@@ -743,12 +743,12 @@ func _input(event: InputEvent):
 
 	if _dragging:
 		if event is InputEventMouseButton:
-			if (not event.pressed) and event.button_index == BUTTON_MIDDLE:
+			if (not event.pressed) and event.button_index == MOUSE_BUTTON_MIDDLE:
 				_dragging = false
 		if event is InputEventMouseMotion:
 			if _mouse_wrapped:
 				_mouse_wrapped = false
-			else: _scaling_helper.rect_position += event.relative
+			else: _scaling_helper.position += event.relative
 			var mouse_position = get_global_mouse_position()
 			var new_mouse_position = mouse_position
 			var rect = _panel.get_global_rect() as Rect2
@@ -768,7 +768,7 @@ func _update_tile_hints():
 	for child in _sprite_border.get_children():
 		if not child is Label: continue
 		child.visible = _show_tile_hints_check_box.pressed
-		child.rect_scale = Vector2.ONE / (_scaling_helper.rect_scale)
+		child.scale = Vector2.ONE / (_scaling_helper.scale)
 
 func _scale(factor: float):
 	match current_view:
@@ -777,21 +777,21 @@ func _scale(factor: float):
 		#	match current_view:
 		#		VIEW.Tex: to_scale = _sprite
 		#		VIEW.Group: to_scale = $HSplitContainer/TextureVBoxContainer/Main/HSplitContainer/Panel/ScalingHelper/GroupView
-			var sprite_global_position = to_scale.rect_global_position
-			_scaling_helper.rect_global_position = get_global_mouse_position()
-			to_scale.rect_global_position = sprite_global_position
-			_scaling_helper.rect_scale *= factor
-			_texture_scaler.value = _scaling_helper.rect_scale.x
+			var sprite_global_position = to_scale.global_position
+			_scaling_helper.global_position = get_global_mouse_position()
+			to_scale.global_position = sprite_global_position
+			_scaling_helper.scale *= factor
+			_texture_scaler.value = _scaling_helper.scale.x
 			_update_tile_hints()
 		VIEW.Group:
 			pass
 
 func _set_scale(value: float):
 	if current_view == VIEW.Group: return
-	var sprite_global_position = _sprite.rect_global_position
-	_scaling_helper.rect_position = _panel.rect_size / 2
-	_sprite.rect_global_position = sprite_global_position
-	_scaling_helper.rect_scale = Vector2.ONE * value
+	var sprite_global_position = _sprite.global_position
+	_scaling_helper.position = _panel.size / 2
+	_sprite.global_position = sprite_global_position
+	_scaling_helper.scale = Vector2.ONE * value
 	_update_tile_hints()
 
 func _refresh_buttons_availibility():
@@ -817,15 +817,15 @@ func _on_Panel_gui_input(event):
 	_update_buttons_mouse_filter()
 	if not (event is InputEventMouseButton and event.pressed): return
 	match event.button_index:
-		BUTTON_MIDDLE: _dragging = true
-		BUTTON_WHEEL_UP: _scale(1.5)
-		BUTTON_WHEEL_DOWN: _scale(1/1.5)
+		MOUSE_BUTTON_MIDDLE: _dragging = true
+		MOUSE_BUTTON_WHEEL_UP: _scale(1.5)
+		MOUSE_BUTTON_WHEEL_DOWN: _scale(1/1.5)
 
 func _on_TextureListScaleHSlider_value_changed(value):
 	_texture_item_list.icon_scale = value
-	var _texture_item_list_rect_size = _texture_item_list.rect_size
-	_texture_item_list.rect_size = Vector2.ZERO
-	_texture_item_list.rect_size = _texture_item_list_rect_size
+	var _texture_item_list_rect_size = _texture_item_list.size
+	_texture_item_list.size = Vector2.ZERO
+	_texture_item_list.size = _texture_item_list_rect_size
 
 func _on_TextureScaleHSlider_value_changed(value):
 	_set_scale(value)
@@ -846,7 +846,7 @@ func _on_EraseAll_pressed() -> void:
 	tilemap.set_global_replacing(true, tilemap.ALL_TILES, -1)
 
 func _on_TilePalette_resized() -> void:
-	$"%TileCells".get_node("ScrollContainer").rect_min_size.y = max(175, rect_size.y-100)
+	$"%TileCells".get_node("ScrollContainer").custom_minimum_size.y = max(175, size.y-100)
 
 func get_tilecell():
 	return $"%TileCells"
