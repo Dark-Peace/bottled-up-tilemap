@@ -13,6 +13,7 @@ signal cell_entered(_cell:Vector2i)
 signal cell_exited(_cell:Vector2i)
 
 enum BrushType {CIRCLE, SQUARE, SQUARE_ROTATED, LINE_H, LINE_V }
+enum TransfoActions {FLIP_H, FLIP_V, ROTATE_RIGHT, ROTATE_LEFT}
 
 const PREVIEW_TILE_COLOR:Color = Color(1,1,1,.5)
 const PREVIEW_CELL_SELECTED:Color = Color(0.392157, 0.584314, 0.929412, .3)
@@ -60,13 +61,10 @@ var c_outline_width = 1
 var c_spray_density = 0
 
 # REPLACING
-#var r_replace_x_by_y = Vector2(-1,-1)
 var r_replace_tile:Vector3i
 var r_replace_by:Vector3i
 var r_y_as_random_pattern = false
 var r_global_replacing = false : set = set_global_replacing
-# to use like 2 vectors x,y and not a rect with w & h
-#var r_select_limits = Rect2() : set = set_select_limits
 var r_limit_color = Color.AQUAMARINE : set = set_limit_color
 
 # SYMMETRY
@@ -75,7 +73,6 @@ var s_axis = 0 : set = set_axis
 var s_display_length = 1000
 
 # MULTI CURSOR
-#var c_active
 var c_use = "" : set = read_used_cursors
 var used_cursors:Array[Vector2i] = []
 var c_multi_cursor_list:Array[Vector2i] : set = set_multi_cursor
@@ -98,9 +95,6 @@ var r_only_draw_on:Vector3i = NO_TILE_V
 var r_scattering = 0
 var r_scatter_affects_erase = false
 
-#var t_clone_id = 0
-#var t_draw_on_self = false
-#
 ## SEND DATA
 #var send_target = NodePath()
 #var send_send = false : set = set_send
@@ -113,13 +107,12 @@ var can_trigger = true
 var can_trigger_multi = true
 var origin = Vector2(0,0)
 var can_origin = true
-var can_erase = true
 # custom select
-var is_selecting = false
-var has_selected = false
-var selecting_init_pos = Vector2()
-var selecting_end_pos = Vector2()
-var selected_tiles:Array[Vector2i]
+#var is_selecting = false
+#var has_selected = false
+#var selecting_init_pos = Vector2()
+#var selecting_end_pos = Vector2()
+#var selected_tiles:Array[Vector2i]
 
 var label = Label.new()
 var font = label.get_theme_font("")
@@ -128,15 +121,17 @@ var tm_hints:Array = []
 var curr_tile_reg:Rect2
 var curr_tile_texture:Texture2D
 var current_tile:BTM.TILEID : set = set_current_tile
+var current_brush_tiles:Dictionary
 var current_cells:Array[Vector2i]
 var curr_cells_shift:Array[Vector2i]
 var max_cells_preview = INF
 var selected_cells:Array[Vector2i] : set = set_selected_cells
 var bucket_explored:Array[Vector2i]
+var current_layer:int = 0
 
-var data = {"instances": instance_dict, "cursors": c_multi_cursor_list, "tilemaps": t_tilemap_list, "patterns": p_patterns}
+#var data = {"instances": instance_dict, "cursors": c_multi_cursor_list, "tilemaps": t_tilemap_list, "patterns": p_patterns}
 #@onready var file = FileAccess.new()
-var url = "res://addons/BottledTileMap/save"
+#var url = "res://addons/BottledTileMap/save"
 
 @onready var tilecell
 
@@ -174,32 +169,11 @@ func scan_for_tileset(node):
 			for pos in node.get_used_cells(tile):
 				instance = load(entry_i[tile]).instantiate()
 				get_tree().current_scene.get_node(entry_p[tile]).add_child(instance)
-
-#		for tile in node.tile_set.get_meta_list():
-#			for pos in node.get_used_cells(tile):
-#				entry = node.tile_set.get_meta(tile)
-#				if not entry.has("instance") and entry.has("parent"): continue
-#				instance = load(entry["instance"]).instantiate()
-#				get_tree().current_scene.get_node(entry["parent"]).add_child(instance)
-#		if node.tile_set in instance_dict.keys():
-#			for tile in instance_dict[node.tile_set].keys():
-#				for pos in node.get_used_cells(tile):
-#					instance = load(instance_dict[node.tile_set][tile]["instance"]).instantiate()
-#					get_tree().current_scene.get_node(instance_dict[node.tile_set][tile]["parent"]).add_child(instance)
 	for child in node.get_children(): scan_for_tileset(child)
 
 func _draw() -> void:
 	var angle_offset = 0
 	if mode == tile_set.TILE_SHAPE_ISOMETRIC: angle_offset = PI/4
-#	if r_select_limits != Rect2(): # draw the limits of the selection
-#		var start_corner = r_select_limits.position*cell_size
-#		var end_corner = r_select_limits.size*cell_size
-#		var upright_corner = Vector2(r_select_limits.size.x,r_select_limits.position.y)*cell_size
-#		var downleft_corner = Vector2(r_select_limits.position.x,r_select_limits.size.y)*cell_size
-#		draw_line(start_corner,downleft_corner,r_limit_color,LINE_WIDTH)
-#		draw_line(start_corner,upright_corner,r_limit_color,LINE_WIDTH)
-#		draw_line(end_corner,downleft_corner,r_limit_color,LINE_WIDTH)
-#		draw_line(end_corner,upright_corner,r_limit_color,LINE_WIDTH)
 
 	angle_offset = 0
 	if mode == tile_set.TILE_SHAPE_ISOMETRIC: angle_offset = s_display_length
@@ -219,13 +193,6 @@ func _draw() -> void:
 	if not tm_hints.is_empty():
 		for i in tm_hints.size():
 			draw_string(font, get_local_mouse_position()+Vector2(10,15*i), tm_hints[i].name, 0,-1,16, Color.AQUA)
-
-	if is_selecting:
-		draw_rect(Rect2((selecting_init_pos/cell_size).round()*cell_size, \
-						(get_local_mouse_position()/cell_size).round()*cell_size), Color.AQUA)
-	elif has_selected:
-		draw_rect(Rect2((selecting_init_pos/cell_size).round()*cell_size, \
-						(selecting_end_pos/cell_size).round()*cell_size), Color.AQUA)
 	
 	# TODO match tools
 	# Preview of the cell being painted
@@ -253,53 +220,56 @@ func _draw() -> void:
 	if not selected_cells.is_empty():
 		for cell in selected_cells:
 			draw_rect(Rect2(cell*cell_size, cell_size), PREVIEW_CELL_SELECTED)
-
+	
+	# preview custom brush
+	if not current_brush_tiles.is_empty():
+		var cell_rect:Rect2; var tile:TileSetAtlasSource
+		for t in current_brush_tiles.keys():
+			cell_rect = Rect2(Vector2i(local_to_map(get_local_mouse_position())+t)*cell_size,cell_size)
+			tile = tile_set.get_source(current_brush_tiles[t].source)
+			draw_texture_rect_region(tile.texture, cell_rect, tile.get_tile_texture_region(current_brush_tiles[t].coords), PREVIEW_TILE_COLOR)
 
 func _draw_symmetry_axis(display_vector:Vector2i):
 	var start_point = (s_position+display_vector)
 	var end_point = (s_position-display_vector)
 	draw_line(start_point,end_point,r_limit_color,LINE_WIDTH)
 
-func draw_tile_line(start:Vector2i, end:Vector2i, tile:BTM.TILEID=current_tile, l:int=0, alt:int=0):
+
+func draw_tile_line(start:Vector2i, end:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=0):
 	for cell in BTM.get_bresenham_line(start, end):
 		draw_tile(cell, tile, l, alt)
 
-func draw_tile_rect(start:Vector2i, end:Vector2i, tile:BTM.TILEID=current_tile, l:int=0, alt:int=0):
-#	for x in abs(start.x-end.x):
-#		draw_tile(Vector2i(start.x+x,start.y), tile, l, alt)
-#		draw_tile(Vector2i(start.x+x,end.y), tile, l, alt)
-#	for y in abs(start.y-end.y):
-#		draw_tile(Vector2i(start.x,start.y+y), tile, l, alt)
-#		draw_tile(Vector2i(end.x,start.y+y), tile, l, alt)
+func draw_tile_rect(start:Vector2i, end:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=0):
 	for cell in get_rect_from(start, end):
 		draw_tile(cell, tile, l, alt)
 
-func draw_bucket(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=0, alt:int=0, replaced:BTM.TILEID=get_cell(xy, l)):
+func draw_bucket(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=0, replaced:BTM.TILEID=get_cell(xy, l)):
 	draw_tile(xy, tile, l, alt)
 	var selected = get_bucket_tiles(xy, l, replaced)
 	for cell in selected:
 		draw_tile(cell, tile, l, alt)
 	bucket_explored.clear()
 
-#func set_cell(x:int,y:int,id,fy=false,fx=false,_t=false,_a=Vector2()):
-func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=0, alt:int=0):
-	if is_selecting or has_selected: return
+func draw_custom_brush(xy:Vector2i, l:int=current_layer, tile:BTM.TILEID=null):
+	if tile != null:
+		for t in current_brush_tiles.keys():
+			draw_tile(xy+t, tile, l)
+	else:
+		for t in current_brush_tiles.keys():
+			draw_tile(xy+t, current_brush_tiles[t], l)
+
+func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=0):
+#	if is_selecting or has_selected: return
 	# multi-cursor handler
 	if used_cursors.size() > 0 and can_trigger_multi:# and not tile.isEqual(get_cell(xy, l)):
 		can_trigger_multi = false
 		for c in used_cursors:
 #			if c == Vector2.ZERO: continue
 			if p_replacing or get_cell(xy+c, l).source == ERASE_TILE:
-#				set_cell(l,xy+c,id,tile.coords,alt)
 				draw_tile(xy+c,tile,l,alt)
 				if p_allow_autotile: update_bitmask_area(xy+c)
 		can_trigger_multi = true
 
-	# case that doesn't change from a normal tilemap
-#	if tile.source == ERASE_TILE:# or tile.isEqual(get_cell(xy, l)):
-#		call_all_draw(xy,tile,l,alt)
-#		if not can_origin: can_origin = true
-#		return
 	# no pattern selected
 	if p_id == -1:
 		if (c_size > 1 or c_size > 1) and can_trigger:
@@ -350,11 +320,10 @@ func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=0, alt:int=0):
 #		else: call_all_draw(xy,tile,l,get_random_subtile(id, tile.coords))
 
 
-func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int,alt:int=0):
+func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=0):
 	if get_cell(xy, l).isEqualV3(r_no_draw_on) or (r_only_draw_on != NO_TILE_V and not get_cell(xy, l).isEqualV3(r_only_draw_on)) \
 		or tile.source < -1:
 			return
-#	if r_no_draw_on == get_cell(xy, l) or (r_only_draw_on != NO_TILE and get_cell(xy, l) != r_only_draw_on): return
 	
 	if not tile.isEqual(get_cell(xy, l)):
 		var test = randf_range(0,1)
@@ -385,17 +354,12 @@ func get_selected_cells():
 	
 	return current_cells
 
-#func setcellv(v:Vector2,id,fy=false,fx=false,_t=false,_a=Vector2()):
-#	if r_no_draw_on == get_cellv(v) or (r_only_draw_on != NO_TILE and get_cellv(v) != r_only_draw_on): return
-#	setcell(v.x,v.y,id,fy,fx,_t,_a)
-
-func draw_symmetry(xy:Vector2i,tile:BTM.TILEID,l:int,alt=0):
+func draw_symmetry(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt=0):
 	if s_axis == 0: return
 	
 	var id=tile.source; var _a = tile.coords;
 	if s_axis == X_AXIS:
 		var new_vect:Vector2i = xy+Vector2i(0,-2*(xy.x-s_position.x)-1)
-#		super.set_cell(x,y-2*(y-s_position.y)-1,id,fy,fx,_t,_a)
 		super.set_cell(l,new_vect,id,_a,alt)
 		if p_allow_autotile: update_bitmask_area(new_vect)
 	elif s_axis == Y_AXIS:
@@ -407,7 +371,6 @@ func draw_symmetry(xy:Vector2i,tile:BTM.TILEID,l:int,alt=0):
 		super.set_cell(l,xy+Vector2i(part_vect.x,0),id,_a,alt)
 		super.set_cell(l,xy+Vector2i(0,part_vect.y),id,_a,alt)
 		super.set_cell(l,xy+Vector2i(part_vect.x,part_vect.y),id,_a,alt)
-#		super.set_cell(x-2*(x-s_position.x)-1,y-2*(y-s_position.y)-1,id,fy,fx,_t,_a)
 		if p_allow_autotile:
 			update_bitmask_area(xy+Vector2i(part_vect.x,0))
 			update_bitmask_area(xy+Vector2i(0,part_vect.y))
@@ -438,24 +401,15 @@ func get_symmetry_tiles(xy:Vector2i):
 #			if id != NO_TILE and (p_replacing or get_cell(xy+Vector2i(column,line), l) == ERASE_TILE):
 #				call_all_draw(xy+Vector2i(column,line),tile,l,get_random_subtile(id, _a))
 
+func set_current_layer(value, button:OptionButton):
+	current_layer = value
+	button.select(value)
+	print(button.selected)
+
 func get_origin(xy:Vector2i):
 	if not can_origin: return
 	if p_center == CENTER.origin: origin = Vector2i.ZERO
 	elif p_center == CENTER.mouse: origin = xy
-
-#func get_tileIDv(xy:Vector2i): #TODO
-#	return get_tileID(xy.x,xy.y)
-#
-#func get_tileID(x:int, y:int): #TODO
-#	var matrix = pattern_list[p_id]
-#	var line = matrix[y%matrix.size()]
-#	var id = line[x%line.size()]
-#
-#	match id:
-#		" ": return NO_TILE # tile won't be drawn there / will be ignored
-#		"x": return ERASE_TILE # tile will be replaced by empty tile
-#	if "R" in id: id = get_random_tile(int(id.right(1))) # random tile from other pattern
-#	return int(id)
 
 func format_patterns(): #TODO
 	pattern_list = p_patterns.split("\n\n",false)
@@ -497,7 +451,7 @@ func get_rect_from(start:Vector2i, end:Vector2i):
 				res.append(Vector2i(x,y))
 	return res
 
-func get_bucket_tiles(xy:Vector2i, l:int=0, replaced:BTM.TILEID=get_cell(xy, l), rec_index=0):
+func get_bucket_tiles(xy:Vector2i, l:int=current_layer, replaced:BTM.TILEID=get_cell(xy, l), rec_index=0):
 	var res:Array[Vector2i]
 	if rec_index > MAX_BUCKET_RECURSION or xy in bucket_explored: return res
 	bucket_explored.append(xy)
@@ -603,12 +557,11 @@ func spray(center:Vector2i):
 
 func global_replacing(old, new):
 	var to_replace = []; var replacing_tile:BTM.TILEID = BTM.TILEID.new(new.z, Vector2i(new.x,new.y))
-	if old.z == ALL_TILES: to_replace = get_used_cells(0) # replace all tiles
-	else: to_replace = get_used_cells_by_id(0, old.z, Vector2i(old.x,old.y))
+	if old.z == ALL_TILES: to_replace = get_used_cells(current_layer) # replace all tiles
+	else: to_replace = get_used_cells_by_id(current_layer, old.z, Vector2i(old.x,old.y))
 	
 	for tile in to_replace:
 		# replace everywhere or in the selection
-#		if r_select_limits == Rect2() or tile_in_rect(tile):
 		if selected_cells.is_empty() or tile in selected_cells:
 #			if r_y_as_random_pattern:
 #				call_all_draw(tile, get_random_tile(new),0)
@@ -621,16 +574,11 @@ func set_global_replacing(value): #TODO
 	
 	global_replacing(r_replace_tile, r_replace_by)
 
-#func tile_in_rect(tile:Vector2i):
-#	if (tile.x > r_select_limits.position.x-1 and tile.y > r_select_limits.position.y-1 \
-#		and tile.x < r_select_limits.size.x and tile.y < r_select_limits.size.y):
-#		return true
-
-func select_tiles():
-	var rect = Rect2((selecting_init_pos)/cell_size, selecting_end_pos/cell_size)
-	for x in rect.size.x:
-		for y in rect.size.y:
-			selected_tiles.append(Vector2i(x,y))
+#func select_tiles():
+#	var rect = Rect2((selecting_init_pos)/cell_size, selecting_end_pos/cell_size)
+#	for x in rect.size.x:
+#		for y in rect.size.y:
+#			selected_tiles.append(Vector2i(x,y))
 
 func set_turn_into_pattern(value): #TODO
 	pass
@@ -692,13 +640,35 @@ func is_tile_in_group(id:BTM.TILEID, group, tilemap=self):
 func group_has_tile(group, id:BTM.TILEID, tilemap=self):
 	return id in tilemap.tile_set.get_meta("groups_by_groups", {}).get(group, [])
 
+func cells_to_brush(center:Vector2i):
+	current_brush_tiles.clear()
+	for tile in selected_cells:
+		current_brush_tiles[tile-center] = get_cell(tile)
+
+func transform_brush(action:int):
+	if current_brush_tiles.is_empty(): return
+	var modified:Dictionary
+	match action:
+		TransfoActions.FLIP_H:
+			for t in current_brush_tiles.keys():
+				modified[Vector2i(-t.x,t.y)] = current_brush_tiles[t]
+		TransfoActions.FLIP_V:
+			for t in current_brush_tiles.keys():
+				modified[Vector2i(t.x,-t.y)] = current_brush_tiles[t]
+		TransfoActions.ROTATE_LEFT:
+			for t in current_brush_tiles.keys():
+				modified[Vector2i(t.y,-t.x)] = current_brush_tiles[t]
+		TransfoActions.ROTATE_RIGHT:
+			for t in current_brush_tiles.keys():
+				modified[Vector2i(-t.y,t.x)] = current_brush_tiles[t]
+	current_brush_tiles = modified
 
 
 
 
 # SETGETS ########################################################
 
-func get_cell(xy:Vector2i, l:int=0) -> BTM.TILEID:
+func get_cell(xy:Vector2i, l:int=current_layer) -> BTM.TILEID:
 	return BTM.TILEID.new(get_cell_source_id(l, xy), get_cell_atlas_coords(l, xy))
 #	return get_cell_source_id(0, xy)
 
@@ -733,9 +703,6 @@ func set_curr_tilemap(value):
 		for cell in curr_tilemap.get_used_cells(layer):
 			super.set_cell(layer,cell, curr_tilemap.get_cell_source_id(layer,cell), \
 				curr_tilemap.get_cell_atlas_coords(layer,cell), curr_tilemap.get_cell_alternative_tile(layer,cell))
-	#		super.set_cell(0,tile, curr_tilemap.get_cellv(tile), curr_tilemap.is_cell_x_flipped(tile.x, tile.y),\
-	#			curr_tilemap.is_cell_x_flipped(tile.x, tile.y), curr_tilemap.is_cell_transposed(tile.x, tile.y),\
-	#			curr_tilemap.get_cell_autotile_coord(tile.x,tile.y))
 	notify_property_list_changed()
 
 func get_neighbor_cells(xy:Vector2i):
@@ -753,10 +720,6 @@ func set_patterns(value):
 	p_patterns = value
 	format_patterns()
 
-#func set_select_limits(value):
-#	r_select_limits = value
-#	queue_redraw()
-
 func set_limit_color(value):
 	r_limit_color = value
 	queue_redraw()
@@ -764,7 +727,6 @@ func set_limit_color(value):
 func set_multi_cursor(value):
 	c_multi_cursor_list = value
 	read_used_cursors(c_use)
-#	queue_redraw()
 
 func set_axis(value):
 	s_axis = value
@@ -773,10 +735,7 @@ func set_axis(value):
 func set_axis_position(value):
 	s_position = value
 	queue_redraw()
-#func set_cursor_color(value):
-#	c_cursor_color = value
-#	queue_redraw()
-
+	
 #func load_data():
 #	if !file.file_exists(url): return
 #	file.open(url, File.READ)
@@ -792,7 +751,6 @@ func set_axis_position(value):
 #	file.store_line(JSON.new().stringify(data))
 #	file.close()
 #	return
-
 
 func import_tilesets():
 	scan_for_tilemaps(get_tree().edited_scene_root)

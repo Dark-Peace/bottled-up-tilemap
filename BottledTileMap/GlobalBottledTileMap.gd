@@ -46,6 +46,7 @@ var is_shift:bool = false
 var is_ctrl:bool = false
 var is_alt:bool = false
 var is_bucket:bool = false
+var is_custom_brush:bool = false
 
 func bottled_set_cell(event:InputEvent):
 	# click
@@ -123,8 +124,9 @@ func match_button_action(button:int):
 
 func draw_tile(button:int):
 	if is_alt or match_button_action(button) == null: return
-#	if is_alt: bottledtilemap.set_selected_cells()
-	bottledtilemap.draw_tile(current_cell, match_button_action(button))
+	if is_custom_brush:
+		bottledtilemap.draw_custom_brush(current_cell, bottledtilemap.current_layer, [null,null,bottledtilemap.ERASE_TILE_ID][button])
+	else: bottledtilemap.draw_tile(current_cell, match_button_action(button))
 
 func select_cell(button:int):
 	if is_bucket:
@@ -142,6 +144,22 @@ func select_cell(button:int):
 			MOUSE_BUTTON_LEFT: bottledtilemap.set_selected_cells()
 			MOUSE_BUTTON_RIGHT: bottledtilemap.unset_selected_cells()
 			INVALID: return
+
+
+func _on_key_pressed(event:InputEventKey):
+	if Input.is_key_pressed(KEY_CTRL) and event.keycode in [KEY_C, KEY_X] and not bottledtilemap.selected_cells.is_empty():
+		# copy selection
+		bottledtilemap.cells_to_brush(current_cell)
+		if event.keycode == KEY_X:
+			# cut selection
+			for tile in bottledtilemap.selected_cells:
+				bottledtilemap.draw_tile(tile, bottledtilemap.ERASE_TILE_ID)
+		bottledtilemap.selected_cells.clear()
+		bottledtilemap.queue_redraw()
+		is_custom_brush = !bottledtilemap.current_brush_tiles.is_empty()
+
+
+
 
 ################################
 
