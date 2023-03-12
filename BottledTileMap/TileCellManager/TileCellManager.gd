@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorPlugin
 
 # ******************************************************************************
@@ -7,11 +7,11 @@ var tile_cells_scene = null
 var tile_list = null
 var tile_cell: Control
 
-func _find_tilemap_editor(node: Node) -> Node:
-	if node.get_class() == "TileMapEditor":
+func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root) -> Node:
+	if node.get_class() == target:
 		return node
 	for child in node.get_children():
-		var tilemap_editor = _find_tilemap_editor(child)
+		var tilemap_editor = _find_in_editor(target, child)
 		if tilemap_editor:
 			return tilemap_editor
 	return null
@@ -21,12 +21,12 @@ func _find_tilemap_editor(node: Node) -> Node:
 func _enter_tree():
 	tile_cells_scene = load("res://addons/BottledTileMap/TileCellManager/TileCells.tscn")
 
-	var _tilemap_editor = _find_tilemap_editor(get_tree().root)
-	tile_list = _tilemap_editor.get_child(5).get_child(0) as ItemList
+	var _tilemap_editor = _find_in_editor()
+	tile_list = _tilemap_editor.get_child(2).get_child(1).get_child(0).get_child(0) as ItemList
 	
-	tile_list.connect('gui_input', self, 'tile_list_gui_input')
+	tile_list.connect('gui_input',Callable(self,'tile_list_gui_input'))
 
-	get_editor_interface().get_selection().connect("selection_changed", self, "on_node_selected")
+	get_editor_interface().get_selection().connect("selection_changed",Callable(self,"on_node_selected"))
 
 func on_node_selected():
 	check_validation()
@@ -39,7 +39,7 @@ func on_node_selected():
 	if selection[0] is TileMap:
 		archive_node = selection[0]
 
-		tile_cell = tile_cells_scene.instance()
+		tile_cell = tile_cells_scene.instantiate()
 		add_control_to_bottom_panel(tile_cell, "TileCell")
 	else:
 		check_validation()
@@ -70,4 +70,4 @@ func tile_list_gui_input(event):
 
 func _exit_tree():
 	check_validation()
-	get_editor_interface().get_selection().disconnect("selection_changed", self, "on_node_selected")
+	get_editor_interface().get_selection().disconnect("selection_changed",Callable(self,"on_node_selected"))

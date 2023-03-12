@@ -12,9 +12,9 @@ extends Control
 @onready var tex = $"%Tex"
 
 var active := false
-var tileset: TileSet
-var tilemap: TileMap
-var id: int
+var tileset:TileSet
+var tilemap:TileMap
+var id:BTM.TILEID
 
 # ******************************************************************************
 
@@ -23,23 +23,24 @@ func populate_infos(info):
 	icon.clear()
 	tilemap = info['tilemap']
 	tileset = info['tilemap'].tile_set
-	id = tileset.find_tile_by_name(info['cell_name'])
-	icon.add_item("", tileset.tile_get_texture(id), false)
-	icon.set_item_icon_region(0, tileset.tile_get_region(id))
-	Name.text = tileset.tile_get_name(id)
-	Id.text = str(id)
-	_z_index.value = tileset.tile_get_z_index(id)
-	Modulation.color = tileset.tile_get_modulate(id)
-	shape.get_node("x").text = String(tileset.tile_get_shape_offset(id, 0).x)
-	shape.get_node("y").text = String(tileset.tile_get_shape_offset(id, 0).y)
-	tex.get_node("x").text = String(tileset.tile_get_texture_offset(id).x)
-	tex.get_node("y").text = String(tileset.tile_get_texture_offset(id).y)
-
-	$"%Instance".text = tilemap.get_meta("instances", {}).get(id, "")
-	$"%Parent".text = tilemap.get_meta("parents", {}).get(id, "")
-	$"%Groups".text = ""
-	for g in tilemap.get_meta("groups_by_IDs", {}).get(id, []):
-		$"%Groups".text += g + "\n"
+	id = info['tile_id']
+	icon.add_item("", tileset.get_source(id.source).texture, false)
+	icon.set_item_icon_region(0, tileset.get_source(id.source).get_tile_texture_region())
+#	Name.text = tileset.tile_get_name(id)
+	Id.text = str(id.source)
+	#TODO
+#	_z_index.value = tileset.tile_get_z_index(id)
+#	Modulation.color = tileset.tile_get_modulate(id)
+#	shape.get_node("x").text = String(tileset.tile_get_shape_offset(id, 0).x)
+#	shape.get_node("y").text = String(tileset.tile_get_shape_offset(id, 0).y)
+#	tex.get_node("x").text = String(tileset.tile_get_texture_offset(id).x)
+#	tex.get_node("y").text = String(tileset.tile_get_texture_offset(id).y)
+#
+#	$"%Instance".text = tilemap.get_meta("instances", {}).get(id, "")
+#	$"%Parent".text = tilemap.get_meta("parents", {}).get(id, "")
+#	$"%Groups".text = ""
+#	for g in tilemap.get_meta("groups_by_IDs", {}).get(id, []):
+#		$"%Groups".text += g + "\n"
 
 # ******************************************************************************
 
