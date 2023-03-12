@@ -66,7 +66,7 @@ func _on_selection_changed():
 	var selected_nodes = _selection.get_selected_nodes()
 	if selected_nodes.size() == 1:
 		var selected_node = selected_nodes[0]
-		if selected_node is TileMap:#BottledTileMap
+		if selected_node is BottledTileMap:
 			_tile_palette.tilemap = selected_node #BottledTileMap
 			_tile_palette.tileset = selected_node.tile_set
 			make_bottom_panel_item_visible(_tile_palette)
@@ -86,97 +86,81 @@ func _add_tile_palette():
 	_selection = get_editor_interface().get_selection()
 	_selection.connect("selection_changed",Callable(self,"_on_selection_changed"))
 	add_control_to_bottom_panel(_tile_palette, "Tile Palette")
-	_tilemap_editor = _find_tilemap_editor(get_tree().root)
-#	var items = _tilemap_editor.get_node("@@11822/@@11824") as ItemList
-	_tile_list = _tilemap_editor.get_child(5).get_child(0) as ItemList
-#	var atlas_tile_items = _tilemap_editor.get_node("@@11822/@@11827") as ItemList
-	_subtile_list = _tilemap_editor.get_child(5).get_child(1) as ItemList
+	_tilemap_editor = _find_in_editor()
+	_tile_list = _tilemap_editor.get_child(2).get_child(1).get_child(0).get_child(0) as ItemList
+#	_tile_list = _tilemap_editor.get_child(5).get_child(0) as ItemList
+	_subtile_list = null#_tilemap_editor.get_child(5).get_child(1) as ItemList
 
 	_tile_palette.set_lists(_tile_list, _subtile_list)
+	
+	
 
-	_hang_canvas_item_visibility(_tilemap_editor, false)
-	_checkboxes_parent = _tilemap_editor
-#	_disable_autotile_check_box = _tilemap_editor.get_node("@@11815") as CheckBox
-	_disable_autotile_check_box = _tilemap_editor.get_child(1) as CheckBox
-	_disable_autotile_check_box_position = 1 # _disable_autotile_check_box.get_position_in_parent()
-	_hang_canvas_item_visibility(_disable_autotile_check_box, true)
-#	_enable_priority_check_box = _tilemap_editor.get_node("@@11816") as CheckBox
-	_enable_priority_check_box = _tilemap_editor.get_child(2) as CheckBox
-	_enable_priority_check_box_position = 2 # _enable_priority_check_box.get_position_in_parent()
-	_hang_canvas_item_visibility(_enable_priority_check_box, true)
+#	_hang_canvas_item_visibility(_tilemap_editor, false)
+#	_checkboxes_parent = _tilemap_editor
+#	_disable_autotile_check_box = _tilemap_editor.get_child(1) as CheckBox
+#	_disable_autotile_check_box_position = 1
+#	_hang_canvas_item_visibility(_disable_autotile_check_box, true)
+#	_enable_priority_check_box = _tilemap_editor.get_child(2) as CheckBox
+#	_enable_priority_check_box_position = 2
+#	_hang_canvas_item_visibility(_enable_priority_check_box, true)
 
-#	_tools_parent = _tilemap_editor.get_node("@@11814") as HBoxContainer
-	_tools_parent = _tilemap_editor.get_child(0) as HBoxContainer
-
-#	_rotate_left_button = _tilemap_editor.get_node("@@11814/@@11839") as Button
-	_rotate_left_button = _tools_parent.get_child(0) as Button
-	_rotate_left_button_position = 0 # _rotate_left_button.get_position_in_parent()
-
-#	_rotate_right_button = _tilemap_editor.get_node("@@11814/@@11840") as Button
-	_rotate_right_button = _tools_parent.get_child(1) as Button
-	_rotate_right_button_position = 1 # _rotate_right_button.get_position_in_parent()
-
-#	_flip_horizontally_button = _tilemap_editor.get_node("@@11814/@@11841") as Button
-	_flip_horizontally_button = _tools_parent.get_child(2) as Button
-	_flip_horizontally_button_position = 2 # _flip_horizontally_button.get_position_in_parent()
-
-#	_flip_vertically_button = _tilemap_editor.get_node("@@11814/@@11842") as Button
-	_flip_vertically_button = _tools_parent.get_child(3) as Button
-	_flip_vertically_button_position = 3 # _flip_vertically_button.get_position_in_parent()
-
-#	_clear_transform_button = _tilemap_editor.get_node("@@11814/@@11843") as Button
-	_clear_transform_button = _tools_parent.get_child(4) as Button
-	_clear_transform_button_position = 4 # _clear_transform_button.get_position_in_parent()
+#	_tools_parent = _tilemap_editor.get_child(0) as HBoxContainer
+#	_rotate_left_button = _tools_parent.get_child(0) as Button
+#	_rotate_right_button = _tools_parent.get_child(1) as Button
+#	_flip_horizontally_button = _tools_parent.get_child(2) as Button
+#	_flip_vertically_button = _tools_parent.get_child(3) as Button
+#	_clear_transform_button = _tools_parent.get_child(4) as Button
+#	_clear_transform_button_position = 4
 
 	_tile_palette.set_tools(
 		_tilemap_editor,
-		_disable_autotile_check_box,
-		_enable_priority_check_box,
-		_rotate_left_button,
-		_rotate_right_button,
-		_flip_horizontally_button,
-		_flip_vertically_button,
-		_clear_transform_button,
+#		_disable_autotile_check_box,
+#		_enable_priority_check_box,
+#		_rotate_left_button,
+#		_rotate_right_button,
+#		_flip_horizontally_button,
+#		_flip_vertically_button,
+#		_clear_transform_button,
 		get_editor_interface().get_editor_scale())
 
 	_on_selection_changed()
 
 
-func _find_tilemap_editor(node: Node) -> Node:
-	if node.get_class() == "TileMapEditor":
+func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root) -> Node:
+	if node.get_class() == target:
 		return node
 	for child in node.get_children():
-		var tilemap_editor = _find_tilemap_editor(child)
+		var tilemap_editor = _find_in_editor(target, child)
 		if tilemap_editor:
 			return tilemap_editor
 	return null
 
 func _remove_tile_palette():
 	remove_control_from_bottom_panel(_tile_palette)
-	_disable_autotile_check_box.get_parent().remove_child(_disable_autotile_check_box)
-	_checkboxes_parent.add_child(_disable_autotile_check_box)
-	_checkboxes_parent.move_child(_disable_autotile_check_box, _disable_autotile_check_box_position)
-	_release_canvas_item_visibility(_disable_autotile_check_box)
-	_enable_priority_check_box.get_parent().remove_child(_enable_priority_check_box)
-	_checkboxes_parent.add_child(_enable_priority_check_box)
-	_checkboxes_parent.move_child(_enable_priority_check_box, _enable_priority_check_box_position)
-	_release_canvas_item_visibility(_enable_priority_check_box)
+#	_disable_autotile_check_box.get_parent().remove_child(_disable_autotile_check_box)
+#	_checkboxes_parent.add_child(_disable_autotile_check_box)
+#	_checkboxes_parent.move_child(_disable_autotile_check_box, _disable_autotile_check_box_position)
+#	_release_canvas_item_visibility(_disable_autotile_check_box)
+#	_enable_priority_check_box.get_parent().remove_child(_enable_priority_check_box)
+#	_checkboxes_parent.add_child(_enable_priority_check_box)
+#	_checkboxes_parent.move_child(_enable_priority_check_box, _enable_priority_check_box_position)
+#	_release_canvas_item_visibility(_enable_priority_check_box)
 
-	_rotate_left_button.get_parent().remove_child(_rotate_left_button)
-	_tools_parent.add_child(_rotate_left_button)
-	_tools_parent.move_child(_rotate_left_button, _rotate_left_button_position)
-	_rotate_right_button.get_parent().remove_child(_rotate_right_button)
-	_tools_parent.add_child(_rotate_right_button)
-	_tools_parent.move_child(_rotate_right_button, _rotate_right_button_position)
-	_flip_horizontally_button.get_parent().remove_child(_flip_horizontally_button)
-	_tools_parent.add_child(_flip_horizontally_button)
-	_tools_parent.move_child(_flip_horizontally_button, _flip_horizontally_button_position)
-	_flip_vertically_button.get_parent().remove_child(_flip_vertically_button)
-	_tools_parent.add_child(_flip_vertically_button)
-	_tools_parent.move_child(_flip_vertically_button, _flip_vertically_button_position)
-	_clear_transform_button.get_parent().remove_child(_clear_transform_button)
-	_tools_parent.add_child(_clear_transform_button)
-	_tools_parent.move_child(_clear_transform_button, _clear_transform_button_position)
+#	_rotate_left_button.get_parent().remove_child(_rotate_left_button)
+#	_tools_parent.add_child(_rotate_left_button)
+#	_tools_parent.move_child(_rotate_left_button, _rotate_left_button_position)
+#	_rotate_right_button.get_parent().remove_child(_rotate_right_button)
+#	_tools_parent.add_child(_rotate_right_button)
+#	_tools_parent.move_child(_rotate_right_button, _rotate_right_button_position)
+#	_flip_horizontally_button.get_parent().remove_child(_flip_horizontally_button)
+#	_tools_parent.add_child(_flip_horizontally_button)
+#	_tools_parent.move_child(_flip_horizontally_button, _flip_horizontally_button_position)
+#	_flip_vertically_button.get_parent().remove_child(_flip_vertically_button)
+#	_tools_parent.add_child(_flip_vertically_button)
+#	_tools_parent.move_child(_flip_vertically_button, _flip_vertically_button_position)
+#	_clear_transform_button.get_parent().remove_child(_clear_transform_button)
+#	_tools_parent.add_child(_clear_transform_button)
+#	_tools_parent.move_child(_clear_transform_button, _clear_transform_button_position)
 
 	_tile_palette.queue_free()
 	_selection.disconnect("selection_changed",Callable(self,"_on_selection_changed"))
@@ -185,10 +169,10 @@ func _remove_tile_palette():
 	var selected_nodes = _selection.get_selected_nodes()
 	if selected_nodes.size() == 1:
 		var selected_node = selected_nodes[0]
-		if selected_node is TileMap:#BottledTileMap:
+		if selected_node is BottledTileMap:
 			_tilemap_editor.visible = true
-			if _tile_list.is_anything_selected():
-				_tilemap_editor._palette_selected(_tile_list.get_selected_items()[0])
+#			if _tile_list.is_anything_selected():
+#				_tilemap_editor._palette_selected(_tile_list.get_selected_items()[0])
 
 
 func _hang_canvas_item_visibility(canvas_item: CanvasItem, value: bool):
