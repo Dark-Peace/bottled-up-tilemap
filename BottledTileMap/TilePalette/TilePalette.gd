@@ -70,54 +70,12 @@ func set_lists(tile_list: ItemList, subtile_list: ItemList):
 	_tile_list = tile_list
 #	_subtile_list = subtile_list
 
-func set_tools(
-				tile_map_editor: Control,
-#				disable_autotile_check_box: CheckBox,
-#				enable_priority_check_box: CheckBox,
-#				rotate_left_button: Button,
-#				rotate_right_button: Button,
-#				flip_horizontally_button: Button,
-#				flip_vertically_button: Button,
-#				clear_transform_button: Button,
-				interface_display_scale: float = 1
-				):
-	
+func set_tools(tile_map_editor: Control, interface_display_scale: float = 1):
 	_tile_map_editor = tile_map_editor
-	
-#	_disable_autotile_check_box = disable_autotile_check_box
-#	_enable_priority_check_box = enable_priority_check_box
-#	_rotate_left_button = rotate_left_button
-#	_rotate_right_button = rotate_right_button
-#	_flip_horizontally_button = flip_horizontally_button
-#	_flip_vertically_button = flip_vertically_button
-#	_clear_transform_button = clear_transform_button
-	
-#	var tools = [
-#		_rotate_left_button,
-#		_rotate_right_button,
-#		_flip_horizontally_button,
-#		_flip_vertically_button,
-#		_clear_transform_button,
-#		_disable_autotile_check_box,
-#		_enable_priority_check_box
-#	]
-#	for t in tools:
-#		t.get_parent().remove_child(t)
-#		_tools_container.add_child(t)
-	
-#	_disable_autotile_check_box.connect("toggled",Callable(self,"_on_disable_autotile_check_box_toggled"))
-#	_enable_priority_check_box.connect("toggled",Callable(self,"_on_enable_priority_check_box_toggled"))
 	_on_clear_transform()
-#	_tile_map_editor._clear_transform()
 	
-#	_rotate_left_button.connect("pressed",Callable(self,"_on_rotate_counterclockwise"))
-#	_rotate_right_button.connect("pressed",Callable(self,"_on_rotate_clockwise"))
-#	_flip_horizontally_button.connect("pressed",Callable(self,"_on_flip_horizontally"))
-#	_flip_vertically_button.connect("pressed",Callable(self,"_on_flip_vertically"))
-#	_clear_transform_button.connect("pressed",Callable(self,"_on_clear_transform"))
-	
-	_reset_scaling_button.icon = _resize_button_texture(_reset_scaling_button.icon, interface_display_scale / 4)
-	_transform_indicator.icon = _resize_button_texture(_transform_indicator.icon, interface_display_scale / 4)
+#	_reset_scaling_button.icon = _resize_button_texture(_reset_scaling_button.icon, interface_display_scale / 4)
+#	_transform_indicator.icon = _resize_button_texture(_transform_indicator.icon, interface_display_scale / 4)
 	
 	# Bottled TileMap
 	var next_button = $HSplitContainer/TextureVBoxContainer/HBoxContainer/ScalingHBoxContainer/NextTile
@@ -540,24 +498,25 @@ func _clear_group_view():
 	_texture_item_list.clear()
 
 func _clear_texture_view():
+	pass
 #	_subtile_to_select = -1
-	_previous_selected_texture_index = -1
-	_texture_item_list.clear()
-	_sprite.texture = null
-	_sprite_border.size = Vector2.ZERO
-	for child in _sprite_border.get_children():
-		_sprite_border.remove_child(child)
-		child.queue_free()
-	for child in _bg_holder.get_children():
-		_bg_holder.remove_child(child)
-		child.queue_free()
-	_selection_rect.size = Vector2.ZERO
-	_selection_rect.position = Vector2.ZERO
-	_last_selected_tile = -1
-	_last_selected_subtile = -1
-	for connection in get_incoming_connections():
-		if connection["signal"].get_object() is TileSet and connection["signal"].get_name() == "changed" and connection["signal"].is_connected(_on_tileset_changed):
-			connection["signal"].get_object().disconnect("changed",Callable(self,"_on_tileset_changed"))
+#	_previous_selected_texture_index = -1
+#	_texture_item_list.clear()
+#	_sprite.texture = null
+#	_sprite_border.size = Vector2.ZERO
+#	for child in _sprite_border.get_children():
+#		_sprite_border.remove_child(child)
+#		child.queue_free()
+#	for child in _bg_holder.get_children():
+#		_bg_holder.remove_child(child)
+#		child.queue_free()
+#	_selection_rect.size = Vector2.ZERO
+#	_selection_rect.position = Vector2.ZERO
+#	_last_selected_tile = -1
+#	_last_selected_subtile = -1
+#	for connection in get_incoming_connections():
+#		if connection["signal"].get_object() is TileSet and connection["signal"].get_name() == "changed" and connection["signal"].is_connected(_on_tileset_changed):
+#			connection["signal"].get_object().disconnect("changed",Callable(self,"_on_tileset_changed"))
 
 func _on_tileset_changed(new_tileset: TileSet):
 	_clear()
