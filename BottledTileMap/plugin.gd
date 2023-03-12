@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorPlugin
 
 # ******************************************************************************
@@ -18,7 +18,7 @@ func _enter_tree():
 		load(plugin_dir + 'BottledTilemap.gd'),
 		load(plugin_dir + 'icon.png')
 	)
-
+	
 	# TILECELL
 	tile_cell_manager = load(plugin_dir + 'TileCellManager/TileCellManager.gd').new()
 	add_child(tile_cell_manager)
@@ -33,10 +33,18 @@ func _exit_tree():
 
 #	# TILECELL
 #	check_validation()
-#	Nodeselected.disconnect("selection_changed",self,"on_node_selected")
+#	Nodeselected.disconnect("selection_changed",Callable(self,"on_node_selected"))
 
 #	# TILEPALETTE
 #	_remove_tile_palette()
 #	remove_inspector_plugin(_tilemap_inspector_plugin)
 
-#
+
+func _handles(object):
+	return object is BottledTileMap
+
+func _forward_canvas_gui_input(event: InputEvent) -> bool:
+	if event is InputEventMouseButton or event is InputEventMouseMotion:
+		BTM.bottled_set_cell(event)
+		return true
+	return false
