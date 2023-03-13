@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cv23pu7kkg0n2"]
+[gd_scene load_steps=9 format=3 uid="uid://cv23pu7kkg0n2"]
 
 [ext_resource type="Texture2D" uid="uid://dw0v4662wamib" path="res://addons/BottledTileMap/TilePalette/reset_scaling.svg" id="1"]
 [ext_resource type="Texture2D" uid="uid://cgxumislianpw" path="res://addons/BottledTileMap/TilePalette/transform_indicator.svg" id="2"]
@@ -6,11 +6,22 @@
 [ext_resource type="Script" path="res://addons/BottledTileMap/TilePalette/TilePalette.gd" id="4"]
 [ext_resource type="PackedScene" uid="uid://5ytjud0qds54" path="res://addons/BottledTileMap/TileCellManager/TileCells.tscn" id="5"]
 
+[sub_resource type="Image" id="Image_lvlmd"]
+data = {
+"data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 120, 107, 196, 255, 120, 107, 198, 255, 128, 116, 22, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 117, 24, 255, 120, 107, 202, 255, 120, 107, 193, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 121, 107, 203, 255, 120, 107, 255, 255, 120, 108, 213, 255, 128, 116, 22, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 117, 24, 255, 120, 107, 215, 255, 120, 107, 255, 255, 120, 108, 199, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 116, 22, 255, 120, 108, 213, 255, 120, 107, 255, 255, 120, 108, 213, 255, 128, 116, 22, 255, 255, 255, 0, 255, 255, 255, 0, 255, 122, 111, 23, 255, 120, 107, 214, 255, 120, 107, 255, 255, 120, 107, 210, 255, 128, 115, 20, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 116, 22, 255, 120, 108, 213, 255, 120, 107, 255, 255, 120, 108, 213, 255, 128, 116, 22, 255, 122, 111, 23, 255, 120, 107, 214, 255, 120, 107, 255, 255, 120, 107, 210, 255, 128, 115, 20, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 116, 22, 255, 120, 108, 213, 255, 120, 107, 255, 255, 120, 108, 213, 255, 120, 108, 213, 255, 120, 107, 255, 255, 120, 107, 210, 255, 128, 115, 20, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 116, 22, 255, 120, 108, 213, 255, 120, 107, 255, 255, 120, 107, 255, 255, 120, 107, 210, 255, 128, 115, 20, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 122, 111, 23, 255, 120, 108, 213, 255, 120, 107, 255, 255, 120, 107, 255, 255, 120, 107, 211, 255, 121, 109, 21, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 122, 111, 23, 255, 120, 107, 214, 255, 120, 107, 255, 255, 120, 107, 210, 255, 120, 107, 211, 255, 120, 107, 255, 255, 120, 107, 211, 255, 121, 109, 21, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 117, 24, 255, 120, 107, 214, 255, 120, 107, 255, 255, 120, 107, 210, 255, 128, 115, 20, 255, 121, 109, 21, 255, 120, 107, 211, 255, 120, 107, 255, 255, 120, 107, 212, 255, 128, 116, 22, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 117, 24, 255, 120, 107, 215, 255, 120, 107, 255, 255, 120, 107, 210, 255, 128, 115, 20, 255, 255, 255, 0, 255, 255, 255, 0, 255, 121, 109, 21, 255, 120, 107, 212, 255, 120, 107, 255, 255, 120, 107, 212, 255, 128, 116, 22, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 121, 107, 207, 255, 120, 107, 255, 255, 120, 107, 210, 255, 128, 115, 20, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 116, 22, 255, 120, 107, 212, 255, 120, 107, 255, 255, 120, 107, 202, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 120, 107, 197, 255, 120, 107, 200, 255, 128, 115, 20, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 116, 22, 255, 120, 107, 202, 255, 120, 107, 193, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
+"format": "RGBA8",
+"height": 16,
+"mipmaps": false,
+"width": 16
+}
+
+[sub_resource type="ImageTexture" id="ImageTexture_vild4"]
+image = SubResource("Image_lvlmd")
+
 [sub_resource type="CanvasItemMaterial" id="1"]
 
 [node name="TilePalette" type="Control"]
-clip_contents = true
-custom_minimum_size = Vector2(0, 128)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -32,10 +43,12 @@ size_flags_vertical = 3
 layout_mode = 2
 
 [node name="Search" type="LineEdit" parent="HSplitContainer/TextureListVBoxContainer"]
+visible = false
 layout_mode = 2
 placeholder_text = "Search Tile"
 
 [node name="ScaleHSlider" type="HSlider" parent="HSplitContainer/TextureListVBoxContainer"]
+visible = false
 layout_mode = 2
 min_value = 0.1
 max_value = 1.0
@@ -132,17 +145,20 @@ alignment = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
 clip_contents = true
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 0
 
 [node name="TileList" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer"]
+visible = false
 layout_mode = 2
 tooltip_text = "Toggle Texture2D List"
 toggle_mode = true
 
 [node name="Views" type="OptionButton" parent="HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 tooltip_text = "Change tile list view :
@@ -165,70 +181,89 @@ tooltip_text = "Use the standard sidebar tilemap editor"
 toggle_mode = true
 
 [node name="VSeparator3" type="VSeparator" parent="HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="EraseAll" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Erase all tiles"
 toggle_mode = true
+icon = SubResource("ImageTexture_vild4")
 
 [node name="TmHints" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer"]
+visible = false
 layout_mode = 2
 tooltip_text = "Toggle Texture2D List"
 toggle_mode = true
 
 [node name="Selection" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools/HBoxContainer"]
+visible = false
 layout_mode = 2
 tooltip_text = "Toggle Selection Mode"
 toggle_mode = true
 
 [node name="Pattern" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 tooltip_text = "Toggle Pattern Preview"
 
 [node name="TurnIntoPattern" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 tooltip_text = "Turn Selection into a Pattern"
 
 [node name="VSeparator3" type="VSeparator" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 
 [node name="Cursors" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Toggle Multi-Cursor List"
 
 [node name="All" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "(Un)Select All Cursors"
 
 [node name="VSeparator" type="VSeparator" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 
 [node name="Maps" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 tooltip_text = "Toggle TileMap Manager"
 
 [node name="MultiSelect" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 tooltip_text = "Allow to select multiple tilemaps to draw checked"
 toggle_mode = true
 
 [node name="Scan" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 tooltip_text = "Fill TileMaps List with all TileMaps down the Scene Tree"
 
 [node name="VSeparator2" type="VSeparator" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 
 [node name="CellManager" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 tooltip_text = "Toggle Cell Editor"
 toggle_mode = true
 
 [node name="VSeparator4" type="VSeparator" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 
 [node name="Brushes" type="Button" parent="HSplitContainer/TextureVBoxContainer/BottledTools"]
+visible = false
 layout_mode = 2
 tooltip_text = "Toggle Brush Preview"
 

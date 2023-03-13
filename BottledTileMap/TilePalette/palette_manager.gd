@@ -120,7 +120,9 @@ func _add_tile_palette():
 	
 #	set_min_size(_tilemap_editor)
 	_tilemap_editor.add_child(_tile_palette)
-	_tilemap_editor.move_child(_tile_palette,0)
+	for i in 5:
+		_tilemap_editor.remove_child(_tilemap_editor.get_child(0))
+#	_tilemap_editor.move_child(_tile_palette,0)
 
 
 func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root) -> Node:
