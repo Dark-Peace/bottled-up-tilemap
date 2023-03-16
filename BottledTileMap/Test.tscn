@@ -9,7 +9,7 @@
 texture = ExtResource("1")
 margins = Vector2i(0, 32)
 texture_region_size = Vector2i(32, 32)
-0:0/next_alternative_id = 9
+0:0/next_alternative_id = 10
 0:0/0 = 0
 0:0/1 = 1
 0:0/1/flip_h = true
@@ -30,6 +30,10 @@ texture_region_size = Vector2i(32, 32)
 0:0/7/flip_h = true
 0:0/7/flip_v = true
 0:0/7/transpose = true
+0:0/9 = 9
+1:0/next_alternative_id = 2
+1:0/0 = 0
+1:0/1 = 1
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sotwq"]
 texture = ExtResource("1")
@@ -61,48 +65,6 @@ texture_region_size = Vector2i(32, 32)
 texture = ExtResource("1")
 margins = Vector2i(0, 64)
 texture_region_size = Vector2i(32, 32)
-0:0/next_alternative_id = 8
-0:0/0 = 0
-0:0/1 = 1
-0:0/1/flip_h = true
-0:0/2 = 2
-0:0/2/flip_v = true
-0:0/3 = 3
-0:0/3/flip_h = true
-0:0/3/flip_v = true
-0:0/4 = 4
-0:0/4/transpose = true
-0:0/5 = 5
-0:0/5/flip_h = true
-0:0/5/transpose = true
-0:0/6 = 6
-0:0/6/flip_v = true
-0:0/6/transpose = true
-0:0/7 = 7
-0:0/7/flip_h = true
-0:0/7/flip_v = true
-0:0/7/transpose = true
-0:1/next_alternative_id = 8
-0:1/0 = 0
-0:1/1 = 1
-0:1/1/flip_h = true
-0:1/2 = 2
-0:1/2/flip_v = true
-0:1/3 = 3
-0:1/3/flip_h = true
-0:1/3/flip_v = true
-0:1/4 = 4
-0:1/4/transpose = true
-0:1/5 = 5
-0:1/5/flip_h = true
-0:1/5/transpose = true
-0:1/6 = 6
-0:1/6/flip_v = true
-0:1/6/transpose = true
-0:1/7 = 7
-0:1/7/flip_h = true
-0:1/7/flip_v = true
-0:1/7/transpose = true
 1:0/next_alternative_id = 8
 1:0/0 = 0
 1:0/1 = 1
@@ -145,6 +107,48 @@ texture_region_size = Vector2i(32, 32)
 1:1/7/flip_h = true
 1:1/7/flip_v = true
 1:1/7/transpose = true
+0:1/next_alternative_id = 8
+0:1/0 = 0
+0:1/1 = 1
+0:1/1/flip_h = true
+0:1/2 = 2
+0:1/2/flip_v = true
+0:1/3 = 3
+0:1/3/flip_h = true
+0:1/3/flip_v = true
+0:1/4 = 4
+0:1/4/transpose = true
+0:1/5 = 5
+0:1/5/flip_h = true
+0:1/5/transpose = true
+0:1/6 = 6
+0:1/6/flip_v = true
+0:1/6/transpose = true
+0:1/7 = 7
+0:1/7/flip_h = true
+0:1/7/flip_v = true
+0:1/7/transpose = true
+0:0/next_alternative_id = 8
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_h = true
+0:0/2 = 2
+0:0/2/flip_v = true
+0:0/3 = 3
+0:0/3/flip_h = true
+0:0/3/flip_v = true
+0:0/4 = 4
+0:0/4/transpose = true
+0:0/5 = 5
+0:0/5/flip_h = true
+0:0/5/transpose = true
+0:0/6 = 6
+0:0/6/flip_v = true
+0:0/6/transpose = true
+0:0/7 = 7
+0:0/7/flip_h = true
+0:0/7/flip_v = true
+0:0/7/transpose = true
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6siyu"]
 texture = ExtResource("5")
@@ -178,30 +182,45 @@ sources/0 = SubResource("TileSetAtlasSource_g5768")
 sources/1 = SubResource("TileSetAtlasSource_sotwq")
 sources/2 = SubResource("TileSetAtlasSource_mjqk6")
 sources/4 = SubResource("TileSetAtlasSource_6siyu")
-metadata/TileList = Array[null]([Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"flags":0)
-, Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"flags":0)
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"flags":0)
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"flags":0)
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"flags":0)
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"flags":0)
-])
-metadata/TileListIndexes = {
-0: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"flags":0)
-,
-1: Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"flags":0)
-,
-2: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"flags":0)
-,
-3: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"flags":0)
-,
-4: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"flags":0)
-,
-5: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"flags":0)
-
-}
 metadata/_better_terrain = {
 "terrains": [],
 "version": "0.1"
+}
+metadata/TileList = Array[null]([Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 0))
+, Object(RefCounted,"script":null,"source":0,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 0))
+, Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 1))
+, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 2))
+, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"v":Vector3i(0, 1, 2))
+, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 2))
+, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"v":Vector3i(1, 1, 2))
+])
+metadata/TileListIndexes = {
+0: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 0))
+,
+1: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 0))
+,
+2: Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 1))
+,
+3: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 2))
+,
+4: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"v":Vector3i(0, 1, 2))
+,
+5: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 2))
+,
+6: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"v":Vector3i(1, 1, 2))
+
+}
+metadata/ID_Map = {
+-3: Vector3i(-3, -3, -3),
+-2: Vector3i(-2, -2, -2),
+0: Vector3i(0, 0, 0),
+1: Vector3i(0, 0, 1),
+2: Vector3i(0, 0, 2),
+3: Vector3i(0, 1, 2),
+4: Vector3i(1, 0, 2),
+5: Vector3i(1, 1, 2),
+6: Vector3i(1, 0, 0),
+"__NEXT_ID__": 7
 }
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wrh38"]
@@ -238,7 +257,7 @@ sources/0 = SubResource("TileSetAtlasSource_wrh38")
 tile_set = SubResource("1")
 cell_quadrant_size = 32
 format = 2
-layer_0/tile_data = PackedInt32Array(131073, 2, 1, 65538, 2, 1, 131074, 2, 1, 196610, 2, 1, 131075, 2, 1, 65539, 2, 1, 196611, 2, 1, 131076, 2, 1, 65540, 2, 1, 196612, 2, 1, 65541, 2, 1, 196613, 2, 1)
+layer_0/tile_data = PackedInt32Array(131073, 2, 1, 65538, 2, 1, 131074, 2, 1, 196610, 2, 1, 131075, 2, 1, 65539, 2, 1, 196611, 2, 1, 131076, 2, 1, 65540, 2, 1, 196612, 2, 1, 196613, 2, 1)
 layer_1/name = "test"
 layer_1/enabled = true
 layer_1/modulate = Color(1, 1, 1, 1)
@@ -258,12 +277,12 @@ p_patterns = ""
 p_turn_into_pattern = false
 p_allow_autotile = false
 c_brush_shape = 2
-c_size = 2.25
+c_size = 1.0
 c_filled = true
 c_outline_width = 1
 c_spray_density = 0
-r_replace_tile = Vector3i(0, 0, -3)
-r_replace_by = Vector3i(0, 0, 2)
+r_replace_tile = 0
+r_replace_by = 0
 r_y_as_random_pattern = false
 r_global_replacing = false
 s_position = Vector2i(0, 0)
@@ -271,8 +290,8 @@ s_axis = 0
 s_display_length = 1000
 c_use = ""
 c_multi_cursor_list = []
-r_only_draw_on = Vector3i(-2, -2, -2)
-r_no_draw_on = Vector3i(-2, -2, -2)
+r_only_draw_on = -2
+r_no_draw_on = -2
 r_scattering = 0
 r_scatter_affects_erase = false
 

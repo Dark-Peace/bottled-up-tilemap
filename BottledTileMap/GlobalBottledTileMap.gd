@@ -7,18 +7,19 @@ extends Node
 class TILEID:
 	var source:int
 	var coords:Vector2i
+	var v:Vector3i
 	
-	enum FLAGS {Paint, Erase=-1}
-	var flags:int
-	
-	func _init(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1), _flags=FLAGS.Paint):
+	func _init(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1)):
 		source = _source
 		coords = _coords
-		flags = _flags
 		
 		if _source < 0:
 			coords.x = _source
 			coords.y = _source
+			
+		v.z = source
+		v.x = coords.x
+		v.y = coords.y
 	
 	func _to_string():
 		return "TILEID< "+str(source)+" ; "+str(coords)+">"
@@ -27,7 +28,13 @@ class TILEID:
 		return source == other.source and coords == other.coords
 	
 	func isEqualV3(vect:Vector3i):
-		return source == vect.z and coords.x == vect.x and coords.y == vect.y
+		return v == vect
+		
+	func isIn(list:Array[TILEID]):
+		var res:bool = false
+		for t in list:
+			if isEqual(t): res = true
+		return res
 
 
 
@@ -39,6 +46,8 @@ var palette
 
 var current_cell:Vector2i
 var starter_cell:Vector2i
+var current_alt:int = 0
+var l:int = 0
 # states
 var button_held:int = INVALID
 var cancel_action:bool = false
@@ -79,11 +88,11 @@ func handle_click_release():
 	# draw
 	if is_alt: select_cell(button_held)
 	elif is_bucket:
-		bottledtilemap.draw_bucket(current_cell, match_button_action(button_held))
+		bottledtilemap.draw_bucket(current_cell, match_button_action(button_held),l,current_alt)
 	elif not cancel_action:
 		if is_shift:
-			if is_ctrl: bottledtilemap.draw_tile_rect(starter_cell, current_cell, match_button_action(button_held))
-			else: bottledtilemap.draw_tile_line(starter_cell, current_cell, match_button_action(button_held))
+			if is_ctrl: bottledtilemap.draw_tile_rect(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
+			else: bottledtilemap.draw_tile_line(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
 		else: draw_tile(button_held)
 	
 	# end of action : reset
@@ -126,7 +135,7 @@ func draw_tile(button:int):
 	if is_alt or match_button_action(button) == null: return
 	if is_custom_brush:
 		bottledtilemap.draw_custom_brush(current_cell, bottledtilemap.current_layer, [null,null,bottledtilemap.ERASE_TILE_ID][button])
-	else: bottledtilemap.draw_tile(current_cell, match_button_action(button))
+	else: bottledtilemap.draw_tile(current_cell, match_button_action(button),l,current_alt)
 
 func select_cell(button:int):
 	if is_bucket:
@@ -145,7 +154,6 @@ func select_cell(button:int):
 			MOUSE_BUTTON_RIGHT: bottledtilemap.unset_selected_cells()
 			INVALID: return
 
-
 func _on_key_pressed(event:InputEventKey):
 	if Input.is_key_pressed(KEY_CTRL) and event.keycode in [KEY_C, KEY_X] and not bottledtilemap.selected_cells.is_empty():
 		# copy selection
@@ -153,7 +161,7 @@ func _on_key_pressed(event:InputEventKey):
 		if event.keycode == KEY_X:
 			# cut selection
 			for tile in bottledtilemap.selected_cells:
-				bottledtilemap.draw_tile(tile, bottledtilemap.ERASE_TILE_ID)
+				bottledtilemap.draw_tile(tile, bottledtilemap.ERASE_TILE_ID,l,current_alt)
 		bottledtilemap.selected_cells.clear()
 		bottledtilemap.queue_redraw()
 		is_custom_brush = !bottledtilemap.current_brush_tiles.is_empty()
@@ -163,15 +171,14 @@ func _on_key_pressed(event:InputEventKey):
 
 ################################
 
-func get_tiles_ids(tileset:TileSet):
-	var res:Array[TILEID]; var curr_source
+func get_tiles_ids(tileset:TileSet) -> Array[TILEID]:
+	var res:Array[TILEID]; var curr_source; var tile:TILEID
 	for source_id in tileset.get_next_source_id():
 		if not tileset.has_source(source_id): continue
 		curr_source = tileset.get_source(source_id)
 		for index in curr_source.get_tiles_count():
-			res.append(BTM.TILEID.new(source_id, curr_source.get_tile_id(index)))
-#			res.append(Vector3i(curr_source.get_tile_id(index).x, curr_source.get_tile_id(index).y, source_id))
-#			res[tileset.get_source(source_id).get_tile_id(index)] = source_id
+			tile = TILEID.new(source_id, curr_source.get_tile_id(index))
+			res.append(tile)
 	return res
 
 func duplicate_tile(tile:TILEID):
