@@ -35,6 +35,9 @@ var toolbar:Control
 var grid_button:Button
 var layer_select:OptionButton
 var layer_vis:Button
+var toolbar_theme:StyleBoxFlat
+var my_toolbar_theme:StyleBoxFlat = preload("res://addons/BottledTileMap/ToolBarTheme.tres")
+var editor_script_screen:Button
 
 
 func _enter_tree():
@@ -58,13 +61,24 @@ func _on_selection_changed():
 				layer_select.item_selected.connect(selected_node.set_current_layer.bind(layer_select))
 #			_tilemap_editor.set_deferred("visible", true)
 			make_bottom_panel_item_visible(_tilemap_editor)
+			my_toolbar_theme = load("res://addons/BottledTileMap/ToolBarTheme.tres")
+			toolbar.get_node("../../").set("theme_override_styles/panel", my_toolbar_theme)
 #			make_bottom_panel_item_visible(_tile_palette)
+			if editor_script_screen.button_pressed:
+				call_deferred("close_bottom_panel", 0.005)
 			return
+		else:
+			if editor_script_screen.button_pressed: call_deferred("close_bottom_panel", 0.16)
+			toolbar.get_node("../../").set("theme_override_styles/panel", toolbar_theme)
 	_tile_palette.tileset = null
 #	_tilemap_editor.set_deferred("custom_minimum_size", Vector2(262,0))
 #	set_min_size(_tilemap_editor)
 #	_tilemap_editor.get_child(2).get_child(1).get_child(0).get_child(0).get_child(1).get_child(0).get_child(0).get_child(1).custom_minimum_size.y = 0
 #	_tilemap_editor.get_child(2).get_child(1).get_child(0).get_child(0).get_child(1).get_child(0).get_child(1).get_child(1).custom_minimum_size.y = 0
+
+func close_bottom_panel(timer:float=0.16):
+	await get_tree().create_timer(timer).timeout
+	hide_bottom_panel()
 
 func set_min_size(parent):
 #	parent.visible = false
@@ -96,16 +110,12 @@ func _add_tile_palette():
 	_subtile_list = null#_tilemap_editor.get_child(5).get_child(1) as ItemList
 
 	_tile_palette.set_lists(_tile_list, _subtile_list)
-#	_tilemap_editor.get_parent().move_child(_tile_palette, 0)
-#	print(_tile_palette.get_index())
 	
 	layer_select = _tilemap_editor.get_child(0).get_child(4)
 	layer_vis = _tilemap_editor.get_child(0).get_child(5)
 	grid_button = _tilemap_editor.get_child(0).get_child(7)
 	
-	_tile_palette.set_tools(
-		_tilemap_editor,
-		get_editor_interface().get_editor_scale())
+	_tile_palette.set_tools(_tilemap_editor, get_editor_interface().get_editor_scale())
 
 	_on_selection_changed()
 	_tilemap_editor.get_child(0).remove_child(layer_select)
@@ -114,16 +124,15 @@ func _add_tile_palette():
 	toolbar.add_child(layer_select)
 	toolbar.add_child(layer_vis)
 	toolbar.add_child(grid_button)
-#	layer_select.show()
-#	layer_vis.show()
-#	grid_button.show()
+#	print(toolbar.get_node("../../").get_stylebox_type_list())
+	toolbar_theme = toolbar.get_node("../../").get("theme_override_styles/panel").duplicate()
+#	print(toolbar_theme)
 	
-#	set_min_size(_tilemap_editor)
 	_tilemap_editor.add_child(_tile_palette)
 	for i in 5:
 		_tilemap_editor.remove_child(_tilemap_editor.get_child(0))
-#	_tilemap_editor.move_child(_tile_palette,0)
-
+	
+	editor_script_screen = _find_in_editor("EditorTitleBar").get_child(2).get_child(2)
 
 func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root) -> Node:
 	if node.get_class() == target:
