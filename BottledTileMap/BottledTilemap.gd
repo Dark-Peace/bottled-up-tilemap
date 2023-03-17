@@ -34,68 +34,75 @@ const NO_TILE_V = Vector3i(-2,-2,-2)
 const ALL_TILES_V = Vector3i(-3,-3,-3)
 const ERASE_TILE_V = Vector3i(-1,-1,-1)
 
-#var NO_TILE_ID:BTM.TILEID = BTM.TILEID.new(NO_TILE)
+var NO_TILE_ID:BTM.TILEID = BTM.TILEID.new(NO_TILE)
 #var ALL_TILES_ID:BTM.TILEID = BTM.TILEID.new(ALL_TILES)
 var ERASE_TILE_ID:BTM.TILEID = BTM.TILEID.new(ERASE_TILE)
 
-
-# PATTERN
-enum CENTER {origin, mouse}
-var p_center = CENTER.origin
-enum BRUSH {whole_pattern, one_tile}
-var p_brush = BRUSH.one_tile
-var p_replacing = true
-var p_id = -1
-
-var p_patterns = "" : set = set_patterns
-var pattern_list:Array
-
-var p_turn_into_pattern:bool : set = set_turn_into_pattern
-var p_allow_autotile:bool = false
-
 # CIRCLES
-var c_brush_shape = BrushType.CIRCLE
-var c_size:float = 1
-var c_filled = true
-var c_outline_width = 1
-
+@export_group("Brushes")
+@export var brush_shape:BrushType = BrushType.CIRCLE
+@export_range(1,INF,0.001, "hide_slider", "suffix:tile(s)") var brush_size:float = 1
+@export var shape_filled = true
+@export_range(1,INF,0.001, "hide_slider", "suffix:tile(s)") var outline_width:float = 1
 # SPRAY
-var c_spray_density = 0
+@export_range(0,INF,1,"suffix:tile(s)") var spray_density:int = 0
+@export_range(0,1) var scattering:float = 0
+
+@export_subgroup("Drawing Rules")
+@export var scatter_affects_erase = false
+@export_range(-3,INF,1,"suffix:TileID") var no_draw_on:int = NO_TILE
+@export_range(-3,INF,1,"suffix:TileID") var only_draw_on:int = NO_TILE
 
 # REPLACING
-var r_replace_tile:int
-var r_replace_by:int
-var r_y_as_random_pattern = false
-var r_global_replacing = false : set = set_global_replacing
-var r_limit_color = Color.AQUAMARINE : set = set_limit_color
+@export_group("Replacing")
+@export_range(-3,INF,1,"suffix:TileID") var replace_tile:int
+@export_range(-3,INF,1,"suffix:TileID") var replace_by:int
+var r_y_as_random_pattern = false #TODO
+@export var REPLACE:bool = false : set = set_global_replacing
+
+# PATTERN
+@export_group("Patterns")
+enum CENTER {origin, mouse}
+enum BRUSH {whole_pattern, one_tile}
+
+@export var center_pattern:CENTER = CENTER.origin
+@export var apply_pattern:BRUSH = BRUSH.one_tile
+@export var can_pattern_replace = true
+var pattern_id:int = -1
+var patterns = "" : set = set_patterns
+#@export_range(-1,INF) var pattern_id:int = -1
+#@export_multiline var patterns = "" : set = set_patterns
+var pattern_list:Array
+@export var turn_into_pattern:bool = false : set = set_turn_into_pattern
+@export var allow_autotile:bool = false
+
 
 # SYMMETRY
-var s_position:Vector2i = Vector2i.ZERO : set = set_axis_position
-var s_axis = 0 : set = set_axis
-var s_display_length = 1000
+@export_group("Symmetry")
+@export var axis_pos:Vector2i = Vector2i.ZERO : set = set_axis_pos
+@export_flags("X","Y") var axis:int = 0 : set = set_axis
+@export_subgroup("Customisation")
+@export var limit_color = Color.AQUAMARINE : set = set_limit_color
+@export_range(0,999999,0.001, "hide_slider","suffix:px") var display_length:float = 1000
 
 # MULTI CURSOR
-var c_use = "" : set = read_used_cursors
+@export_group("Multi Cursors")
+@export_placeholder("ex: 0;1;2") var use_those:String : set = read_used_cursors
 var used_cursors:Array[Vector2i] = []
-var c_multi_cursor_list:Array[Vector2i] : set = set_multi_cursor
+@export var multi_cursor_list:Array[Vector2i] : set = set_multi_cursor
 var cursor_texture = load("res://addons/BottledTileMap/icon.png")
 #var c_cursor_color = Color.AQUA : set = set_cursor_color
 
-# MULTI TILEMAP
-var t_tilemap_list = []
-var used_tilemaps = []
-var t_scan_for_tilemaps : set = scan_for_tilemaps
-var t_use = "" : set = read_used_tilemaps
+# MULTI TILEMAPS
+@export_group("Multi TileMaps")
+@export_placeholder("ex: 0;1;2") var use_these:String : set = read_used_tilemaps
+@export var tilemap_list:Array[NodePath] = []
+var used_tilemaps:Array[TileMap] = []
+@export var SCAN:bool : set = scan_for_tilemaps
 var curr_tilemap:TileMap : set = set_curr_tilemap
 
 # INSTANCES
 var instance_dict = {}
-
-# RULES
-var r_no_draw_on:int = NO_TILE
-var r_only_draw_on:int = NO_TILE
-var r_scattering = 0
-var r_scatter_affects_erase = false
 
 ## SEND DATA
 #var send_target = NodePath()
@@ -117,6 +124,7 @@ var tm_hints:Array = []
 var curr_tile_reg:Rect2
 var curr_tile_texture:Texture2D
 var current_tile:BTM.TILEID : set = set_current_tile
+var right_click_tile:BTM.TILEID = ERASE_TILE_ID
 var current_brush_tiles:Dictionary
 var current_cells:Array[Vector2i]
 var curr_cells_shift:Array[Vector2i]
@@ -127,7 +135,7 @@ var current_layer:int = 0
 var current_alt:int=0
 var ID_map:Dictionary
 
-#var data = {"instances": instance_dict, "cursors": c_multi_cursor_list, "tilemaps": t_tilemap_list, "patterns": p_patterns}
+#var data = {"instances": instance_dict, "cursors": multi_cursor_list, "tilemaps": tilemap_list, "patterns": patterns}
 #@onready var file = FileAccess.new()
 #var url = "res://addons/BottledTileMap/save"
 
@@ -142,7 +150,7 @@ func init():
 #	write_data()
 	randomize()
 	format_patterns()
-	read_used_tilemaps(t_use)
+	read_used_tilemaps(use_these)
 	BTM.bottledtilemap = self
 	cell_entered.connect(_on_cell_entered)
 	self.changed.connect(_on_tileset_changed)
@@ -196,15 +204,15 @@ func _draw() -> void:
 	if mode == tile_set.TILE_SHAPE_ISOMETRIC: angle_offset = PI/4
 
 	angle_offset = 0
-	if mode == tile_set.TILE_SHAPE_ISOMETRIC: angle_offset = s_display_length
-	if s_axis > 0:
+	if mode == tile_set.TILE_SHAPE_ISOMETRIC: angle_offset = display_length
+	if axis > 0:
 		var display_vector; var start_point; var end_point
-		match s_axis:
-			X_AXIS: _draw_symmetry_axis(Vector2(s_display_length,angle_offset))
-			Y_AXIS: _draw_symmetry_axis(Vector2(-angle_offset,s_display_length))
+		match axis:
+			X_AXIS: _draw_symmetry_axis(Vector2(display_length,angle_offset))
+			Y_AXIS: _draw_symmetry_axis(Vector2(-angle_offset,display_length))
 			BOTH_AXIS:
-				_draw_symmetry_axis(Vector2(s_display_length,angle_offset))
-				_draw_symmetry_axis(Vector2(-angle_offset,s_display_length))
+				_draw_symmetry_axis(Vector2(display_length,angle_offset))
+				_draw_symmetry_axis(Vector2(-angle_offset,display_length))
 
 	if not used_cursors.is_empty():
 		for c in used_cursors:
@@ -217,24 +225,30 @@ func _draw() -> void:
 	# TODO match tools
 	# Preview of the cell being painted
 	if curr_tile_reg != Rect2():
+		var reg:Rect2 = curr_tile_reg
+		var transpose:bool = false
+		# handle alternate tiles
+		if current_alt in BTM.ALT_H: reg.size.x = -reg.size.x
+		if current_alt in BTM.ALT_V: reg.size.y = -reg.size.y
+		if current_alt in BTM.ALT_T: transpose = true
 		# preview cell at mouse pos
 		var cell_rect:Rect2 = Rect2(local_to_map(get_local_mouse_position())*cell_size, cell_size)
-		draw_texture_rect_region(curr_tile_texture, cell_rect, curr_tile_reg, PREVIEW_TILE_COLOR)
+		draw_texture_rect_region(curr_tile_texture, cell_rect, reg, PREVIEW_TILE_COLOR, transpose)
 		# preview for multi cursors
 		for c in used_cursors:
 			var cursor_pos:Vector2i = Vector2i(get_local_mouse_position())+cell_size*c
 			cell_rect = Rect2(local_to_map(cursor_pos)*cell_size, cell_size)
-			draw_texture_rect_region(curr_tile_texture, cell_rect, curr_tile_reg, PREVIEW_TILE_COLOR)
+			draw_texture_rect_region(curr_tile_texture, cell_rect, reg, PREVIEW_TILE_COLOR, transpose)
 			if current_cells.size() > max_cells_preview: continue
 			# preview for big brushes
 			for cell in current_cells:
 				cell_rect = Rect2((c+cell)*cell_size, cell_size)
-				draw_texture_rect_region(curr_tile_texture, cell_rect, curr_tile_reg, PREVIEW_TILE_COLOR)
+				draw_texture_rect_region(curr_tile_texture, cell_rect, reg, PREVIEW_TILE_COLOR, transpose)
 		# preview for big brushes
 		if current_cells.size() <= max_cells_preview:
 			for cell in current_cells:
 				cell_rect = Rect2(cell*cell_size, cell_size)
-				draw_texture_rect_region(curr_tile_texture, cell_rect, curr_tile_reg, PREVIEW_TILE_COLOR)
+				draw_texture_rect_region(curr_tile_texture, cell_rect, reg, PREVIEW_TILE_COLOR, transpose)
 	
 	# preview of cell selection
 	if not selected_cells.is_empty():
@@ -250,9 +264,9 @@ func _draw() -> void:
 			draw_texture_rect_region(tile.texture, cell_rect, tile.get_tile_texture_region(current_brush_tiles[t].coords), PREVIEW_TILE_COLOR)
 
 func _draw_symmetry_axis(display_vector:Vector2i):
-	var start_point = (s_position+display_vector)
-	var end_point = (s_position-display_vector)
-	draw_line(start_point,end_point,r_limit_color,LINE_WIDTH)
+	var start_point = (axis_pos+display_vector)
+	var end_point = (axis_pos-display_vector)
+	draw_line(start_point,end_point,limit_color,LINE_WIDTH)
 
 
 func draw_tile_line(start:Vector2i, end:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=current_alt):
@@ -285,17 +299,17 @@ func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, a
 		can_trigger_multi = false
 		for c in used_cursors:
 #			if c == Vector2.ZERO: continue
-			if p_replacing or get_cell(xy+c, l).source == ERASE_TILE:
+			if can_pattern_replace or get_cell(xy+c, l).source == ERASE_TILE:
 				draw_tile(xy+c,tile,l,alt)
-				if p_allow_autotile: update_bitmask_area(xy+c)
+				if allow_autotile: update_bitmask_area(xy+c)
 		can_trigger_multi = true
 
 	# no pattern selected
-	if p_id == -1:
-		if (c_size > 1 or c_size > 1) and can_trigger:
+	if pattern_id == -1:
+		if (brush_size > 1 or brush_size > 1) and can_trigger:
 			can_trigger = false
 			# use circle tool
-			if c_spray_density == 0:
+			if spray_density == 0:
 				current_cells = get_tiles_with_brush(xy)
 				for t in current_cells:
 					call_all_draw(t,tile,l,alt)
@@ -313,11 +327,11 @@ func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, a
 	get_origin(xy)
 
 	# use pattern tool #TODO
-#	if p_brush == BRUSH.one_tile:
+#	if apply_pattern == BRUSH.one_tile:
 #		# use spray or circle tool
-#		if (c_size > 1 or c_size > 1) and can_trigger:
+#		if (brush_size > 1 or brush_size > 1) and can_trigger:
 #			can_trigger = false
-#			if c_spray_density == 0:
+#			if spray_density == 0:
 #				for t in get_tiles_with_brush(xy):
 #					id = get_tileIDv(t-origin)
 #					if id != NO_TILE: call_all_draw(xy,tile,l,get_random_subtile(id, tile.coords))
@@ -332,7 +346,7 @@ func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, a
 #			if id == NO_TILE: return # use transparancy tile
 #			call_all_draw(xy,tile,l,get_random_subtile(id, tile.coords))
 #	# draw with whole pattern
-#	elif p_brush == BRUSH.whole_pattern:
+#	elif apply_pattern == BRUSH.whole_pattern:
 #		if can_trigger:
 #			can_trigger = false
 #			place_pattern(l,xy,tile.coords,alt) #TODO
@@ -341,19 +355,19 @@ func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, a
 
 
 func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=current_alt):
-	if get_cell(xy,l).isEqualV3(ID_map[r_no_draw_on]) or (r_only_draw_on != NO_TILE and not get_cell(xy,l).isEqualV3(ID_map[r_only_draw_on])) \
+	if get_cell(xy,l).isEqualV3(ID_map[no_draw_on]) or (only_draw_on != NO_TILE and not get_cell(xy,l).isEqualV3(ID_map[only_draw_on])) \
 		or tile.source < -1:
 			return
 	
 	if not tile.isEqual(get_cell(xy, l)):
 		var test = randf_range(0,1)
-		if r_scattering > 0 and test <= r_scattering and (tile.source != ERASE_TILE or r_scatter_affects_erase): return
+		if scattering > 0 and test <= scattering and (tile.source != ERASE_TILE or scatter_affects_erase): return
 #		for tm in used_tilemaps: #TODO
 #			get_node(tm).set_cell(l,xy,tile.source,tile.coords,alt)
 #			draw_symmetry(xy,tile,l,alt)
 		super.set_cell(l,xy,tile.source,tile.coords,alt)
 		draw_symmetry(xy,tile,l,alt)
-	if p_allow_autotile: update_bitmask_area(xy)
+	if allow_autotile: update_bitmask_area(xy)
 
 func _on_cell_entered(cell:Vector2i):
 	if max_cells_preview <= 0: return
@@ -363,47 +377,66 @@ func get_selected_cells():
 	current_cells.clear()
 	
 	for c in curr_cells_shift:
-		if c_size > 1:
-			if c_spray_density > 0: current_cells.append_array(spray(c))
+		if brush_size > 1:
+			if spray_density > 0: current_cells.append_array(spray(c))
 			else: current_cells.append_array(get_tiles_with_brush(c))
 		else: current_cells.append(c)
 	
-	if s_axis > 0:
+	if axis > 0:
 		for _c in current_cells.size():
 			current_cells.append_array(get_symmetry_tiles(current_cells[_c]))
 	
 	return current_cells
+	
+func select_all_cells(layer:int=current_layer, tile:BTM.TILEID=NO_TILE_ID, keep_selection:bool=false):
+	var res:Array[Vector2i]
+	if tile.isEqual(NO_TILE_ID) and not keep_selection:
+		if layer == ALL_LAYERS:
+			for l in get_layers_count():
+				res.append_array(get_used_cells(l))
+		else: res = get_used_cells(layer)
+	else:
+		if layer == ALL_LAYERS:
+			for l in get_layers_count():
+				for t in get_used_cells(l):
+					if not get_cell(t,l).isEqual(tile) and (not keep_selection or t in current_cells): continue
+					res.append(t)
+		else:
+			for t in get_used_cells(layer):
+				if not get_cell(t,layer).isEqual(tile) and (not keep_selection or t in current_cells): continue
+				res.append(t)
+	return res
 
 func draw_symmetry(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt=current_alt):
-	if s_axis == 0: return
+	if axis == 0: return
 	
 	var id=tile.source; var _a = tile.coords;
-	if s_axis == X_AXIS:
-		var new_vect:Vector2i = xy+Vector2i(0,-2*(xy.x-s_position.x)-1)
+	if axis == X_AXIS:
+		var new_vect:Vector2i = xy+Vector2i(0,-2*(xy.x-axis_pos.x)-1)
 		super.set_cell(l,new_vect,id,_a,alt)
-		if p_allow_autotile: update_bitmask_area(new_vect)
-	elif s_axis == Y_AXIS:
-		var new_vect:Vector2i = xy+Vector2i(-2*(xy.y-s_position.y)-1,0)
+		if allow_autotile: update_bitmask_area(new_vect)
+	elif axis == Y_AXIS:
+		var new_vect:Vector2i = xy+Vector2i(-2*(xy.y-axis_pos.y)-1,0)
 		super.set_cell(l,new_vect,id,_a,alt)
-		if p_allow_autotile: update_bitmask_area(new_vect)
-	elif s_axis == BOTH_AXIS:
-		var part_vect:Vector2i = Vector2i((-2*(xy.x-s_position.x)-1),(-2*(xy.y-s_position.y)-1))
+		if allow_autotile: update_bitmask_area(new_vect)
+	elif axis == BOTH_AXIS:
+		var part_vect:Vector2i = Vector2i((-2*(xy.x-axis_pos.x)-1),(-2*(xy.y-axis_pos.y)-1))
 		super.set_cell(l,xy+Vector2i(part_vect.x,0),id,_a,alt)
 		super.set_cell(l,xy+Vector2i(0,part_vect.y),id,_a,alt)
 		super.set_cell(l,xy+Vector2i(part_vect.x,part_vect.y),id,_a,alt)
-		if p_allow_autotile:
+		if allow_autotile:
 			update_bitmask_area(xy+Vector2i(part_vect.x,0))
 			update_bitmask_area(xy+Vector2i(0,part_vect.y))
 			update_bitmask_area(xy+Vector2i(part_vect.x,part_vect.y))
 
 func get_symmetry_tiles(xy:Vector2i):
-	if s_axis == 0: return
+	if axis == 0: return
 	var res:Array[Vector2i]
 	
-	if s_axis == X_AXIS: res.append(xy+Vector2i(0,-2*(xy.x-s_position.x)-1))
-	elif s_axis == Y_AXIS: res.append(xy+Vector2i(-2*(xy.y-s_position.y)-1,0))
-	elif s_axis == BOTH_AXIS:
-		var part_vect:Vector2i = Vector2i((-2*(xy.x-s_position.x)-1),(-2*(xy.y-s_position.y)-1))
+	if axis == X_AXIS: res.append(xy+Vector2i(0,-2*(xy.x-axis_pos.x)-1))
+	elif axis == Y_AXIS: res.append(xy+Vector2i(-2*(xy.y-axis_pos.y)-1,0))
+	elif axis == BOTH_AXIS:
+		var part_vect:Vector2i = Vector2i((-2*(xy.x-axis_pos.x)-1),(-2*(xy.y-axis_pos.y)-1))
 		res.append(xy+Vector2i(part_vect.x,0))
 		res.append(xy+Vector2i(0,part_vect.y))
 		res.append(xy+Vector2i(part_vect.x,part_vect.y))
@@ -412,13 +445,13 @@ func get_symmetry_tiles(xy:Vector2i):
 
 # draw pattern checked map
 #func place_pattern(l:int, xy:Vector2i,_a,alt): #TODO
-#	var matrix = pattern_list[p_id]
+#	var matrix = pattern_list[pattern_id]
 #	var m_size = matrix.size()
 #	var id
 #	for line in m_size:
 #		for column in matrix[line].size():
 #			id = get_tileID(xy.x+column-origin.x,xy.y+line-origin.y)
-#			if id != NO_TILE and (p_replacing or get_cell(xy+Vector2i(column,line), l) == ERASE_TILE):
+#			if id != NO_TILE and (can_pattern_replace or get_cell(xy+Vector2i(column,line), l) == ERASE_TILE):
 #				call_all_draw(xy+Vector2i(column,line),tile,l,get_random_subtile(id, _a))
 
 func set_current_layer(value, button:OptionButton):
@@ -428,11 +461,11 @@ func set_current_layer(value, button:OptionButton):
 
 func get_origin(xy:Vector2i):
 	if not can_origin: return
-	if p_center == CENTER.origin: origin = Vector2i.ZERO
-	elif p_center == CENTER.mouse: origin = xy
+	if center_pattern == CENTER.origin: origin = Vector2i.ZERO
+	elif center_pattern == CENTER.mouse: origin = xy
 
 func format_patterns(): #TODO
-	pattern_list = p_patterns.split("\n\n",false)
+	pattern_list = patterns.split("\n\n",false)
 	var p:Array; var t:Array;
 	for m in pattern_list:
 		p = m.split("\n",false)
@@ -446,7 +479,7 @@ func format_patterns(): #TODO
 	pattern_list.reverse()
 
 func get_tiles_with_brush(_center_in_tiles:Vector2i):
-	match c_brush_shape:
+	match brush_shape:
 		BrushType.SQUARE:
 			return drawSquare(_center_in_tiles)
 		BrushType.SQUARE_ROTATED:
@@ -483,17 +516,17 @@ func get_bucket_tiles(xy:Vector2i, l:int=current_layer, replaced:BTM.TILEID=get_
 	return res
 
 func drawSquare(pos):
-	var bound = (c_size+0.5)/2; var res:Array[Vector2i]
+	var bound = (brush_size+0.5)/2; var res:Array[Vector2i]
 	for x in range(pos.x - floor(bound), pos.x + round(bound)):
 		for y in range(pos.y - floor(bound), pos.y + round(bound)):
-			if not c_filled and not (x <= pos.x-floor(bound)+c_outline_width-1 or x >= pos.x+round(bound)-c_outline_width \
-								or y <= pos.y-floor(bound)+c_outline_width-1 or y >= pos.y+round(bound)-c_outline_width):
+			if not shape_filled and not (x <= pos.x-floor(bound)+outline_width-1 or x >= pos.x+round(bound)-outline_width \
+								or y <= pos.y-floor(bound)+outline_width-1 or y >= pos.y+round(bound)-outline_width):
 				continue
 			res.append(Vector2i(x,y))
 	return res
 
 func drawSquareRotated(pos):
-	var bound = round(sqrt(pow(c_size, 2) * 2) / 2)
+	var bound = round(sqrt(pow(brush_size, 2) * 2) / 2)
 
 	var topLeft = Vector2(pos.x - bound, pos.y)
 	var topRight = Vector2(pos.x, pos.y - bound)
@@ -511,13 +544,13 @@ func drawSquareRotated(pos):
 
 func drawLineH(pos):
 	var res:Array[Vector2i]
-	for x in range(pos.x - (c_size / 2), round(pos.x as float + (c_size as float / 2))):
+	for x in range(pos.x - (brush_size / 2), round(pos.x as float + (brush_size as float / 2))):
 		res.append(Vector2i(x,pos.y))
 	return res
 
 func drawLineV(pos):
 	var res:Array[Vector2i]
-	for y in range(pos.y - (c_size / 2), round(pos.y as float + (c_size as float / 2))):
+	for y in range(pos.y - (brush_size / 2), round(pos.y as float + (brush_size as float / 2))):
 		res.append(Vector2i(pos.x,y))
 	return res
 
@@ -526,38 +559,38 @@ func drawLineV(pos):
 # I improved it to allow to make ovals and contour-only and use it in editor
 func get_tile_positions_in_circle(_center_in_tiles:Vector2):
 	# Get the rectangle bounding the circle
-	var min_pos = (_center_in_tiles - Vector2(c_size, c_size)).floor()
-	var max_pos = (_center_in_tiles + Vector2(c_size, c_size)).ceil()
+	var min_pos = (_center_in_tiles - Vector2(brush_size, brush_size)).floor()
+	var max_pos = (_center_in_tiles + Vector2(brush_size, brush_size)).ceil()
 	var positions:Array[Vector2i]
 	var tile_pos
 	var dist
-	var max_size = max(c_size, c_size)
+	var max_size = max(brush_size, brush_size)
 	# Gather all points that are within the radius
 	for y in range(int(min_pos.y), int(max_pos.y)):
 		for x in range(int(min_pos.x), int(max_pos.x)):
 			tile_pos = Vector2(x, y)
 			dist = tile_pos.distance_to(_center_in_tiles)
-			if c_filled and dist < max_size:
+			if shape_filled and dist < max_size:
 				positions.append(Vector2i(tile_pos))
-			elif not c_filled and dist < max_size and dist > max_size-c_outline_width-0.05:
+			elif not shape_filled and dist < max_size and dist > max_size-outline_width-0.05:
 				positions.append(Vector2i(tile_pos))
 	return positions
 
 func pick_spray1(_center_in_tiles:Vector2i):
 	var angle = randf_range(-PI, PI)
 	var direction = Vector2(cos(angle), sin(angle))
-	return _center_in_tiles + direction * max(c_size, c_size)
+	return _center_in_tiles + direction * max(brush_size, brush_size)
 
 func pick_spray2(_center_in_tiles:Vector2i):
 	var angle = randf_range(-PI, PI)
 	var direction = Vector2(cos(angle), sin(angle))
-	var distance = max(c_size, c_size) * sqrt(randf_range(0.0, 1.0))
+	var distance = max(brush_size, brush_size) * sqrt(randf_range(0.0, 1.0))
 	return (_center_in_tiles + direction * distance).floor()
 
 func spray(center:Vector2i):
 	var res:Array[Vector2i]
 	var all = get_tiles_with_brush(center)
-	for t in c_spray_density:
+	for t in spray_density:
 		res.append(all[randi()%all.size()])
 	return res
 #----
@@ -589,23 +622,23 @@ func global_replacing(old, new, replace:int=REPLACE_PARAM.Auto, l=current_layer)
 			for tile in to_replace:
 				if selected_cells.is_empty() or tile in selected_cells:
 					call_all_draw(tile, replacing_tile,l)
-					if p_allow_autotile: update_bitmask_area(tile)
+					if allow_autotile: update_bitmask_area(tile)
 		REPLACE_PARAM.SelectionOnly:
 			for tile in to_replace:
 				if tile in selected_cells:
 					call_all_draw(tile, replacing_tile,l)
-					if p_allow_autotile: update_bitmask_area(tile)
+					if allow_autotile: update_bitmask_area(tile)
 		REPLACE_PARAM.Global:
 			for tile in to_replace:
 				call_all_draw(tile, replacing_tile,l)
-				if p_allow_autotile: update_bitmask_area(tile)
+				if allow_autotile: update_bitmask_area(tile)
 	#			if r_y_as_random_pattern:
 	#				call_all_draw(tile, get_random_tile(replacing_tile),l)
 	#			else: call_all_draw(tile, replacing_tile,l)
 
 func set_global_replacing(value):
 	if not value: return
-	global_replacing(r_replace_tile, r_replace_by, REPLACE_PARAM.Auto)
+	global_replacing(replace_tile, replace_by, REPLACE_PARAM.Auto)
 
 #func select_tiles():
 #	var rect = Rect2((selecting_init_pos)/cell_size, selecting_end_pos/cell_size)
@@ -624,7 +657,7 @@ func set_turn_into_pattern(value): #TODO
 #			if t_id == "-1": t_id = " "
 #			line_res += t_id
 #			if x != r_select_limits.size.x-1: line_res += ";"
-#	p_patterns += "/n"+line_res
+#	patterns += "/n"+line_res
 #	notify_property_list_changed()
 
 #		print(line_res)
@@ -641,27 +674,27 @@ func scan_for_tilemaps(node):
 	if not node is Node:
 		if not get_tree(): return
 		node = get_tree().edited_scene_root
-	if not node == self and node is TileMap and not t_tilemap_list.has(node.get_path()):
-		t_tilemap_list.append(node.get_path())
+	if not node == self and node is TileMap and not tilemap_list.has(node.get_path()):
+		tilemap_list.append(node.get_path())
 	for child in node.get_children(): scan_for_tilemaps(child)
 	read_used_tilemaps(null)
 	notify_property_list_changed()
 
 func read_used_tilemaps(value):
-	if value != null: t_use = value
-	if t_tilemap_list.is_empty(): return
+	if value != null: use_these = value
+	if tilemap_list.is_empty(): return
 	used_tilemaps.clear()
 	curr_tilemap = null
-	for x in t_use.split(" ",false,t_tilemap_list.size()):
-		if curr_tilemap == null: set_curr_tilemap(get_node(t_tilemap_list[int(x)]))
-		used_tilemaps.append(t_tilemap_list[int(x)])
+	for x in use_these.split(" ",false,tilemap_list.size()):
+		if curr_tilemap == null: set_curr_tilemap(get_node(tilemap_list[int(x)]))
+		used_tilemaps.append(tilemap_list[int(x)])
 
 func read_used_cursors(value):
-	c_use = value
-	if c_multi_cursor_list.is_empty(): return
+	use_those = value
+	if multi_cursor_list.is_empty(): return
 	used_cursors.clear()
-	for x in c_use.split(" ",false,c_multi_cursor_list.size()):
-		used_cursors.append(c_multi_cursor_list[int(x)])
+	for x in use_those.split(" ",false,multi_cursor_list.size()):
+		used_cursors.append(multi_cursor_list[int(x)])
 
 
 func update_bitmask_area(pos:Vector2): #TODO
@@ -748,26 +781,26 @@ func get_neighbor_cells(xy:Vector2i):
 	return res
 
 func set_no_draw_on(value):
-	r_no_draw_on = value
+	no_draw_on = value
 	
 func set_patterns(value):
-	p_patterns = value
+	patterns = value
 	format_patterns()
 
 func set_limit_color(value):
-	r_limit_color = value
+	limit_color = value
 	queue_redraw()
 
 func set_multi_cursor(value):
-	c_multi_cursor_list = value
-	read_used_cursors(c_use)
+	multi_cursor_list = value
+	read_used_cursors(use_those)
 
 func set_axis(value):
-	s_axis = value
+	axis = value
 	queue_redraw()
 
-func set_axis_position(value):
-	s_position = value
+func set_axis_pos(value):
+	axis_pos = value
 	queue_redraw()
 	
 #func load_data():
@@ -792,7 +825,7 @@ func import_tilesets():
 	var t:TileSet; var imported_tiles:Array[BTM.TILEID];
 	var new_source:TileSetAtlasSource; var imp_source:TileSetAtlasSource;
 	var new_alt:TileData; var imp_alt:TileData;
-	for tm in t_tilemap_list:
+	for tm in used_tilemaps:
 		t = tm.tile_set
 		imported_tiles = BTM.get_tiles_ids(t)
 		for id in imported_tiles:
@@ -829,189 +862,189 @@ func _EMPTY_TILE_ARRAY() -> Array[BTM.TILEID]:
 	return EMPTY_TILE_ARRAY.duplicate()
 
 
-func _get_property_list() -> Array:
-	return [
-		{
-			name = "Tilemaps to draw",
-			type = TYPE_NIL,
-			hint_string = "t_",
-			usage = PROPERTY_USAGE_GROUP
-		},{
-			name = "t_scan_for_tilemaps",
-			type = TYPE_BOOL,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "t_use",
-			type = TYPE_STRING,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "t_tilemap_list",
-			type = TYPE_ARRAY,
-			hint = PROPERTY_HINT_RESOURCE_TYPE,
-			hint_string = TYPE_NODE_PATH,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "Pattern",
-			type = TYPE_NIL,
-			hint_string = "p_",
-			usage = PROPERTY_USAGE_GROUP
-		},{
-			name = "p_center",
-			type = TYPE_INT,
-			hint = PROPERTY_HINT_ENUM,
-			hint_string = CENTER,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "p_brush",
-			type = TYPE_INT,
-			hint = PROPERTY_HINT_ENUM,
-			hint_string = BRUSH,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "p_replacing",
-			type = TYPE_BOOL,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "p_id",
-			type = TYPE_INT,
-			hint = PROPERTY_HINT_RANGE,
-			hint_string = "-1, 9999",
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "p_patterns",
-			type = TYPE_STRING,
-			hint = PROPERTY_HINT_MULTILINE_TEXT,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "p_turn_into_pattern",
-			type = TYPE_BOOL,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "p_allow_autotile",
-			type = TYPE_BOOL,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "Special Brushes",
-			type = TYPE_NIL,
-			hint_string = "c_",
-			usage = PROPERTY_USAGE_GROUP
-		},{
-			name = "c_brush_shape",
-			type = TYPE_INT,
-			hint = PROPERTY_HINT_ENUM,
-			hint_string = BrushType,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "c_size",
-			type = TYPE_FLOAT,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "c_filled",
-			type = TYPE_BOOL,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "c_outline_width",
-			type = TYPE_FLOAT,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "c_spray_density",
-			type = TYPE_INT,
-			hint = PROPERTY_HINT_RANGE,
-			hint_string = "0, 999999",
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "Replacing",
-			type = TYPE_NIL,
-			hint_string = "r_",
-			usage = PROPERTY_USAGE_GROUP
-		},{
-			name = "r_replace_tile",
-			type = TYPE_INT,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "r_replace_by",
-			type = TYPE_INT,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "r_y_as_random_pattern",
-			type = TYPE_BOOL,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "r_global_replacing",
-			type = TYPE_BOOL,
-			usage = PROPERTY_USAGE_DEFAULT
-		},
+#func _get_property_list() -> Array:
+#	return [
 #		{
-#			name = "Selection",
+#			name = "Tilemaps to draw",
+#			type = TYPE_NIL,
+#			hint_string = "t_",
+#			usage = PROPERTY_USAGE_GROUP
+#		},{
+#			name = "SCAN",
+#			type = TYPE_BOOL,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "use_these",
+#			type = TYPE_STRING,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "tilemap_list",
+#			type = TYPE_ARRAY,
+#			hint = PROPERTY_HINT_RESOURCE_TYPE,
+#			hint_string = TYPE_NODE_PATH,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "Pattern",
+#			type = TYPE_NIL,
+#			hint_string = "p_",
+#			usage = PROPERTY_USAGE_GROUP
+#		},{
+#			name = "center_pattern",
+#			type = TYPE_INT,
+#			hint = PROPERTY_HINT_ENUM,
+#			hint_string = CENTER,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "apply_pattern",
+#			type = TYPE_INT,
+#			hint = PROPERTY_HINT_ENUM,
+#			hint_string = BRUSH,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "can_pattern_replace",
+#			type = TYPE_BOOL,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "pattern_id",
+#			type = TYPE_INT,
+#			hint = PROPERTY_HINT_RANGE,
+#			hint_string = "-1, 9999",
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "patterns",
+#			type = TYPE_STRING,
+#			hint = PROPERTY_HINT_MULTILINE_TEXT,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "turn_into_pattern",
+#			type = TYPE_BOOL,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "allow_autotile",
+#			type = TYPE_BOOL,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "Special Brushes",
+#			type = TYPE_NIL,
+#			hint_string = "c_",
+#			usage = PROPERTY_USAGE_GROUP
+#		},{
+#			name = "brush_shape",
+#			type = TYPE_INT,
+#			hint = PROPERTY_HINT_ENUM,
+#			hint_string = BrushType,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "brush_size",
+#			type = TYPE_FLOAT,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "shape_filled",
+#			type = TYPE_BOOL,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "outline_width",
+#			type = TYPE_FLOAT,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "spray_density",
+#			type = TYPE_INT,
+#			hint = PROPERTY_HINT_RANGE,
+#			hint_string = "0, 999999",
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "Replacing",
 #			type = TYPE_NIL,
 #			hint_string = "r_",
 #			usage = PROPERTY_USAGE_GROUP
 #		},{
-#			name = "r_select_limits",
-#			type = TYPE_RECT2,
+#			name = "replace_tile",
+#			type = TYPE_INT,
 #			usage = PROPERTY_USAGE_DEFAULT
 #		},{
-#			name = "r_limit_color",
-#			type = TYPE_COLOR,
+#			name = "replace_by",
+#			type = TYPE_INT,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "r_y_as_random_pattern",
+#			type = TYPE_BOOL,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "REPLACE",
+#			type = TYPE_BOOL,
 #			usage = PROPERTY_USAGE_DEFAULT
 #		},
-		{
-			name = "Symmetry",
-			type = TYPE_NIL,
-			hint_string = "s_",
-			usage = PROPERTY_USAGE_GROUP
-		},{
-			name = "s_position",
-			type = TYPE_VECTOR2,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "s_axis",
-			type = TYPE_INT,
-			hint = PROPERTY_HINT_FLAGS,
-			hint_string = "X, Y",
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "s_display_length",
-			type = TYPE_INT,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "Multi Cursors",
-			type = TYPE_NIL,
-			hint_string = "c_",
-			usage = PROPERTY_USAGE_GROUP
-		},{
-			name = "c_use",
-			type = TYPE_STRING,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "c_multi_cursor_list",
-			type = TYPE_ARRAY,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "Rules",
-			type = TYPE_NIL,
-			hint_string = "r_",
-			usage = PROPERTY_USAGE_GROUP
-		},{
-			name = "r_only_draw_on",
-			type = TYPE_INT,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "r_no_draw_on",
-			type = TYPE_INT,
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "r_scattering",
-			type = TYPE_FLOAT,
-			hint = PROPERTY_HINT_RANGE,
-			hint_string = "0, 1",
-			usage = PROPERTY_USAGE_DEFAULT
-		},{
-			name = "r_scatter_affects_erase",
-			type = TYPE_BOOL,
-			usage = PROPERTY_USAGE_DEFAULT
-		}
-		]
+##		{
+##			name = "Selection",
+##			type = TYPE_NIL,
+##			hint_string = "r_",
+##			usage = PROPERTY_USAGE_GROUP
+##		},{
+##			name = "r_select_limits",
+##			type = TYPE_RECT2,
+##			usage = PROPERTY_USAGE_DEFAULT
+##		},{
+##			name = "limit_color",
+##			type = TYPE_COLOR,
+##			usage = PROPERTY_USAGE_DEFAULT
+##		},
+#		{
+#			name = "Symmetry",
+#			type = TYPE_NIL,
+#			hint_string = "s_",
+#			usage = PROPERTY_USAGE_GROUP
+#		},{
+#			name = "axis_pos",
+#			type = TYPE_VECTOR2,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "axis",
+#			type = TYPE_INT,
+#			hint = PROPERTY_HINT_FLAGS,
+#			hint_string = "X, Y",
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "display_length",
+#			type = TYPE_INT,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "Multi Cursors",
+#			type = TYPE_NIL,
+#			hint_string = "c_",
+#			usage = PROPERTY_USAGE_GROUP
+#		},{
+#			name = "use_those",
+#			type = TYPE_STRING,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "multi_cursor_list",
+#			type = TYPE_ARRAY,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "Rules",
+#			type = TYPE_NIL,
+#			hint_string = "r_",
+#			usage = PROPERTY_USAGE_GROUP
+#		},{
+#			name = "only_draw_on",
+#			type = TYPE_INT,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "no_draw_on",
+#			type = TYPE_INT,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "scattering",
+#			type = TYPE_FLOAT,
+#			hint = PROPERTY_HINT_RANGE,
+#			hint_string = "0, 1",
+#			usage = PROPERTY_USAGE_DEFAULT
+#		},{
+#			name = "scatter_affects_erase",
+#			type = TYPE_BOOL,
+#			usage = PROPERTY_USAGE_DEFAULT
+#		}
+#		]
 
 
 

@@ -2,6 +2,10 @@
 extends Node
 
 
+const ALT_H:Array = [1,3,5,7]
+const ALT_V:Array = [2,3,6,7]
+const ALT_T:Array = [4,5,6,7]
+
 ###############################
 
 class TILEID:
@@ -46,7 +50,7 @@ var palette
 
 var current_cell:Vector2i
 var starter_cell:Vector2i
-var current_alt:int = 0
+var current_alt:int = 0 : set = _set_current_alt
 var l:int = 0
 # states
 var button_held:int = INVALID
@@ -128,7 +132,7 @@ func handle_motion():
 func match_button_action(button:int):
 	match button:
 		MOUSE_BUTTON_LEFT: return bottledtilemap.current_tile
-		MOUSE_BUTTON_RIGHT: return bottledtilemap.ERASE_TILE_ID
+		MOUSE_BUTTON_RIGHT: return bottledtilemap.right_click_tile
 		INVALID: return
 
 func draw_tile(button:int):
@@ -166,7 +170,9 @@ func _on_key_pressed(event:InputEventKey):
 		bottledtilemap.queue_redraw()
 		is_custom_brush = !bottledtilemap.current_brush_tiles.is_empty()
 
-
+func _set_current_alt(value):
+	current_alt = value
+	bottledtilemap.current_alt = value
 
 
 ################################
