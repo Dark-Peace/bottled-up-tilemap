@@ -129,8 +129,12 @@ func _add_tile_palette():
 #	print(toolbar_theme)
 	
 	_tilemap_editor.add_child(_tile_palette)
+	var tilemap_child
 	for i in 5:
-		_tilemap_editor.remove_child(_tilemap_editor.get_child(0))
+		tilemap_child = _tilemap_editor.get_child(0)
+		_tilemap_editor.remove_child(tilemap_child)
+#		_tile_palette.get_node("Old").add_child(tilemap_child)
+#		tilemap_child.visible = false
 	
 	editor_script_screen = _find_in_editor("EditorTitleBar").get_child(2).get_child(2)
 

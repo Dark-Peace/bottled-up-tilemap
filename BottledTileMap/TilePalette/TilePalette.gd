@@ -39,6 +39,9 @@ var hidden_groups:Array[String]
 var can_multi_check:bool = false
 var can_show_subview:bool = true
 
+var selected_left:int = -1
+var selected_right:int = -1
+
 var tileset:TileSet : set = _set_tileset
 func _set_tileset(value):
 	if tileset == value:
@@ -62,36 +65,10 @@ func set_tools(tile_map_editor: Control, interface_display_scale: float = 1):
 # Bottled TileMap
 func go_to_tile(inc:int):
 	var max_tiles = 0
-#	match current_view:
-#		VIEW.Tex:
-#			max_tiles = count_tiles_in_texture()
-#			var new_tile = current_tile+inc
-#			if new_tile < 0: new_tile = max_tiles
-#			if new_tile > max_tiles: new_tile = 0
-#			while not new_tile in tileset.get_meta("TileList"): #TODO
-#				current_tile+inc
-#			for child in _sprite_border.get_children():
-#				if child is ReferenceRect and child.has_meta("tile_id") and child.get_meta("tile_id") == new_tile:
-#					_on_pressed_tile_button(child)
-#		VIEW.List:
-#			max_tiles = $"%ListView".get_item_count()
-#			var new_tile = current_tile+inc
-#			if new_tile < 0: new_tile = max_tiles-1
-#			if new_tile >= max_tiles: new_tile = 0
-#			current_tile = new_tile
-#			_on_ListView_item_selected(current_tile%max_tiles)
-#			$"%ListView".select(current_tile)
-#		VIEW.Group:
-#			pass
 
 # Bottled TileMap
 func count_tiles_in_texture():
 	pass
-#	var curr_tile_counted = -1
-#	for child in _sprite_border.get_children():
-#		if child is ReferenceRect and child.has_meta("tile_id") and child.get_meta("tile_id") != curr_tile_counted:
-#			curr_tile_counted = child.get_meta("tile_id")
-#	return curr_tile_counted
 
 func trigger_preview(type:String):
 	clear_preview_list()
@@ -236,6 +213,14 @@ func _ready():
 	BTM.palette = self
 	fav_groups.append(GROUPNAME_NOGROUP)
 	fav_groups.append(GROUPNAME_ALLTILES)
+#	get_parent().resized.connect(resize)
+#
+#func resize():
+#	print("ok")
+#	size = get_parent().size
+
+func _process(delta):
+	size = get_parent().size
 
 func _fill():
 	_clear()
@@ -274,14 +259,14 @@ func _fill_variant_view():
 func _fill_alttile_view():
 	pass
 
-func _fill_subview(tilelist:Array[BTM.TILEID]):
+func _fill_subview(tilelist:Array):
 	$"%Subtile".clear()
 #	var tilelist_indexes:Dictionary; var index:int=0
-#	for id in tilelist:
+	for id in tilelist:
 #		tilelist_indexes[index] = id
 #		index += 1
-#		$"%Subtile".add_item("", tileset.get_source(id.source).texture)
-#		$"%Subtile".set_item_icon_region($"%Subtile".get_item_count()-1,tileset.get_source(id.source).get_tile_texture_region(id.coords))
+		$"%Subtile".add_item("", tileset.get_source(id.source).texture)
+		$"%Subtile".set_item_icon_region($"%Subtile".get_item_count()-1,tileset.get_source(id.source).get_tile_texture_region(id.coords))
 #	tileset.set_meta("TileListIndexes", tilelist_indexes)
 
 func _fill_group_view():
@@ -417,12 +402,17 @@ func _on_tileset_changed(new_tileset: TileSet):
 	_fill()
 
 func _on_ListView_item_selected(index: int) -> void:
-	tilemap.current_tile = tileset.get_meta("TileListIndexes", {}).get(index, BTM.TILEID.new())
+	if index != selected_right:
+		tilemap.current_tile = tileset.get_meta("TileListIndexes", {}).get(index, BTM.TILEID.new())
+		selected_left = index
+	for item in $"%ListView".get_selected_items():
+		if item == selected_left or item == selected_right: continue
+		$"%ListView".deselect(item)
 #	current_tile = index
 #	_tile_list.select(current_tile)
 #	_tile_map_editor._palette_selected(int(current_tile))
 	# TODO : display subtile view
-	init_tilecell()
+#	init_tilecell()
 
 # Cell Manager
 func init_tilecell():
@@ -431,14 +421,24 @@ func init_tilecell():
 
 
 enum REPLACE_PARAM {Auto, SelectionOnly, Global}
+enum SELECT {SelectionOnly, WholeLayer, Global, SelectionAllLayers}
 func _on_EraseAll_pressed() -> void:
-	match $"%SelectErase".get_selected_id():
-		0: return
-		1: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly)
-		2: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global)
-		3: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global, tilemap.ALL_LAYERS)
-		4: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly, tilemap.ALL_LAYERS)
-	$"%SelectErase".select(0)
+	match $"%Selections".get_selected_id():
+		SELECT.SelectionOnly: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly)
+		SELECT.WholeLayer: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global)
+		SELECT.Global: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global, tilemap.ALL_LAYERS)
+		SELECT.SelectionAllLayers: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly, tilemap.ALL_LAYERS)
+	$"%Selections".select(SELECT.SelectionOnly)
+
+func _on_select_all_pressed():
+	var tile:BTM.TILEID = [tilemap.NO_TILE_ID,tilemap.current_tile][int($"%SelectTile".button_pressed)]
+	
+	match $"%Selections".get_selected_id():
+		SELECT.SelectionOnly: return
+		SELECT.WholeLayer: tilemap.select_all_cells(tilemap.current_layer, tile)
+		SELECT.Global: tilemap.select_all_cells(tilemap.ALL_LAYERS, tile)
+		SELECT.SelectionAllLayers: tilemap.select_all_cells(tilemap.ALL_LAYERS, tile, true)
+	$"%Selections".select(SELECT.SelectionOnly)
 	
 
 func _on_TilePalette_resized() -> void:
@@ -476,3 +476,18 @@ func _on_toggle_sub_pressed():
 
 func _on_random_sub_pressed():
 	pass # Replace with function body.
+
+
+func _on_clear_invalid_pressed():
+	tilemap.fix_invalid_tiles()
+
+func _on_list_view_empty_clicked(at_position, mouse_button_index):
+	if mouse_button_index != MOUSE_BUTTON_RIGHT: return
+	selected_right = -1
+	tilemap.right_click_tile = tilemap.ERASE_TILE_ID
+
+
+func _on_list_view_item_clicked(index, at_position, mouse_button_index):
+	if mouse_button_index != MOUSE_BUTTON_RIGHT: return
+	selected_right = index
+	tilemap.right_click_tile = tileset.get_meta("TileListIndexes", {}).get(index, tilemap.ERASE_TILE_ID)
