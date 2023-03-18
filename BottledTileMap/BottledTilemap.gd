@@ -11,8 +11,10 @@ class_name BottledTileMap
 
 signal cell_entered(_cell:Vector2i)
 signal cell_exited(_cell:Vector2i)
+signal tile_drawn(_tile:BTM.TILEID, _cell:Vector2i)
+signal tile_erased(_previous_tile:BTM.TILEID, _cell:Vector2i)
 
-enum BrushType {CIRCLE, SQUARE, SQUARE_ROTATED, LINE_H, LINE_V }
+enum BrushType {CIRCLE, SQUARE, SQUARE_ROTATED, LINE_H, LINE_V}
 enum TransfoActions {FLIP_H, FLIP_V, ROTATE_RIGHT, ROTATE_LEFT}
 
 const PREVIEW_TILE_COLOR:Color = Color(1,1,1,.5)
@@ -38,6 +40,7 @@ var NO_TILE_ID:BTM.TILEID = BTM.TILEID.new(NO_TILE)
 #var ALL_TILES_ID:BTM.TILEID = BTM.TILEID.new(ALL_TILES)
 var ERASE_TILE_ID:BTM.TILEID = BTM.TILEID.new(ERASE_TILE)
 
+
 # CIRCLES
 @export_group("Brushes")
 @export var brush_shape:BrushType = BrushType.CIRCLE
@@ -47,11 +50,18 @@ var ERASE_TILE_ID:BTM.TILEID = BTM.TILEID.new(ERASE_TILE)
 # SPRAY
 @export_range(0,INF,1,"suffix:tile(s)") var spray_density:int = 0
 @export_range(0,1) var scattering:float = 0
+@export_subgroup("Randomness")
+enum RandomAccross {Cursors=8, TileMaps=4, BrushShape=2, Symmetry=1}
+@export_flags("Cursors","TileMaps","BrushShape","Symmetry") var allow_random:int = 15
+#@export var no_random_accross:RandomAccross = RandomAccross.Nowhere
+var use_tile_random:bool = false
+var use_alt_random:bool = false
 
 @export_subgroup("Drawing Rules")
 @export var scatter_affects_erase = false
 @export_range(-3,INF,1,"suffix:TileID") var no_draw_on:int = NO_TILE
 @export_range(-3,INF,1,"suffix:TileID") var only_draw_on:int = NO_TILE
+
 
 # REPLACING
 @export_group("Replacing")
@@ -60,11 +70,11 @@ var ERASE_TILE_ID:BTM.TILEID = BTM.TILEID.new(ERASE_TILE)
 var r_y_as_random_pattern = false #TODO
 @export var REPLACE:bool = false : set = set_global_replacing
 
+
 # PATTERN
 @export_group("Patterns")
 enum CENTER {origin, mouse}
 enum BRUSH {whole_pattern, one_tile}
-
 @export var center_pattern:CENTER = CENTER.origin
 @export var apply_pattern:BRUSH = BRUSH.one_tile
 @export var can_pattern_replace = true
@@ -85,6 +95,7 @@ var pattern_list:Array
 @export var limit_color = Color.AQUAMARINE : set = set_limit_color
 @export_range(0,999999,0.001, "hide_slider","suffix:px") var display_length:float = 1000
 
+
 # MULTI CURSOR
 @export_group("Multi Cursors")
 @export_placeholder("ex: 0;1;2") var use_those:String : set = read_used_cursors
@@ -92,6 +103,7 @@ var used_cursors:Array[Vector2i] = []
 @export var multi_cursor_list:Array[Vector2i] : set = set_multi_cursor
 var cursor_texture = load("res://addons/BottledTileMap/icon.png")
 #var c_cursor_color = Color.AQUA : set = set_cursor_color
+
 
 # MULTI TILEMAPS
 @export_group("Multi TileMaps")
@@ -101,13 +113,14 @@ var used_tilemaps:Array[TileMap] = []
 @export var SCAN:bool : set = scan_for_tilemaps
 var curr_tilemap:TileMap : set = set_curr_tilemap
 
+# TILESETS
+@export_group("TileSet")
+@export_subgroup("Alternative Tiles", "alt_")
+@export_range(0,INF) var alt_create_range:int = 0
+@export var alt_create_colors:Gradient
+
 # INSTANCES
 var instance_dict = {}
-
-## SEND DATA
-#var send_target = NodePath()
-#var send_send = false : set = set_send
-#var send_erase_after_send = false
 
 #-------------------------------------------------------------------------------------------
 
@@ -293,34 +306,36 @@ func draw_custom_brush(xy:Vector2i, l:int=current_layer, tile:BTM.TILEID=null):
 			draw_tile(xy+t, current_brush_tiles[t], l)
 
 func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=current_alt):
-#	if is_selecting or has_selected: return
+	# handle random tile in group
+	
 	# multi-cursor handler
 	if used_cursors.size() > 0 and can_trigger_multi:# and not tile.isEqual(get_cell(xy, l)):
 		can_trigger_multi = false
 		for c in used_cursors:
-#			if c == Vector2.ZERO: continue
 			if can_pattern_replace or get_cell(xy+c, l).source == ERASE_TILE:
+				if use_tile_random and (allow_random & RandomAccross.Cursors): tile = pick_random_tile()
+				if use_alt_random and (allow_random & RandomAccross.Cursors): alt = randi()%8
 				draw_tile(xy+c,tile,l,alt)
 				if allow_autotile: update_bitmask_area(xy+c)
 		can_trigger_multi = true
 
 	# no pattern selected
 	if pattern_id == -1:
-		if (brush_size > 1 or brush_size > 1) and can_trigger:
+		if brush_size > 1 and can_trigger:
 			can_trigger = false
 			# use circle tool
 			if spray_density == 0:
 				current_cells = get_tiles_with_brush(xy)
 				for t in current_cells:
-					call_all_draw(t,tile,l,alt)
+					call_all_draw(t,tile,l,alt, CALLTYPE.Brush)
 			# use spray tool
 			else:
 				current_cells = spray(xy)
 				for t in current_cells:
-					call_all_draw(t,tile,l,alt)
+					call_all_draw(t,tile,l,alt, CALLTYPE.Brush)
 			can_trigger = true
 		else:
-			call_all_draw(xy,tile,l,alt) # case that doesn't change from a normal tilemap
+			call_all_draw(xy,tile,l,alt, CALLTYPE.Single) # case that doesn't change from a normal tilemap
 		if not can_origin: can_origin = true
 		return
 
@@ -329,7 +344,7 @@ func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, a
 	# use pattern tool #TODO
 #	if apply_pattern == BRUSH.one_tile:
 #		# use spray or circle tool
-#		if (brush_size > 1 or brush_size > 1) and can_trigger:
+#		if brush_size > 1 and can_trigger:
 #			can_trigger = false
 #			if spray_density == 0:
 #				for t in get_tiles_with_brush(xy):
@@ -353,21 +368,35 @@ func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, a
 #			can_trigger = true
 #		else: call_all_draw(xy,tile,l,get_random_subtile(id, tile.coords))
 
-
-func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=current_alt):
+enum CALLTYPE {Single, Brush}
+func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=current_alt, call_type=0):
 	if get_cell(xy,l).isEqualV3(ID_map[no_draw_on]) or (only_draw_on != NO_TILE and not get_cell(xy,l).isEqualV3(ID_map[only_draw_on])) \
 		or tile.source < -1:
 			return
 	
+	if use_tile_random and ((call_type == CALLTYPE.Brush and (allow_random & RandomAccross.BrushShape)) or call_type == CALLTYPE.Single):
+		tile = pick_random_tile()
+	if use_alt_random and ((call_type == CALLTYPE.Brush and (allow_random & RandomAccross.BrushShape)) or call_type == CALLTYPE.Single):
+		alt = randi()%8
+	
 	if not tile.isEqual(get_cell(xy, l)):
 		var test = randf_range(0,1)
 		if scattering > 0 and test <= scattering and (tile.source != ERASE_TILE or scatter_affects_erase): return
-#		for tm in used_tilemaps: #TODO
-#			get_node(tm).set_cell(l,xy,tile.source,tile.coords,alt)
-#			draw_symmetry(xy,tile,l,alt)
+		for tm in used_tilemaps:
+			if use_tile_random and (allow_random & RandomAccross.TileMaps): tile = pick_random_tile()
+			if use_alt_random and (allow_random & RandomAccross.TileMaps): alt = randi()%8
+			tm.set_cell(l,xy,tile.source,tile.coords,alt)
+			draw_symmetry(xy,tile,l,alt)
+		send_draw_signals(xy, tile, l)
 		super.set_cell(l,xy,tile.source,tile.coords,alt)
 		draw_symmetry(xy,tile,l,alt)
 	if allow_autotile: update_bitmask_area(xy)
+
+func send_draw_signals(xy:Vector2i,tile:BTM.TILEID, l:int=current_layer):
+	var cell = get_cell(xy,l)
+	if cell.isEqual(tile): return
+	if tile.isEqual(ERASE_TILE_ID): tile_erased.emit(cell, xy)
+	else: tile_drawn.emit(tile, xy)
 
 func _on_cell_entered(cell:Vector2i):
 	if max_cells_preview <= 0: return
@@ -409,16 +438,20 @@ func select_all_cells(layer:int=current_layer, tile:BTM.TILEID=NO_TILE_ID, keep_
 
 func draw_symmetry(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt=current_alt):
 	if axis == 0: return
+	if use_tile_random and (allow_random & RandomAccross.Symmetry): tile = pick_random_tile()
+	if use_alt_random and (allow_random & RandomAccross.Symmetry): alt = randi()%8
 	
 	var id=tile.source; var _a = tile.coords;
 	if axis == X_AXIS:
 		var new_vect:Vector2i = xy+Vector2i(0,-2*(xy.x-axis_pos.x)-1)
 		super.set_cell(l,new_vect,id,_a,alt)
 		if allow_autotile: update_bitmask_area(new_vect)
+		send_draw_signals(new_vect, tile, l)
 	elif axis == Y_AXIS:
 		var new_vect:Vector2i = xy+Vector2i(-2*(xy.y-axis_pos.y)-1,0)
 		super.set_cell(l,new_vect,id,_a,alt)
 		if allow_autotile: update_bitmask_area(new_vect)
+		send_draw_signals(new_vect, tile, l)
 	elif axis == BOTH_AXIS:
 		var part_vect:Vector2i = Vector2i((-2*(xy.x-axis_pos.x)-1),(-2*(xy.y-axis_pos.y)-1))
 		super.set_cell(l,xy+Vector2i(part_vect.x,0),id,_a,alt)
@@ -428,6 +461,9 @@ func draw_symmetry(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt=current_a
 			update_bitmask_area(xy+Vector2i(part_vect.x,0))
 			update_bitmask_area(xy+Vector2i(0,part_vect.y))
 			update_bitmask_area(xy+Vector2i(part_vect.x,part_vect.y))
+		send_draw_signals(xy+Vector2i(part_vect.x,0), tile, l)
+		send_draw_signals(xy+Vector2i(0,part_vect.y), tile, l)
+		send_draw_signals(xy+Vector2i(part_vect.x,part_vect.y), tile, l)
 
 func get_symmetry_tiles(xy:Vector2i):
 	if axis == 0: return
@@ -696,7 +732,6 @@ func read_used_cursors(value):
 	for x in use_those.split(" ",false,multi_cursor_list.size()):
 		used_cursors.append(multi_cursor_list[int(x)])
 
-
 func update_bitmask_area(pos:Vector2): #TODO
 	pass
 #	super.update_bitmask_area(pos)
@@ -730,7 +765,11 @@ func transform_brush(action:int):
 				modified[Vector2i(-t.y,t.x)] = current_brush_tiles[t]
 	current_brush_tiles = modified
 
-
+func pick_random_tile():
+	return tile_set.get_meta("TileListIndexes", {}).values()[randi()%(tile_set.get_meta("TileListIndexes", {}).size())]
+#	var array:Dictionary = tile_set.get_meta("TileListIndexes", {})
+#	for t in array.values():
+#
 
 
 # SETGETS ########################################################
