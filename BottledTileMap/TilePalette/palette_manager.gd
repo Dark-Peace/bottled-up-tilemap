@@ -52,6 +52,7 @@ func _exit_tree():
 
 func _on_selection_changed():
 	var selected_nodes = _selection.get_selected_nodes()
+	if _tile_palette.lock_dock and _tilemap_editor.visible: lock_palette_dock()
 	if selected_nodes.size() == 1:
 		var selected_node = selected_nodes[0]
 		if selected_node is BottledTileMap:
@@ -80,6 +81,10 @@ func close_bottom_panel(timer:float=0.16):
 	await get_tree().create_timer(timer).timeout
 	hide_bottom_panel()
 
+func lock_palette_dock(timer:float=0.16):
+	await get_tree().create_timer(timer).timeout
+	make_bottom_panel_item_visible(_tilemap_editor)
+
 func set_min_size(parent):
 #	parent.visible = false
 #	for p in parent.get_property_list():
@@ -101,6 +106,7 @@ func _print_tree(node: Node, indent = 0):
 
 func _add_tile_palette():
 	_tile_palette = load("res://addons/BottledTileMap/TilePalette/TilePalette.tscn").instantiate()
+	_tile_palette.active = true
 	_selection = get_editor_interface().get_selection()
 	_selection.connect("selection_changed",Callable(self,"_on_selection_changed"))
 #	dock_button = add_control_to_bottom_panel(_tile_palette, "Tile Palette")

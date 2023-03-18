@@ -1,6 +1,8 @@
 @tool
 extends Control
 
+var active:bool = false
+
 const single_tile_border_color: Color = Color("fce844")
 const atlas_tile_border_color: Color = Color("c9cfd4")
 const auto_tile_border_color: Color = Color("4490fc")
@@ -41,6 +43,7 @@ var can_show_subview:bool = true
 
 var selected_left:int = -1
 var selected_right:int = -1
+var lock_dock:bool = false
 
 var tileset:TileSet : set = _set_tileset
 func _set_tileset(value):
@@ -220,6 +223,7 @@ func _ready():
 #	size = get_parent().size
 
 func _process(delta):
+	if not active: return
 	size = get_parent().size
 
 func _fill():
@@ -245,10 +249,7 @@ func _fill_list_view(tilelist:Array[BTM.TILEID]=tileset.get_meta("TileList")):
 	tileset.set_meta("TileListIndexes", tilelist_indexes)
 
 func _on_sub_tab_tab_changed(tab):
-	match tab:
-		0: _fill_subtile_view()
-		1: _fill_alttile_view()
-		2: _fill_variant_view()
+	_fill_subview()
 
 func _fill_subtile_view():
 	pass
@@ -257,17 +258,24 @@ func _fill_variant_view():
 	pass
 
 func _fill_alttile_view():
-	pass
+	var current_tile:BTM.TILEID = tilemap.current_tile
+	
+	var region:Rect2; var alt:TileData;
+	for a in 8:
+		alt = tileset.get_source(current_tile.source).get_tile_data(current_tile.coords, a)
+		$"%Subtile".add_item("", tileset.get_source(current_tile.source).texture)
+		region = tileset.get_source(current_tile.source).get_tile_texture_region(current_tile.coords)
+		if alt.flip_h: region.size.x = -region.size.x
+		if alt.flip_v: region.size.y = -region.size.y
+		if alt.transpose: $"%Subtile".set_item_icon_transposed(a, true)
+		$"%Subtile".set_item_icon_region(a,region)
 
-func _fill_subview(tilelist:Array):
+func _fill_subview():
 	$"%Subtile".clear()
-#	var tilelist_indexes:Dictionary; var index:int=0
-	for id in tilelist:
-#		tilelist_indexes[index] = id
-#		index += 1
-		$"%Subtile".add_item("", tileset.get_source(id.source).texture)
-		$"%Subtile".set_item_icon_region($"%Subtile".get_item_count()-1,tileset.get_source(id.source).get_tile_texture_region(id.coords))
-#	tileset.set_meta("TileListIndexes", tilelist_indexes)
+	match $"%SubTab".current_tab:
+		0: _fill_subtile_view()
+		1: _fill_alttile_view()
+		2: _fill_variant_view()
 
 func _fill_group_view():
 	if not tileset: return
@@ -408,6 +416,7 @@ func _on_ListView_item_selected(index: int) -> void:
 	for item in $"%ListView".get_selected_items():
 		if item == selected_left or item == selected_right: continue
 		$"%ListView".deselect(item)
+	_fill_subview()
 #	current_tile = index
 #	_tile_list.select(current_tile)
 #	_tile_map_editor._palette_selected(int(current_tile))
@@ -467,15 +476,16 @@ func _on_tab_changed(tab):
 	$"%Tabs_TM".current_tab = tab
 	$BetterTerrain.get_node("%Tabs_BT").current_tab = tab
 	$PatternEditor.get_node("%Tabs_P").current_tab = tab
+	
+	for t in [$"%Tabs_TM",$BetterTerrain.get_node("%Tabs_BT"),$PatternEditor.get_node("%Tabs_P")]:
+		for c in t.get_children():
+			c.hide()
 
 func _on_tile_size_value_changed(value):
 	$"%ListView".fixed_icon_size = Vector2(value,value)
 
 func _on_toggle_sub_pressed():
 	can_show_subview = $"%ToggleSub".button_pressed
-
-func _on_random_sub_pressed():
-	pass # Replace with function body.
 
 
 func _on_clear_invalid_pressed():
@@ -491,3 +501,20 @@ func _on_list_view_item_clicked(index, at_position, mouse_button_index):
 	if mouse_button_index != MOUSE_BUTTON_RIGHT: return
 	selected_right = index
 	tilemap.right_click_tile = tileset.get_meta("TileListIndexes", {}).get(index, tilemap.ERASE_TILE_ID)
+
+
+func _on_lock_dock_pressed():
+	lock_dock = $"%LockDock".button_pressed
+
+func _on_random_tile_pressed():
+	tilemap.use_tile_random = $"%RandomTile".button_pressed
+
+func _on_random_sub_pressed():
+	match $"%SubTab".current_tab:
+		0: pass
+		1: tilemap.use_alt_random = $"%RandomSub".button_pressed
+
+func _on_subtile_item_selected(index):
+	match $"%SubTab".current_tab:
+		0: pass
+		1: BTM.current_alt = index
