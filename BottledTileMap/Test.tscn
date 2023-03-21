@@ -186,41 +186,53 @@ metadata/_better_terrain = {
 "terrains": [],
 "version": "0.1"
 }
-metadata/TileList = Array[null]([Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 0))
-, Object(RefCounted,"script":null,"source":0,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 0))
-, Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 1))
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 2))
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"v":Vector3i(0, 1, 2))
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 2))
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"v":Vector3i(1, 1, 2))
+metadata/TileList = Array[null]([Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 0),"cv":Vector2i(0, 0))
+, Object(RefCounted,"script":null,"source":0,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 0),"cv":Vector2i(1, 0))
+, Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 1),"cv":Vector2i(0, 0))
+, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 2),"cv":Vector2i(0, 0))
+, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"v":Vector3i(0, 1, 2),"cv":Vector2i(0, 1))
+, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 2),"cv":Vector2i(1, 0))
+, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"v":Vector3i(1, 1, 2),"cv":Vector2i(1, 1))
 ])
 metadata/TileListIndexes = {
-0: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 0))
+0: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 0),"cv":Vector2i(0, 0))
 ,
-1: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 0))
+1: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 0),"cv":Vector2i(1, 0))
 ,
-2: Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 1))
+2: Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 1),"cv":Vector2i(0, 0))
 ,
-3: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 2))
+3: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 2),"cv":Vector2i(0, 0))
 ,
-4: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"v":Vector3i(0, 1, 2))
+4: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"v":Vector3i(0, 1, 2),"cv":Vector2i(0, 1))
 ,
-5: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 2))
+5: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 2),"cv":Vector2i(1, 0))
 ,
-6: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"v":Vector3i(1, 1, 2))
+6: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"v":Vector3i(1, 1, 2),"cv":Vector2i(1, 1))
 
 }
 metadata/ID_Map = {
 -3: Vector3i(-3, -3, -3),
 -2: Vector3i(-2, -2, -2),
 0: Vector3i(0, 0, 0),
-1: Vector3i(0, 0, 1),
-2: Vector3i(0, 0, 2),
-3: Vector3i(0, 1, 2),
-4: Vector3i(1, 0, 2),
-5: Vector3i(1, 1, 2),
-6: Vector3i(1, 0, 0),
+1: Vector3i(1, 0, 0),
+2: Vector3i(0, 0, 1),
+3: Vector3i(0, 0, 2),
+4: Vector3i(0, 1, 2),
+5: Vector3i(1, 0, 2),
+6: Vector3i(1, 1, 2),
 "__NEXT_ID__": 7
+}
+metadata/groups_by_groups = {
+"ALL TILES2": [Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(0, 0, 2), Vector3i(0, 1, 2), Vector3i(1, 0, 2), Vector3i(1, 1, 2)]
+}
+metadata/groups_by_ids = {
+Vector3i(0, 0, 0): ["ALL TILES2"],
+Vector3i(0, 0, 1): ["ALL TILES2"],
+Vector3i(0, 0, 2): ["ALL TILES2"],
+Vector3i(0, 1, 2): ["ALL TILES2"],
+Vector3i(1, 0, 0): ["ALL TILES2"],
+Vector3i(1, 0, 2): ["ALL TILES2"],
+Vector3i(1, 1, 2): ["ALL TILES2"]
 }
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wrh38"]
@@ -257,7 +269,7 @@ sources/0 = SubResource("TileSetAtlasSource_wrh38")
 tile_set = SubResource("1")
 cell_quadrant_size = 32
 format = 2
-layer_0/tile_data = PackedInt32Array(131073, 2, 1, 65538, 2, 1, 131074, 2, 1, 196610, 2, 1, 131075, 2, 1, 65539, 2, 1, 196611, 2, 1, 131076, 2, 1, 65540, 2, 1, 196612, 2, 1, 196613, 2, 1, 65545, 0, 65536, 9, 2, 65537, -65526, 2, 458752, -65525, 65538, 393216, -65524, 0, 262144, -65523, 2, 1, -65522, 2, 327680, 14, 2, 131073, 65550, 65538, 458752, 65549, 2, 262144, 65548, 65538, 262144, 12, 2, 0, 10, 65538, 327681, 131082, 2, 262145, 131083, 1, 0, 131084, 65538, 262145, 131085, 2, 458753, 131086, 65538, 131073, 131087, 0, 65536, 65551, 65538, 458752, 196620, 65538, 393217, 196619, 65538, 262144, 196617, 2, 196609, 196616, 2, 131073, 65544, 65538, 393217, 8, 2, 131072, 15, 65538, 196608, 65543, 0, 0, 7, 0, 262144, 65546, 0, 327680, 131081, 0, 458752, 65547, 0, 0, 196618, 2, 196608, 196623, 2, 327681, 196622, 65538, 262145, 262157, 1, 65536, 262156, 2, 327680, 262155, 1, 393216, 262154, 65538, 65536)
+layer_0/tile_data = PackedInt32Array(131073, 2, 1, 65538, 2, 1, 131074, 2, 1, 196610, 2, 1, 131075, 2, 1, 65539, 2, 1, 196611, 2, 1, 131076, 2, 1, 65540, 2, 1, 196612, 2, 1, 196613, 2, 1)
 layer_1/name = "test"
 layer_1/enabled = true
 layer_1/modulate = Color(1, 1, 1, 1)
@@ -266,6 +278,9 @@ layer_1/y_sort_origin = 0
 layer_1/z_index = 0
 layer_1/tile_data = PackedInt32Array(196610, 2, 1, 131075, 2, 1, 196611, 2, 1, 262147, 2, 1, 196612, 2, 1, 131076, 2, 1, 262148, 2, 1, 196613, 2, 1, 327684, 2, 1, 262149, 2, 1, 327685, 2, 1, 262150, 2, 1, 196614, 2, 1, 327686, 2, 1, 262151, 2, 1)
 script = ExtResource("2")
+brush_shape = 1
+dock_group_selected = "ALL TILES2"
+dock_tile_selected = "3"
 
 [node name="PatternTileMap1" type="TileMap" parent="."]
 tile_set = SubResource("2")

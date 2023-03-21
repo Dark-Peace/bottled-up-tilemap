@@ -12,6 +12,7 @@ class TILEID:
 	var source:int
 	var coords:Vector2i
 	var v:Vector3i
+	var cv:Vector2i
 	
 	func _init(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1)):
 		source = _source
@@ -24,6 +25,8 @@ class TILEID:
 		v.z = source
 		v.x = coords.x
 		v.y = coords.y
+		cv.x = coords.x
+		cv.y = coords.y
 	
 	func _to_string():
 		return "TILEID< "+str(source)+" ; "+str(coords)+">"

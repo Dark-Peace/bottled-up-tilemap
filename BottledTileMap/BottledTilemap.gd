@@ -40,7 +40,6 @@ var NO_TILE_ID:BTM.TILEID = BTM.TILEID.new(NO_TILE)
 #var ALL_TILES_ID:BTM.TILEID = BTM.TILEID.new(ALL_TILES)
 var ERASE_TILE_ID:BTM.TILEID = BTM.TILEID.new(ERASE_TILE)
 
-
 # CIRCLES
 @export_group("Brushes")
 @export var brush_shape:BrushType = BrushType.CIRCLE
@@ -119,6 +118,10 @@ var curr_tilemap:TileMap : set = set_curr_tilemap
 @export_range(0,INF) var alt_create_range:int = 0
 @export var alt_create_colors:Gradient
 
+# store dock var
+@export var dock_group_selected:String = "ALL_TILES"
+@export var dock_tile_selected:String = "0"
+
 # INSTANCES
 var instance_dict = {}
 
@@ -168,6 +171,9 @@ func init():
 	cell_entered.connect(_on_cell_entered)
 	self.changed.connect(_on_tileset_changed)
 	if not tile_set.has_meta("ID_Map"): _on_tileset_changed()
+	if not tile_set.has_meta("groups_by_groups"):
+		tile_set.set_meta("groups_by_groups", {})
+		tile_set.set_meta("groups_by_ids", {})
 
 func _on_tileset_changed():
 	var tiles:Array[BTM.TILEID] = BTM.get_tiles_ids(tile_set)
@@ -175,6 +181,7 @@ func _on_tileset_changed():
 	_update_id_map()
 	ID_map[ALL_TILES] = ALL_TILES_V
 	ID_map[NO_TILE] = NO_TILE_V
+	
 
 func _update_id_map():
 	if not tile_set.has_meta("ID_Map"): tile_set.set_meta("ID_Map", {"__NEXT_ID__": 0})
@@ -736,11 +743,44 @@ func update_bitmask_area(pos:Vector2): #TODO
 	pass
 #	super.update_bitmask_area(pos)
 
-func is_tile_in_group(id:BTM.TILEID, group, tilemap=self):
-	return group in tilemap.tile_set.get_meta("groups_by_IDs", {}).get(id, [])
 
-func group_has_tile(group, id:BTM.TILEID, tilemap=self):
-	return id in tilemap.tile_set.get_meta("groups_by_groups", {}).get(group, [])
+
+func is_tile_in_group(id:Vector3i, group:String, tilemap=self):
+	return group in tile_set.get_meta("groups_by_ids", {}).get(id, [])
+
+func group_has_tile(group:String, id:Vector3i, tilemap=self):
+	return id in tile_set.get_meta("groups_by_groups", {}).get(group, [])
+
+func tile_has_any_group(id:Vector3i):
+	return id in tile_set.get_meta("groups_by_ids", {}).keys()
+
+func get_tiles_in_group(group:String):
+	return tile_set.get_meta("groups_by_groups", {})[group]
+
+func add_tile_to_group(id:Vector3i, group:String):
+	if not tile_set.get_meta("groups_by_groups", {}).has(group): tile_set.get_meta("groups_by_groups", {})[group] = []
+	tile_set.get_meta("groups_by_groups", {})[group].append(id)
+
+func add_group_to_tile(id:Vector3i, group:String):
+	if not tile_set.get_meta("groups_by_ids", {}).has(id): tile_set.get_meta("groups_by_ids", {})[id] = []
+	tile_set.get_meta("groups_by_ids", {})[id].append(group)
+
+func group_exists(group:String):
+	return tile_set.get_meta("groups_by_groups", {}).has(group)
+
+func remove_group_from_tile(id:Vector3i, group:String):
+#	print(id, tile_set.get_meta("groups_by_ids", {}))
+#	if not is_tile_in_group(id, group): return
+	tile_set.get_meta("groups_by_ids", {})[id].erase(group)
+	if tile_set.get_meta("groups_by_ids", {})[id].is_empty(): tile_set.get_meta("groups_by_ids", {}).erase(id)
+
+func remove_tile_from_group(id:Vector3i, group:String):
+#	if not group_has_tile(group, id): return
+	tile_set.get_meta("groups_by_groups", {})[group].erase(id)
+	if tile_set.get_meta("groups_by_groups", {})[group].is_empty(): tile_set.get_meta("groups_by_groups", {}).erase(group)
+
+
+
 
 func cells_to_brush(center:Vector2i):
 	current_brush_tiles.clear()
