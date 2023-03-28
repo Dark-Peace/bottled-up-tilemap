@@ -178,6 +178,8 @@ texture_region_size = Vector2i(18, 17)
 
 [sub_resource type="TileSet" id="1"]
 tile_size = Vector2i(32, 32)
+custom_data_layer_0/name = "test"
+custom_data_layer_0/type = 20
 sources/0 = SubResource("TileSetAtlasSource_g5768")
 sources/1 = SubResource("TileSetAtlasSource_sotwq")
 sources/2 = SubResource("TileSetAtlasSource_mjqk6")
@@ -186,28 +188,28 @@ metadata/_better_terrain = {
 "terrains": [],
 "version": "0.1"
 }
-metadata/TileList = Array[null]([Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 0),"cv":Vector2i(0, 0))
-, Object(RefCounted,"script":null,"source":0,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 0),"cv":Vector2i(1, 0))
-, Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 1),"cv":Vector2i(0, 0))
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 2),"cv":Vector2i(0, 0))
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"v":Vector3i(0, 1, 2),"cv":Vector2i(0, 1))
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 2),"cv":Vector2i(1, 0))
-, Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"v":Vector3i(1, 1, 2),"cv":Vector2i(1, 1))
-])
+metadata/TileList = [Object(RefCounted,"script":null)
+, Object(RefCounted,"script":null)
+, Object(RefCounted,"script":null)
+, Object(RefCounted,"script":null)
+, Object(RefCounted,"script":null)
+, Object(RefCounted,"script":null)
+, Object(RefCounted,"script":null)
+]
 metadata/TileListIndexes = {
-0: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 0),"cv":Vector2i(0, 0))
+0: Object(RefCounted,"script":null)
 ,
-1: Object(RefCounted,"script":null,"source":0,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 0),"cv":Vector2i(1, 0))
+1: Object(RefCounted,"script":null)
 ,
-2: Object(RefCounted,"script":null,"source":1,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 1),"cv":Vector2i(0, 0))
+2: Object(RefCounted,"script":null)
 ,
-3: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 0),"v":Vector3i(0, 0, 2),"cv":Vector2i(0, 0))
+3: Object(RefCounted,"script":null)
 ,
-4: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(0, 1),"v":Vector3i(0, 1, 2),"cv":Vector2i(0, 1))
+4: Object(RefCounted,"script":null)
 ,
-5: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 0),"v":Vector3i(1, 0, 2),"cv":Vector2i(1, 0))
+5: Object(RefCounted,"script":null)
 ,
-6: Object(RefCounted,"script":null,"source":2,"coords":Vector2i(1, 1),"v":Vector3i(1, 1, 2),"cv":Vector2i(1, 1))
+6: Object(RefCounted,"script":null)
 
 }
 metadata/ID_Map = {
@@ -280,7 +282,7 @@ layer_1/tile_data = PackedInt32Array(196610, 2, 1, 131075, 2, 1, 196611, 2, 1, 2
 script = ExtResource("2")
 brush_shape = 1
 dock_group_selected = "ALL TILES2"
-dock_tile_selected = "3"
+dock_tile_selected = "-1"
 
 [node name="PatternTileMap1" type="TileMap" parent="."]
 tile_set = SubResource("2")

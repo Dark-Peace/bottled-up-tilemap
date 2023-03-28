@@ -1,6 +1,7 @@
 @tool
 extends HBoxContainer
 
+enum TransfoActions {FLIP_H, FLIP_V, ROTATE_RIGHT, ROTATE_LEFT}
 const V:String = "v"
 const H:String = "h"
 const ROTATION:Dictionary = {
@@ -39,12 +40,15 @@ func flip(axis:String, value:bool):
 	transfo_icon.set("flip_"+axis, value)
 	set("bit_"+axis, value)
 	change_alt_tile()
+	BTM._transform_pattern(TransfoActions.get("FLIP_"+axis))
 
 func _on_rot_left_pressed():
 	_on_rotation(0)
+	BTM._transform_pattern(TransfoActions.ROTATE_LEFT)
 
 func _on_rot_right_pressed():
 	_on_rotation(1)
+	BTM._transform_pattern(TransfoActions.ROTATE_RIGHT)
 
 func _on_rotation(dir:int):
 	var alt:String = ROTATION[str(_get_alt_string().bin_to_int())][dir]

@@ -21,6 +21,8 @@ const PREVIEW_TILE_COLOR:Color = Color(1,1,1,.5)
 const PREVIEW_CELL_SELECTED:Color = Color(0.392157, 0.584314, 0.929412, .3)
 const MAX_BUCKET_RECURSION:int = 100
 var EMPTY_TILE_ARRAY:Array[BTM.TILEID] = [] : get = _EMPTY_TILE_ARRAY
+const NO_THEME = "-1"
+const DEFAULT_THEME = "CUSTOM"
 
 const LINE_WIDTH = 3
 const X_AXIS = 1
@@ -28,14 +30,15 @@ const Y_AXIS = 2
 const BOTH_AXIS = 3
 const EVERY_TILEMAP = -1
 const ALL_LAYERS = -1
+
 const ERASE_TILE = -1
 const NO_TILE = -2
 const ALL_TILES = -3
-
+const ANY_TILE = -4
+const WIPE_TILE = -5
 const NO_TILE_V = Vector3i(-2,-2,-2)
 const ALL_TILES_V = Vector3i(-3,-3,-3)
 const ERASE_TILE_V = Vector3i(-1,-1,-1)
-
 var NO_TILE_ID:BTM.TILEID = BTM.TILEID.new(NO_TILE)
 #var ALL_TILES_ID:BTM.TILEID = BTM.TILEID.new(ALL_TILES)
 var ERASE_TILE_ID:BTM.TILEID = BTM.TILEID.new(ERASE_TILE)
@@ -77,13 +80,13 @@ enum BRUSH {whole_pattern, one_tile}
 @export var center_pattern:CENTER = CENTER.origin
 @export var apply_pattern:BRUSH = BRUSH.one_tile
 @export var can_pattern_replace = true
-var pattern_id:int = -1
-var patterns = "" : set = set_patterns
+#var patterns = "" : set = set_patterns
 #@export_range(-1,INF) var pattern_id:int = -1
 #@export_multiline var patterns = "" : set = set_patterns
-var pattern_list:Array
-@export var turn_into_pattern:bool = false : set = set_turn_into_pattern
+#@export var turn_into_pattern:bool = false : set = set_turn_into_pattern
 @export var allow_autotile:bool = false
+var pattern_id:int = -1 : set = set_pattern_id
+var pattern_list:Array[Dictionary]
 
 
 # SYMMETRY
@@ -123,7 +126,7 @@ var curr_tilemap:TileMap : set = set_curr_tilemap
 @export var dock_tile_selected:String = "0"
 
 # INSTANCES
-var instance_dict = {}
+#var instance_dict = {}
 
 #-------------------------------------------------------------------------------------------
 
@@ -150,6 +153,7 @@ var bucket_explored:Array[Vector2i]
 var current_layer:int = 0
 var current_alt:int=0
 var ID_map:Dictionary
+var used_theme:String = NO_THEME
 
 #var data = {"instances": instance_dict, "cursors": multi_cursor_list, "tilemaps": tilemap_list, "patterns": patterns}
 #@onready var file = FileAccess.new()
@@ -165,7 +169,7 @@ var mode = tile_set.tile_shape
 func init():
 #	write_data()
 	randomize()
-	format_patterns()
+#	format_patterns()
 	read_used_tilemaps(use_these)
 	BTM.bottledtilemap = self
 	cell_entered.connect(_on_cell_entered)
@@ -278,10 +282,16 @@ func _draw() -> void:
 	# preview custom brush
 	if not current_brush_tiles.is_empty():
 		var cell_rect:Rect2; var tile:TileSetAtlasSource
+		var reg:Rect2; var transpose:bool = false
 		for t in current_brush_tiles.keys():
-			cell_rect = Rect2(Vector2i(local_to_map(get_local_mouse_position())+t)*cell_size,cell_size)
+			cell_rect = Rect2(Vector2i(local_to_map(get_local_mouse_position())+BTM.vector2(t))*cell_size,cell_size)
 			tile = tile_set.get_source(current_brush_tiles[t].source)
-			draw_texture_rect_region(tile.texture, cell_rect, tile.get_tile_texture_region(current_brush_tiles[t].coords), PREVIEW_TILE_COLOR)
+			reg = tile.get_tile_texture_region(current_brush_tiles[t].coords)
+			# handles alt tiles transfo
+			if current_alt in BTM.ALT_H: reg.size.x = -reg.size.x
+			if current_alt in BTM.ALT_V: reg.size.y = -reg.size.y
+			if current_alt in BTM.ALT_T: transpose = true
+			draw_texture_rect_region(tile.texture, cell_rect, reg, PREVIEW_TILE_COLOR, transpose)
 
 func _draw_symmetry_axis(display_vector:Vector2i):
 	var start_point = (axis_pos+display_vector)
@@ -307,10 +317,10 @@ func draw_bucket(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer,
 func draw_custom_brush(xy:Vector2i, l:int=current_layer, tile:BTM.TILEID=null):
 	if tile != null:
 		for t in current_brush_tiles.keys():
-			draw_tile(xy+t, tile, l)
+			draw_tile(xy+BTM.vector2(t), tile, l+t.z)
 	else:
 		for t in current_brush_tiles.keys():
-			draw_tile(xy+t, current_brush_tiles[t], l)
+			draw_tile(xy+BTM.vector2(t), current_brush_tiles[t], l+t.z)
 
 func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=current_alt):
 	# handle random tile in group
@@ -382,7 +392,7 @@ func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=curre
 			return
 	
 	if use_tile_random and ((call_type == CALLTYPE.Brush and (allow_random & RandomAccross.BrushShape)) or call_type == CALLTYPE.Single):
-		tile = pick_random_tile()
+		tile = pick_random_tile(true)
 	if use_alt_random and ((call_type == CALLTYPE.Brush and (allow_random & RandomAccross.BrushShape)) or call_type == CALLTYPE.Single):
 		alt = randi()%8
 	
@@ -390,14 +400,26 @@ func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=curre
 		var test = randf_range(0,1)
 		if scattering > 0 and test <= scattering and (tile.source != ERASE_TILE or scatter_affects_erase): return
 		for tm in used_tilemaps:
-			if use_tile_random and (allow_random & RandomAccross.TileMaps): tile = pick_random_tile()
+			if use_tile_random and (allow_random & RandomAccross.TileMaps): tile = pick_random_tile(true)
 			if use_alt_random and (allow_random & RandomAccross.TileMaps): alt = randi()%8
 			tm.set_cell(l,xy,tile.source,tile.coords,alt)
-			draw_symmetry(xy,tile,l,alt)
+#			draw_symmetry(xy,tile,l,alt) #TODO multi tilemap symmetry
 		send_draw_signals(xy, tile, l)
 		super.set_cell(l,xy,tile.source,tile.coords,alt)
 		draw_symmetry(xy,tile,l,alt)
 	if allow_autotile: update_bitmask_area(xy)
+
+func match_themes(tile:BTM.TILEID) -> BTM.TILEID:
+	if used_theme == NO_THEME: return tile
+	var swap_list = tile_set.get_meta("THEMES")[used_theme]
+	for s in swap_list:
+		if ID_map[int(s[0])] == tile.v:
+			# tile in theme
+			var new_tile:Vector3i = ID_map[int(s[1])]
+			return BTM.TILEID.new(new_tile.z, BTM.vector2(new_tile))
+			break
+	# tile not affected by theme
+	return tile
 
 func send_draw_signals(xy:Vector2i,tile:BTM.TILEID, l:int=current_layer):
 	var cell = get_cell(xy,l)
@@ -445,7 +467,7 @@ func select_all_cells(layer:int=current_layer, tile:BTM.TILEID=NO_TILE_ID, keep_
 
 func draw_symmetry(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt=current_alt):
 	if axis == 0: return
-	if use_tile_random and (allow_random & RandomAccross.Symmetry): tile = pick_random_tile()
+	if use_tile_random and (allow_random & RandomAccross.Symmetry): tile = pick_random_tile(true)
 	if use_alt_random and (allow_random & RandomAccross.Symmetry): alt = randi()%8
 	
 	var id=tile.source; var _a = tile.coords;
@@ -507,19 +529,19 @@ func get_origin(xy:Vector2i):
 	if center_pattern == CENTER.origin: origin = Vector2i.ZERO
 	elif center_pattern == CENTER.mouse: origin = xy
 
-func format_patterns(): #TODO
-	pattern_list = patterns.split("\n\n",false)
-	var p:Array; var t:Array;
-	for m in pattern_list:
-		p = m.split("\n",false)
-		pattern_list.push_front(p)
-		pattern_list.erase(m)
-		for l in p:
-			t = l.split(";",false)
-			p.push_front(t)
-			p.erase(l)
-		p.reverse()
-	pattern_list.reverse()
+#func format_patterns(): #TODO
+#	pattern_list = patterns.split("\n\n",false)
+#	var p:Array; var t:Array;
+#	for m in pattern_list:
+#		p = m.split("\n",false)
+#		pattern_list.push_front(p)
+#		pattern_list.erase(m)
+#		for l in p:
+#			t = l.split(";",false)
+#			p.push_front(t)
+#			p.erase(l)
+#		p.reverse()
+#	pattern_list.reverse()
 
 func get_tiles_with_brush(_center_in_tiles:Vector2i):
 	match brush_shape:
@@ -636,6 +658,7 @@ func spray(center:Vector2i):
 	for t in spray_density:
 		res.append(all[randi()%all.size()])
 	return res
+
 #----
 
 # this function was made by GammaGames
@@ -651,67 +674,53 @@ func spray(center:Vector2i):
 #	var random_pattern = pattern_list[id][0]
 #	return int(random_pattern[randi()%random_pattern.size()])
 
-enum REPLACE_PARAM {Auto, SelectionOnly, Global}
-func global_replacing(old, new, replace:int=REPLACE_PARAM.Auto, l=current_layer):
-	var to_replace = []; var tilev = ID_map[new]; var replacing_tile:BTM.TILEID = BTM.TILEID.new(tilev.z, Vector2i(tilev.x,tilev.y))
+enum REPLACE_PARAM {SelectionOnly=0, Global=1}
+func global_replacing(old, new, replace:int=REPLACE_PARAM.SelectionOnly, l=current_layer):
+	var to_replace = []; var tilev; var replacing_tile:BTM.TILEID
 	if old == ALL_TILES:
 		to_replace = get_used_cells(current_layer) # replace all tiles
-	else:
+	elif old is int:
+		tilev = ID_map[new];
+		replacing_tile = match_themes(BTM.TILEID.new(tilev.z, BTM.vector2(tilev)))
 		tilev = ID_map[old]
-		to_replace = get_used_cells_by_id(current_layer, tilev.z, Vector2i(tilev.x,tilev.y))
+		to_replace = get_used_cells_by_id(current_layer, tilev.z, BTM.vector2(tilev))
+	elif old is BTM.TILEID:
+		tilev = old.v
+		replacing_tile = match_themes(new)
+		to_replace = get_used_cells_by_id(current_layer, tilev.z, BTM.vector2(tilev))
 	
 	match replace:
-		REPLACE_PARAM.Auto:
-			for tile in to_replace:
-				if selected_cells.is_empty() or tile in selected_cells:
-					call_all_draw(tile, replacing_tile,l)
-					if allow_autotile: update_bitmask_area(tile)
+#		REPLACE_PARAM.Auto:
+#			for tile in to_replace:
+#				if selected_cells.is_empty() or tile in selected_cells:
+#					call_all_draw(tile, replacing_tile,l)
 		REPLACE_PARAM.SelectionOnly:
 			for tile in to_replace:
 				if tile in selected_cells:
 					call_all_draw(tile, replacing_tile,l)
-					if allow_autotile: update_bitmask_area(tile)
 		REPLACE_PARAM.Global:
 			for tile in to_replace:
 				call_all_draw(tile, replacing_tile,l)
-				if allow_autotile: update_bitmask_area(tile)
+#				if allow_autotile: update_bitmask_area(tile)
 	#			if r_y_as_random_pattern:
 	#				call_all_draw(tile, get_random_tile(replacing_tile),l)
 	#			else: call_all_draw(tile, replacing_tile,l)
 
 func set_global_replacing(value):
 	if not value: return
-	global_replacing(replace_tile, replace_by, REPLACE_PARAM.Auto)
+	global_replacing(replace_tile, replace_by)
 
-#func select_tiles():
-#	var rect = Rect2((selecting_init_pos)/cell_size, selecting_end_pos/cell_size)
-#	for x in rect.size.x:
-#		for y in rect.size.y:
-#			selected_tiles.append(Vector2i(x,y))
-
-func set_turn_into_pattern(value): #TODO
-	pass
-#	if r_select_limits == Rect2() or not value: return
-#	var line_res:String; var t_id:String
-#	for y in range(r_select_limits.position.y,r_select_limits.size.y):
-#		line_res += "/n"
-#		for x in range(r_select_limits.position.x,r_select_limits.size.x):
-#			t_id = String(get_cell(Vector2i(x,y), 0)) #TODO adapt to layer
-#			if t_id == "-1": t_id = " "
-#			line_res += t_id
-#			if x != r_select_limits.size.x-1: line_res += ";"
-#	patterns += "/n"+line_res
-#	notify_property_list_changed()
-
-#		print(line_res)
-#		line_res = ""
-
-#func set_send(value):
-#	if send_target == NodePath(): return
-#	for tile in self.get_used_cells():
-#		if r_select_limits == Rect2() or tile_in_rect(tile):
-#			get_node(send_target).set_cellv(tile, self.get_cellv(tile))
-#			if send_erase_after_send: set_cellv(tile, -1)
+func apply_theme_global(replace:int, layer:int=current_layer):
+	var tile:BTM.TILEID
+	if layer == ALL_LAYERS:
+		for l in get_layers_count():
+			for cell in get_used_cells(l):
+				tile = get_cell(cell,l)
+				global_replacing(tile, tile, replace, l)
+	else:
+		for cell in get_used_cells(layer):
+			tile = get_cell(cell,layer)
+			global_replacing(tile, tile, replace, layer)
 
 func scan_for_tilemaps(node):
 	if not node is Node:
@@ -782,40 +791,56 @@ func remove_tile_from_group(id:Vector3i, group:String):
 
 
 
-func cells_to_brush(center:Vector2i):
+func cells_to_brush(center:Vector2i, l:int=current_layer):
 	current_brush_tiles.clear()
-	for tile in selected_cells:
-		current_brush_tiles[tile-center] = get_cell(tile)
+	var cell:BTM.TILEID
+	if l == ALL_LAYERS:
+		for tile in selected_cells:
+			for layer in get_layers_count():
+				cell = get_cell(tile, layer)
+				if cell.source == ERASE_TILE: continue
+				current_brush_tiles[Vector3i((tile-center).x,(tile-center).y,layer-l)] = cell
+	else:
+		for tile in selected_cells:
+			cell = get_cell(tile, l)
+			if cell.source == ERASE_TILE: continue
+			current_brush_tiles[Vector3i((tile-center).x,(tile-center).y,0)] = cell
 
 func transform_brush(action:int):
 	if current_brush_tiles.is_empty(): return
+	
 	var modified:Dictionary
 	match action:
 		TransfoActions.FLIP_H:
 			for t in current_brush_tiles.keys():
-				modified[Vector2i(-t.x,t.y)] = current_brush_tiles[t]
+				modified[Vector3i(-t.x,t.y,t.z)] = current_brush_tiles[t]
 		TransfoActions.FLIP_V:
 			for t in current_brush_tiles.keys():
-				modified[Vector2i(t.x,-t.y)] = current_brush_tiles[t]
+				modified[Vector3i(t.x,-t.y,t.z)] = current_brush_tiles[t]
 		TransfoActions.ROTATE_LEFT:
 			for t in current_brush_tiles.keys():
-				modified[Vector2i(t.y,-t.x)] = current_brush_tiles[t]
+				modified[Vector3i(t.y,-t.x,t.z)] = current_brush_tiles[t]
 		TransfoActions.ROTATE_RIGHT:
 			for t in current_brush_tiles.keys():
-				modified[Vector2i(-t.y,t.x)] = current_brush_tiles[t]
+				modified[Vector3i(-t.y,t.x,t.z)] = current_brush_tiles[t]
 	current_brush_tiles = modified
 
-func pick_random_tile():
-	return tile_set.get_meta("TileListIndexes", {}).values()[randi()%(tile_set.get_meta("TileListIndexes", {}).size())]
-#	var array:Dictionary = tile_set.get_meta("TileListIndexes", {})
-#	for t in array.values():
-#
+func save_brush_as_pattern():
+	if current_brush_tiles.is_empty(): return
+	pattern_list.append(current_brush_tiles)
+
+#func get_brush_as_pattern
+
+func pick_random_tile(use_theme:bool=false):
+	if use_theme:
+		return match_themes(tile_set.get_meta("TileListIndexes",{}).values()[randi()%(tile_set.get_meta("TileListIndexes",{}).size())])
+	else: return tile_set.get_meta("TileListIndexes", {}).values()[randi()%(tile_set.get_meta("TileListIndexes", {}).size())]
 
 
 # SETGETS ########################################################
 
 func get_cell(xy:Vector2i, l:int=current_layer) -> BTM.TILEID:
-	return BTM.TILEID.new(get_cell_source_id(l, xy), get_cell_atlas_coords(l, xy))
+	return BTM.TILEID.new(get_cell_source_id(l, xy), get_cell_atlas_coords(l, xy), get_cell_alternative_tile(l, xy))
 #	return get_cell_source_id(0, xy)
 
 func set_selected_cells(value=null):
@@ -862,9 +887,10 @@ func get_neighbor_cells(xy:Vector2i):
 func set_no_draw_on(value):
 	no_draw_on = value
 	
-func set_patterns(value):
-	patterns = value
-	format_patterns()
+func set_pattern_id(value):
+	pattern_id = value
+	if value == -1: current_brush_tiles.clear()
+	else: current_brush_tiles = pattern_list[value]
 
 func set_limit_color(value):
 	limit_color = value
@@ -940,190 +966,6 @@ func create_alt_tiles(tile:BTM.TILEID):
 func _EMPTY_TILE_ARRAY() -> Array[BTM.TILEID]:
 	return EMPTY_TILE_ARRAY.duplicate()
 
-
-#func _get_property_list() -> Array:
-#	return [
-#		{
-#			name = "Tilemaps to draw",
-#			type = TYPE_NIL,
-#			hint_string = "t_",
-#			usage = PROPERTY_USAGE_GROUP
-#		},{
-#			name = "SCAN",
-#			type = TYPE_BOOL,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "use_these",
-#			type = TYPE_STRING,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "tilemap_list",
-#			type = TYPE_ARRAY,
-#			hint = PROPERTY_HINT_RESOURCE_TYPE,
-#			hint_string = TYPE_NODE_PATH,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "Pattern",
-#			type = TYPE_NIL,
-#			hint_string = "p_",
-#			usage = PROPERTY_USAGE_GROUP
-#		},{
-#			name = "center_pattern",
-#			type = TYPE_INT,
-#			hint = PROPERTY_HINT_ENUM,
-#			hint_string = CENTER,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "apply_pattern",
-#			type = TYPE_INT,
-#			hint = PROPERTY_HINT_ENUM,
-#			hint_string = BRUSH,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "can_pattern_replace",
-#			type = TYPE_BOOL,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "pattern_id",
-#			type = TYPE_INT,
-#			hint = PROPERTY_HINT_RANGE,
-#			hint_string = "-1, 9999",
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "patterns",
-#			type = TYPE_STRING,
-#			hint = PROPERTY_HINT_MULTILINE_TEXT,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "turn_into_pattern",
-#			type = TYPE_BOOL,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "allow_autotile",
-#			type = TYPE_BOOL,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "Special Brushes",
-#			type = TYPE_NIL,
-#			hint_string = "c_",
-#			usage = PROPERTY_USAGE_GROUP
-#		},{
-#			name = "brush_shape",
-#			type = TYPE_INT,
-#			hint = PROPERTY_HINT_ENUM,
-#			hint_string = BrushType,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "brush_size",
-#			type = TYPE_FLOAT,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "shape_filled",
-#			type = TYPE_BOOL,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "outline_width",
-#			type = TYPE_FLOAT,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "spray_density",
-#			type = TYPE_INT,
-#			hint = PROPERTY_HINT_RANGE,
-#			hint_string = "0, 999999",
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "Replacing",
-#			type = TYPE_NIL,
-#			hint_string = "r_",
-#			usage = PROPERTY_USAGE_GROUP
-#		},{
-#			name = "replace_tile",
-#			type = TYPE_INT,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "replace_by",
-#			type = TYPE_INT,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "r_y_as_random_pattern",
-#			type = TYPE_BOOL,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "REPLACE",
-#			type = TYPE_BOOL,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},
-##		{
-##			name = "Selection",
-##			type = TYPE_NIL,
-##			hint_string = "r_",
-##			usage = PROPERTY_USAGE_GROUP
-##		},{
-##			name = "r_select_limits",
-##			type = TYPE_RECT2,
-##			usage = PROPERTY_USAGE_DEFAULT
-##		},{
-##			name = "limit_color",
-##			type = TYPE_COLOR,
-##			usage = PROPERTY_USAGE_DEFAULT
-##		},
-#		{
-#			name = "Symmetry",
-#			type = TYPE_NIL,
-#			hint_string = "s_",
-#			usage = PROPERTY_USAGE_GROUP
-#		},{
-#			name = "axis_pos",
-#			type = TYPE_VECTOR2,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "axis",
-#			type = TYPE_INT,
-#			hint = PROPERTY_HINT_FLAGS,
-#			hint_string = "X, Y",
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "display_length",
-#			type = TYPE_INT,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "Multi Cursors",
-#			type = TYPE_NIL,
-#			hint_string = "c_",
-#			usage = PROPERTY_USAGE_GROUP
-#		},{
-#			name = "use_those",
-#			type = TYPE_STRING,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "multi_cursor_list",
-#			type = TYPE_ARRAY,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "Rules",
-#			type = TYPE_NIL,
-#			hint_string = "r_",
-#			usage = PROPERTY_USAGE_GROUP
-#		},{
-#			name = "only_draw_on",
-#			type = TYPE_INT,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "no_draw_on",
-#			type = TYPE_INT,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "scattering",
-#			type = TYPE_FLOAT,
-#			hint = PROPERTY_HINT_RANGE,
-#			hint_string = "0, 1",
-#			usage = PROPERTY_USAGE_DEFAULT
-#		},{
-#			name = "scatter_affects_erase",
-#			type = TYPE_BOOL,
-#			usage = PROPERTY_USAGE_DEFAULT
-#		}
-#		]
 
 
 

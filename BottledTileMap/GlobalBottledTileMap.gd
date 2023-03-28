@@ -12,11 +12,12 @@ class TILEID:
 	var source:int
 	var coords:Vector2i
 	var v:Vector3i
-	var cv:Vector2i
+	var alt:int
 	
-	func _init(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1)):
+	func _init(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1), _alt:int=0):
 		source = _source
 		coords = _coords
+		alt = _alt
 		
 		if _source < 0:
 			coords.x = _source
@@ -25,8 +26,6 @@ class TILEID:
 		v.z = source
 		v.x = coords.x
 		v.y = coords.y
-		cv.x = coords.x
-		cv.y = coords.y
 	
 	func _to_string():
 		return "TILEID< "+str(source)+" ; "+str(coords)+">"
@@ -44,11 +43,10 @@ class TILEID:
 		return res
 
 
-
 # canvas input handling ###############################
 
 const INVALID:int = -1
-var bottledtilemap:BottledTileMap
+var tilemap:BottledTileMap
 var palette
 
 var current_cell:Vector2i
@@ -62,7 +60,7 @@ var is_shift:bool = false
 var is_ctrl:bool = false
 var is_alt:bool = false
 var is_bucket:bool = false
-var is_custom_brush:bool = false
+#var is_custom_brush:bool = false
 
 func bottled_set_cell(event:InputEvent):
 	# click
@@ -77,11 +75,11 @@ func handle_click_pressed(button):
 	# cancel line / rect by clicking with the other mouse button
 	if button == (button_held%2)+1:
 		cancel_action = true
-		bottledtilemap.curr_cells_shift.clear()
-		bottledtilemap.get_selected_cells()
-		bottledtilemap.queue_redraw()
+		tilemap.curr_cells_shift.clear()
+		tilemap.get_selected_cells()
+		tilemap.queue_redraw()
 	# setup
-	current_cell = bottledtilemap.local_to_map(bottledtilemap.get_local_mouse_position())
+	current_cell = tilemap.local_to_map(tilemap.get_local_mouse_position())
 	button_held = button
 	# remember starter cell if SHIFT
 	is_shift = Input.is_key_pressed(KEY_SHIFT)
@@ -95,11 +93,12 @@ func handle_click_release():
 	# draw
 	if is_alt: select_cell(button_held)
 	elif is_bucket:
-		bottledtilemap.draw_bucket(current_cell, match_button_action(button_held),l,current_alt)
+		tilemap.draw_bucket(current_cell, match_button_action(button_held),l,current_alt)
 	elif not cancel_action:
 		if is_shift:
-			if is_ctrl: bottledtilemap.draw_tile_rect(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
-			else: bottledtilemap.draw_tile_line(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
+			if is_ctrl: tilemap.draw_tile_rect(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
+			else: tilemap.draw_tile_line(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
+		elif is_ctrl: palette.pick_tile(tilemap.get_cell(current_cell))
 		else: draw_tile(button_held)
 	
 	# end of action : reset
@@ -110,73 +109,75 @@ func handle_click_release():
 	cancel_action = false
 
 func handle_motion():
-	if is_bucket or current_cell == bottledtilemap.local_to_map(bottledtilemap.get_local_mouse_position()):
+	if is_bucket or current_cell == tilemap.local_to_map(tilemap.get_local_mouse_position()):
 		return
 	
 	# update current cell
-	bottledtilemap.cell_exited.emit(current_cell)
-	current_cell = bottledtilemap.local_to_map(bottledtilemap.get_local_mouse_position())
+	tilemap.cell_exited.emit(current_cell)
+	current_cell = tilemap.local_to_map(tilemap.get_local_mouse_position())
 	if is_shift:
-		if is_ctrl: bottledtilemap.curr_cells_shift = bottledtilemap.get_rect_from(starter_cell, current_cell)
-		else: bottledtilemap.curr_cells_shift = get_bresenham_line(starter_cell, current_cell)
+		if is_ctrl: tilemap.curr_cells_shift = tilemap.get_rect_from(starter_cell, current_cell)
+		else: tilemap.curr_cells_shift = get_bresenham_line(starter_cell, current_cell)
 	else:
 		# button held and no line / rect
 		draw_tile(button_held)
 		# preview single cell
 		var new_cells_shift:Array[Vector2i] = [current_cell]
-		bottledtilemap.curr_cells_shift = new_cells_shift
+		tilemap.curr_cells_shift = new_cells_shift
 	if is_alt:
 		select_cell(button_held)
 	# draw preview
-	bottledtilemap.cell_entered.emit(current_cell)
-	bottledtilemap.queue_redraw()
+	tilemap.cell_entered.emit(current_cell)
+	tilemap.queue_redraw()
 
 
 func match_button_action(button:int):
 	match button:
-		MOUSE_BUTTON_LEFT: return bottledtilemap.current_tile
-		MOUSE_BUTTON_RIGHT: return bottledtilemap.right_click_tile
+		MOUSE_BUTTON_LEFT: return tilemap.current_tile
+		MOUSE_BUTTON_RIGHT: return tilemap.right_click_tile
 		INVALID: return
 
 func draw_tile(button:int):
 	if is_alt or match_button_action(button) == null: return
-	if is_custom_brush:
-		bottledtilemap.draw_custom_brush(current_cell, bottledtilemap.current_layer, [null,null,bottledtilemap.ERASE_TILE_ID][button])
-	else: bottledtilemap.draw_tile(current_cell, match_button_action(button),l,current_alt)
+	if !tilemap.current_brush_tiles.is_empty():
+		tilemap.draw_custom_brush(current_cell, l, [null,null,tilemap.ERASE_TILE_ID][button])
+	else: tilemap.draw_tile(current_cell, match_button_action(button),l,current_alt)
 
 func select_cell(button:int):
 	if is_bucket:
-		var selected = bottledtilemap.get_bucket_tiles(current_cell)
-		bottledtilemap.bucket_explored.clear()
+		var selected = tilemap.get_bucket_tiles(current_cell)
+		tilemap.bucket_explored.clear()
 		match button:
 			MOUSE_BUTTON_LEFT:
-				if not current_cell in bottledtilemap.selected_cells: bottledtilemap.selected_cells.append(current_cell)
-				for cell in selected: if not cell in bottledtilemap.selected_cells: bottledtilemap.selected_cells.append(cell)
+				if not current_cell in tilemap.selected_cells: tilemap.selected_cells.append(current_cell)
+				for cell in selected: if not cell in tilemap.selected_cells: tilemap.selected_cells.append(cell)
 			MOUSE_BUTTON_RIGHT:
-				if current_cell in bottledtilemap.selected_cells: bottledtilemap.selected_cells.erase(current_cell)
-				for cell in selected: if cell in bottledtilemap.selected_cells: bottledtilemap.selected_cells.erase(cell)
+				if current_cell in tilemap.selected_cells: tilemap.selected_cells.erase(current_cell)
+				for cell in selected: if cell in tilemap.selected_cells: tilemap.selected_cells.erase(cell)
 	else:
 		match button:
-			MOUSE_BUTTON_LEFT: bottledtilemap.set_selected_cells()
-			MOUSE_BUTTON_RIGHT: bottledtilemap.unset_selected_cells()
+			MOUSE_BUTTON_LEFT: tilemap.set_selected_cells()
+			MOUSE_BUTTON_RIGHT: tilemap.unset_selected_cells()
 			INVALID: return
 
 func _on_key_pressed(event:InputEventKey):
-	if Input.is_key_pressed(KEY_CTRL) and event.keycode in [KEY_C, KEY_X] and not bottledtilemap.selected_cells.is_empty():
+	if Input.is_key_pressed(KEY_CTRL) and event.keycode in [KEY_C, KEY_X] and not tilemap.selected_cells.is_empty():
 		# copy selection
-		bottledtilemap.cells_to_brush(current_cell)
+		tilemap.cells_to_brush(current_cell, [l, tilemap.ALL_LAYERS][palette.get_node("%Selections").get_selected_id() > 1])
 		if event.keycode == KEY_X:
 			# cut selection
-			for tile in bottledtilemap.selected_cells:
-				bottledtilemap.draw_tile(tile, bottledtilemap.ERASE_TILE_ID,l,current_alt)
-		bottledtilemap.selected_cells.clear()
-		bottledtilemap.queue_redraw()
-		is_custom_brush = !bottledtilemap.current_brush_tiles.is_empty()
+			for tile in tilemap.selected_cells:
+				tilemap.draw_tile(tile, tilemap.ERASE_TILE_ID,l,current_alt)
+		tilemap.selected_cells.clear()
+		tilemap.queue_redraw()
+#		is_custom_brush = !tilemap.current_brush_tiles.is_empty()
 
 func _set_current_alt(value):
 	current_alt = value
-	bottledtilemap.current_alt = value
+	tilemap.current_alt = value
 
+func _transform_pattern(action:int):
+	tilemap.transform_brush(action)
 
 ################################
 
@@ -245,3 +246,6 @@ func get_bresenham_line(start:Vector2i, end:Vector2i):
 		points.reverse()
 	
 	return points
+
+func vector2(vect:Vector3i, start:int=0):
+	return Vector2i(vect.x,vect.y)
