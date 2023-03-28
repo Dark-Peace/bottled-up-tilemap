@@ -30,7 +30,7 @@ var _clear_transform_button_position: int
 
 var _tilemap_inspector_plugin
 
-var dock_button
+#var dock_button
 var toolbar:Control
 var grid_button:Button
 var layer_select:OptionButton
@@ -38,6 +38,10 @@ var layer_vis:Button
 var toolbar_theme:StyleBoxFlat
 var my_toolbar_theme:StyleBoxFlat = preload("res://addons/BottledTileMap/ToolBarTheme.tres")
 var editor_script_screen:Button
+var pool_nodes:Array
+var tileset_editor
+var button_tileset
+var button_tilemap
 
 
 func _enter_tree():
@@ -55,6 +59,7 @@ func _on_selection_changed():
 	if _tile_palette.lock_dock and _tilemap_editor.visible: lock_palette_dock()
 	if selected_nodes.size() == 1:
 		var selected_node = selected_nodes[0]
+		update_button_visibility(selected_node is TileMap)
 		if selected_node is BottledTileMap:
 			_tile_palette.tilemap = selected_node #BottledTileMap
 			_tile_palette.tileset = selected_node.tile_set
@@ -76,6 +81,11 @@ func _on_selection_changed():
 #	set_min_size(_tilemap_editor)
 #	_tilemap_editor.get_child(2).get_child(1).get_child(0).get_child(0).get_child(1).get_child(0).get_child(0).get_child(1).custom_minimum_size.y = 0
 #	_tilemap_editor.get_child(2).get_child(1).get_child(0).get_child(0).get_child(1).get_child(0).get_child(1).get_child(1).custom_minimum_size.y = 0
+
+func update_button_visibility(tm:bool, timer:float=0.16):
+	await get_tree().create_timer(timer).timeout
+	button_tilemap.visible = tm
+#	button_tileset.visible = false
 
 func close_bottom_panel(timer:float=0.16):
 	await get_tree().create_timer(timer).timeout
@@ -108,7 +118,7 @@ func _add_tile_palette():
 	_tile_palette = load("res://addons/BottledTileMap/TilePalette/TilePalette.tscn").instantiate()
 	_tile_palette.active = true
 	_selection = get_editor_interface().get_selection()
-	_selection.connect("selection_changed",Callable(self,"_on_selection_changed"))
+	_selection.connect("selection_changed", Callable(self,"_on_selection_changed"))
 #	dock_button = add_control_to_bottom_panel(_tile_palette, "Tile Palette")
 	_tilemap_editor = _find_in_editor()
 	_tile_list = _tilemap_editor.get_child(2).get_child(1).get_child(0).get_child(0) as ItemList
@@ -122,6 +132,10 @@ func _add_tile_palette():
 	grid_button = _tilemap_editor.get_child(0).get_child(7)
 	
 	_tile_palette.set_tools(_tilemap_editor, get_editor_interface().get_editor_scale())
+	_tile_palette.get_node("%DisplayOld").pressed.connect(switch_editor)
+	var switch_button = _tile_palette.get_node("%DisplayOld").duplicate()
+	switch_button.pressed.connect(switch_editor)
+	_tilemap_editor.get_child(0).add_child(switch_button)
 
 	_on_selection_changed()
 	_tilemap_editor.get_child(0).remove_child(layer_select)
@@ -135,14 +149,65 @@ func _add_tile_palette():
 #	print(toolbar_theme)
 	
 	_tilemap_editor.add_child(_tile_palette)
+	
+#	var old_editor = Control.new()
+#	old_editor.name = "Old TileMap"
+#	_tilemap_editor.get_parent().add_child(old_editor)
 	var tilemap_child
 	for i in 5:
 		tilemap_child = _tilemap_editor.get_child(0)
 		_tilemap_editor.remove_child(tilemap_child)
-#		_tile_palette.get_node("Old").add_child(tilemap_child)
-#		tilemap_child.visible = false
+		pool_nodes.append(tilemap_child)
+#		_tilemap_editor.add_child(tilemap_child)
+#	add_control_to_bottom_panel(old_editor, "Old TileMap")
 	
 	editor_script_screen = _find_in_editor("EditorTitleBar").get_child(2).get_child(2)
+	
+	tileset_editor = _find_in_editor("TileSetEditor")
+#	var tileset_panel = tileset_editor.get_child(1)
+#	tileset_editor.remove_child(tileset_panel)
+#	tileset_panel.visible = false
+#	tileset_panel.name = "TileSet"
+#	_tile_palette.add_child(tileset_panel)
+
+#	tileset_editor.get_parent().remove_child(tileset_editor)
+#	tileset_editor.name = "TileSet"
+#	tileset_editor.visible = false
+#	_tile_palette.add_child(tileset_editor)
+	
+	tileset_editor.get_child(0).hide()
+	_tile_palette._tab_tileset.connect(open_tileset_editor)
+	
+	for b in _tilemap_editor.get_parent().get_child(-1).get_child(0).get_children():
+		if b.text == "TileSet":
+			button_tileset = b
+			button_tileset.visibility_changed.connect(hide_tileset_button)
+		elif b.text == "TileMap": button_tilemap = b
+	
+	var event_button = Button.new()
+	event_button.text = "Events"
+	event_button.icon = _tile_palette.get_theme_icon("SignalsAndGroups", "EditorIcons")
+	event_button.flat = true
+#	event_button.pressed.connect() #TODO
+	var atlas_tools = tileset_editor.get_child(1).get_child(1).get_child(1).get_child(0).get_child(0)
+	atlas_tools.add_child(event_button)
+	atlas_tools.get_child(0).text = "Source"
+	atlas_tools.get_child(1).text = "Tile"
+
+func hide_tileset_button():
+	button_tileset.hide()
+
+func open_tileset_editor():
+	make_bottom_panel_item_visible(tileset_editor)
+
+func switch_editor():
+	var temp:Array
+	for node in _tilemap_editor.get_children():
+		temp.append(node)
+		_tilemap_editor.remove_child(node)
+	for node in pool_nodes:
+		_tilemap_editor.add_child(node)
+	pool_nodes = temp
 
 func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root) -> Node:
 	if node.get_class() == target:

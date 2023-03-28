@@ -1,5 +1,7 @@
 @tool
-extends Control
+extends VBoxContainer
+
+signal _tab_tileset
 
 var active:bool = false
 
@@ -101,7 +103,7 @@ func pattern_list(): #TODO
 	preview.pattern_list = tilemap.pattern_list
 	preview.queue_redraw()
 	
-	var new_pattern:CheckBox; var value:Array;
+	var new_pattern:CheckBox; var value:Dictionary;
 	for c in tilemap.pattern_list.size():
 		value = tilemap.pattern_list[c]
 		if value.is_empty(): continue
@@ -209,16 +211,12 @@ func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root, _
 	return null
 
 func _ready():
+	_on_tab_changed(TAB.TileMap)
 	BTM.palette = self
-#	fav_groups.append(GROUPNAME_NOGROUP)
-#	fav_groups.append(GROUPNAME_ALLTILES)
-	
+	$PatternEditor.dock = self
 	$"%GroupTree".get_child(0).connect("pressed", select_group.bind(GROUPNAME_ALLTILES))
 	$"%GroupTree".get_child(1).connect("pressed", select_group.bind(GROUPNAME_NOGROUP))
-#	get_parent().resized.connect(resize)
-#
-#func resize():
-#	size = get_parent().size
+	
 
 func _process(delta):
 	if not active: return
@@ -237,7 +235,7 @@ func _fill():
 	_group_tree.show()
 
 func _on_togglefav_pressed(fav=null):
-	if fav == null: fav = $"%Togglefav".button_pressed
+	if fav == null: fav = $"%ToggleFav".button_pressed
 	for g in _group_tree.get_children():
 		if fav: g.visible = (g.text in fav_groups or g.text in [GROUPNAME_NOGROUP, GROUPNAME_ALLTILES])
 		else: g.visible = not g.text in hidden_groups
@@ -287,7 +285,7 @@ func create_group(g:String, group_content:Array, tree=_group_tree):
 	_group_tree.add_child(group)
 	return false
 
-func select_group(group:String,fav_tree:bool=false):
+func select_group(group:String):
 	curr_group = group
 	for n in _group_tree.get_children():
 		if n.name == group:
@@ -299,7 +297,6 @@ func select_group(group:String,fav_tree:bool=false):
 
 func _fill_list_view(tilelist:Array=tileset.get_meta("TileList")):
 	$"%ListView".clear()
-	var id_map = tileset.get_meta("ID_Map", {})
 	var tilelist_indexes:Dictionary; var index:int=0; var list_index:int; var unique_id:String
 	for id in tilelist:
 		if not id is Vector3i: tilelist_indexes[index] = id
@@ -440,26 +437,32 @@ func init_tilecell():
 	$"%TileCells".populate_infos(populate_array)
 
 
-enum REPLACE_PARAM {Auto, SelectionOnly, Global}
-enum SELECT {SelectionOnly, WholeLayer, Global, SelectionAllLayers}
+#enum REPLACE_PARAM {Auto, SelectionOnly, Global}
+#enum SELECT {SelectionOnly, WholeLayer, Global, SelectionAllLayers}
 func _on_EraseAll_pressed() -> void:
-	match $"%Selections".get_selected_id():
-		SELECT.SelectionOnly: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly)
-		SELECT.WholeLayer: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global)
-		SELECT.Global: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global, tilemap.ALL_LAYERS)
-		SELECT.SelectionAllLayers: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly, tilemap.ALL_LAYERS)
-	$"%Selections".select(SELECT.SelectionOnly)
+	tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, $"%SelectionType".get_selected_id(), \
+							[tilemap.current_layer,tilemap.ALL_LAYERS][$"%SelectionLayer".get_selected_id()])
+	
+#	match $"%Selections".get_selected_id():
+#		SELECT.SelectionOnly: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly)
+#		SELECT.WholeLayer: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global)
+#		SELECT.Global: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global, tilemap.ALL_LAYERS)
+#		SELECT.SelectionAllLayers: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly, tilemap.ALL_LAYERS)
+	$"%SelectionType".select(0)
+	$"%Selectionlayer".select(0)
 
 func _on_select_all_pressed():
 	var tile:BTM.TILEID = [tilemap.NO_TILE_ID,tilemap.current_tile][int($"%SelectTile".button_pressed)]
+	if $"%SelectionType".get_selected_id() == 0: return
+	tilemap.select_all_cells([tilemap.current_layer,tilemap.ALL_LAYERS][$"%SelectionLayer".get_selected_id()], tile, bool($"%SelectionType".get_selected_id()))
 	
-	match $"%Selections".get_selected_id():
-		SELECT.SelectionOnly: return
-		SELECT.WholeLayer: tilemap.select_all_cells(tilemap.current_layer, tile)
-		SELECT.Global: tilemap.select_all_cells(tilemap.ALL_LAYERS, tile)
-		SELECT.SelectionAllLayers: tilemap.select_all_cells(tilemap.ALL_LAYERS, tile, true)
-	$"%Selections".select(SELECT.SelectionOnly)
-	
+#	match $"%Selections".get_selected_id():
+#		SELECT.SelectionOnly: return
+#		SELECT.WholeLayer: tilemap.select_all_cells(tilemap.current_layer, tile)
+#		SELECT.Global: tilemap.select_all_cells(tilemap.ALL_LAYERS, tile)
+#		SELECT.SelectionAllLayers: tilemap.select_all_cells(tilemap.ALL_LAYERS, tile, true)
+	$"%SelectionType".select(0)
+	$"%Selectionlayer".select(0)
 
 func _on_TilePalette_resized() -> void:
 	$"%TileCells".get_node("ScrollContainer").custom_minimum_size.y = max(175, size.y-100)
@@ -469,23 +472,36 @@ func get_tilecell():
 
 func _on_Search_text_changed(new_text: String) -> void:
 	for g in _group_tree.get_children():
-#		print(g.text)
 		if g.text in hidden_groups:
-			print(new_text[0])
 			g.visible = (new_text[0] == GROUPCHAR_HIDDEN and new_text.is_subsequence_ofn(GROUPCHAR_HIDDEN+g.text))
 		else: g.visible = new_text.is_subsequence_ofn(g.text)
 
+enum TAB {TileMap, TileSet, Terrains, Patterns}
 func _on_tab_changed(tab):
-	$TileMap.visible = (tab == 0)
-	$BetterTerrain.visible = (tab == 1)
-	$PatternEditor.visible = (tab == 2)
+	if tab == TAB.TileSet:
+		_tab_tileset.emit()
+		tab = TAB.TileMap
+	$TileMap.visible = (tab == TAB.TileMap)
+	$BetterTerrain.visible = (tab == TAB.Terrains)
+	$PatternEditor.visible = (tab == TAB.Patterns)
+#	$TileSet.visible = (tab == TAB.TileSet)
 	$"%Tabs_TM".current_tab = tab
-	$BetterTerrain.get_node("%Tabs_BT").current_tab = tab
-	$PatternEditor.get_node("%Tabs_P").current_tab = tab
+#	$BetterTerrain.get_node("%Tabs_BT").current_tab = tab
+#	$PatternEditor.get_node("%Tabs_P").current_tab = tab
 	
-	for t in [$"%Tabs_TM",$BetterTerrain.get_node("%Tabs_BT"),$PatternEditor.get_node("%Tabs_P")]:
-		for c in t.get_children():
-			c.hide()
+#	for t in [$"%Tabs_TM",$BetterTerrain.get_node("%Tabs_BT"), $PatternEditor.get_node("%Tabs_P")]:
+	for c in $"%Tabs_TM".get_children():
+		c.hide()
+	
+	for node in $BottledTools.get_children():
+		if node in [$"%ToggleFav",$"%Search Group",$"%MoveTileLeft",$"%MoveTileRight",$"%Clean",$"%ClearInvalid",$"%EraseAll"]:
+			node.visible = $TileMap.visible
+		elif node in [$"%PaintType",$"%PaintTerrain",$"%BitmaskCopy",$"%BitmaskPaste", $"%AutoAlt",$"%CreateAlt",
+						$"%SelectAlt",$"%DeleteAlt"]: node.visible = $BetterTerrain.visible
+#		elif node in [$"%SelectionType",$"%SelectionLayer",$"%SelectAll",$"%SelectTile"]: node.visible = 
+		elif node.name == "RigthTools":
+			for subtool in node.get_children(): if node in [$"%Cursors",$"%All"]: node.visible = $TileMap.visible
+		elif node in [$"%SwitchEditors"]: node.visible = $PatternEditor.visible
 
 func _on_tile_size_value_changed(value):
 	$"%ListView".fixed_icon_size = Vector2(value,value)
@@ -501,12 +517,10 @@ func _on_list_view_empty_clicked(at_position, mouse_button_index):
 	selected_right = -1
 	tilemap.right_click_tile = tilemap.ERASE_TILE_ID
 
-
 func _on_list_view_item_clicked(index, at_position, mouse_button_index):
 	if mouse_button_index != MOUSE_BUTTON_RIGHT: return
 	selected_right = index
 	tilemap.right_click_tile = tileset.get_meta("TileListIndexes", {}).get(index, tilemap.ERASE_TILE_ID)
-
 
 func _on_lock_dock_pressed():
 	lock_dock = $"%LockDock".button_pressed
@@ -523,3 +537,22 @@ func _on_subtile_item_selected(index):
 	match $"%SubTab".current_tab:
 		0: pass
 		1: BTM.current_alt = index
+
+func pick_tile(tile:BTM.TILEID):
+	if $"%Tabs_TM".current_tab == 2:
+		pick_tile_id(tile)
+		return
+	var list = tileset.get_meta("TileListIndexes", {})
+	for t in list.keys():
+		if tile.isEqual(list[t]):
+			_on_ListView_item_selected(t)
+			return
+	select_group(GROUPNAME_ALLTILES)
+	tileset.get_meta("TileListIndexes", {})
+	for t in list.keys():
+		if tile.isEqual(list[t]):
+			_on_ListView_item_selected(t)
+			return
+
+func pick_tile_id(tile:BTM.TILEID):
+	DisplayServer.clipboard_set(tilemap._get_id_in_map(tile.v))
