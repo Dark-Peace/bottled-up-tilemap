@@ -9,10 +9,16 @@ class_name BottledTileMap
 # https://docs.google.com/document/d/1y2aPsn72dOxQ-wBNGqLlQvrw9-SV_z12a1MradBglF4/edit?usp=sharing"
 ###
 
-signal cell_entered(_cell:Vector2i)
+## Editor signals
+signal cell_entered(_cell:Vector2i) # mouse enters cell in editor
 signal cell_exited(_cell:Vector2i)
-signal tile_drawn(_tile:BTM.TILEID, _cell:Vector2i)
-signal tile_erased(_previous_tile:BTM.TILEID, _cell:Vector2i)
+## Tile Event trigger signals
+signal tile_drawn(_tile:BTM.TILEID, _cell:Vector2i) # drawn in editor
+signal tile_erased(_previous_tile:BTM.TILEID, _cell:Vector2i) # erased in editor
+signal tile_created(_tile:BTM.TILEID, _cell:Vector2i) # created by code at game runtime
+signal tile_destroyed(_previous_tile:BTM.TILEID, _cell:Vector2i) # erased by code at game runtime
+signal trigger_tile_event(_cell:Vector2i, event_index:String) # send a signal to trigger a specific tile event on a specific cell
+signal trigger_global_event(event_index:String) # send a signal to trigger a specific tile event on the whole map
 
 enum BrushType {CIRCLE, SQUARE, SQUARE_ROTATED, LINE_H, LINE_V}
 enum TransfoActions {FLIP_H, FLIP_V, ROTATE_RIGHT, ROTATE_LEFT}
@@ -46,11 +52,11 @@ var ERASE_TILE_ID:BTM.TILEID = BTM.TILEID.new(ERASE_TILE)
 # CIRCLES
 @export_group("Brushes")
 @export var brush_shape:BrushType = BrushType.CIRCLE
-@export_range(1,INF,0.001, "hide_slider", "suffix:tile(s)") var brush_size:float = 1
+@export_range(1,999999,0.001, "hide_slider", "suffix:tile(s)") var brush_size:float = 1
 @export var shape_filled = true
-@export_range(1,INF,0.001, "hide_slider", "suffix:tile(s)") var outline_width:float = 1
+@export_range(1,999999,0.001, "hide_slider", "suffix:tile(s)") var outline_width:float = 1
 # SPRAY
-@export_range(0,INF,1,"suffix:tile(s)") var spray_density:int = 0
+@export_range(0,999999,1,"suffix:tile(s)") var spray_density:int = 0
 @export_range(0,1) var scattering:float = 0
 @export_subgroup("Randomness")
 enum RandomAccross {Cursors=8, TileMaps=4, BrushShape=2, Symmetry=1}
@@ -61,14 +67,14 @@ var use_alt_random:bool = false
 
 @export_subgroup("Drawing Rules")
 @export var scatter_affects_erase = false
-@export_range(-3,INF,1,"suffix:TileID") var no_draw_on:int = NO_TILE
-@export_range(-3,INF,1,"suffix:TileID") var only_draw_on:int = NO_TILE
+@export_range(-3,999999,1,"suffix:TileID") var no_draw_on:int = NO_TILE
+@export_range(-3,999999,1,"suffix:TileID") var only_draw_on:int = NO_TILE
 
 
 # REPLACING
 @export_group("Replacing")
-@export_range(-3,INF,1,"suffix:TileID") var replace_tile:int
-@export_range(-3,INF,1,"suffix:TileID") var replace_by:int
+@export_range(-3,999999,1,"suffix:TileID") var replace_tile:int
+@export_range(-3,999999,1,"suffix:TileID") var replace_by:int
 var r_y_as_random_pattern = false #TODO
 @export var REPLACE:bool = false : set = set_global_replacing
 
@@ -167,17 +173,18 @@ var mode = tile_set.tile_shape
 
 
 func init():
-#	write_data()
 	randomize()
-#	format_patterns()
 	read_used_tilemaps(use_these)
-	BTM.bottledtilemap = self
+	BTM.tilemap = self
 	cell_entered.connect(_on_cell_entered)
 	self.changed.connect(_on_tileset_changed)
-	if not tile_set.has_meta("ID_Map"): _on_tileset_changed()
+	
+	if not tile_set.has_meta("ID_Map"):
+		_on_tileset_changed()
 	if not tile_set.has_meta("groups_by_groups"):
 		tile_set.set_meta("groups_by_groups", {})
 		tile_set.set_meta("groups_by_ids", {})
+		tile_set.set_meta("TILE_EVENTS", {})
 
 func _on_tileset_changed():
 	var tiles:Array[BTM.TILEID] = BTM.get_tiles_ids(tile_set)
@@ -185,7 +192,6 @@ func _on_tileset_changed():
 	_update_id_map()
 	ID_map[ALL_TILES] = ALL_TILES_V
 	ID_map[NO_TILE] = NO_TILE_V
-	
 
 func _update_id_map():
 	if not tile_set.has_meta("ID_Map"): tile_set.set_meta("ID_Map", {"__NEXT_ID__": 0})
@@ -778,7 +784,6 @@ func group_exists(group:String):
 	return tile_set.get_meta("groups_by_groups", {}).has(group)
 
 func remove_group_from_tile(id:Vector3i, group:String):
-#	print(id, tile_set.get_meta("groups_by_ids", {}))
 #	if not is_tile_in_group(id, group): return
 	tile_set.get_meta("groups_by_ids", {})[id].erase(group)
 	if tile_set.get_meta("groups_by_ids", {})[id].is_empty(): tile_set.get_meta("groups_by_ids", {}).erase(id)
