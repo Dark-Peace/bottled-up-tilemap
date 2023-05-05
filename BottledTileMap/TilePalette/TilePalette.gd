@@ -22,7 +22,6 @@ const GROUPCHAR_CUSTOM:String = "#"
 const GROUPNAME_ALLTILES:String = "ALL TILES"
 const GROUPNAME_NOGROUP:String = "NO GROUP"
 
-#var _tile_list: ItemList
 @onready var _panel:ScrollContainer = $"%Panel"
 @onready var _group_tree = $"%GroupTree"
 @onready var _preview:ScrollContainer = $"%Preview"
@@ -30,8 +29,9 @@ const GROUPNAME_NOGROUP:String = "NO GROUP"
 
 var _tile_map_editor: Control
 var tilemap:BottledTileMap
+var tileset:TileSet : set = _set_tileset
+var tile_event_panel:ScrollContainer
 var curr_preview_type:String
-#var can_see_tile_hint = false
 
 var tile_list:Dictionary
 var group_list:Dictionary
@@ -46,7 +46,7 @@ var selected_left:int = -1
 var selected_right:int = -1
 var lock_dock:bool = false
 
-var tileset:TileSet : set = _set_tileset
+
 func _set_tileset(value):
 	if value == null or tileset == value:
 		return
@@ -217,6 +217,9 @@ func _ready():
 	$"%GroupTree".get_child(0).connect("pressed", select_group.bind(GROUPNAME_ALLTILES))
 	$"%GroupTree".get_child(1).connect("pressed", select_group.bind(GROUPNAME_NOGROUP))
 	
+	$BetterTerrain.paint_type = $"%PaintType"
+	$BetterTerrain.paint_terrain = $"%PaintTerrain"
+	$BetterTerrain.clean_button = $"%Clean"
 
 func _process(delta):
 	if not active: return
@@ -260,7 +263,6 @@ func _fill_group_view():
 
 func update_no_group():
 	$"%NO GROUP".set_meta("TILES", get_tiles_without_groups())
-	print($"%NO GROUP".get_meta("TILES"))
 
 func get_tiles_without_groups():
 	var no_group:Array[BTM.TILEID]
@@ -484,12 +486,8 @@ func _on_tab_changed(tab):
 	$TileMap.visible = (tab == TAB.TileMap)
 	$BetterTerrain.visible = (tab == TAB.Terrains)
 	$PatternEditor.visible = (tab == TAB.Patterns)
-#	$TileSet.visible = (tab == TAB.TileSet)
 	$"%Tabs_TM".current_tab = tab
-#	$BetterTerrain.get_node("%Tabs_BT").current_tab = tab
-#	$PatternEditor.get_node("%Tabs_P").current_tab = tab
 	
-#	for t in [$"%Tabs_TM",$BetterTerrain.get_node("%Tabs_BT"), $PatternEditor.get_node("%Tabs_P")]:
 	for c in $"%Tabs_TM".get_children():
 		c.hide()
 	
@@ -498,7 +496,6 @@ func _on_tab_changed(tab):
 			node.visible = $TileMap.visible
 		elif node in [$"%PaintType",$"%PaintTerrain",$"%BitmaskCopy",$"%BitmaskPaste", $"%AutoAlt",$"%CreateAlt",
 						$"%SelectAlt",$"%DeleteAlt"]: node.visible = $BetterTerrain.visible
-#		elif node in [$"%SelectionType",$"%SelectionLayer",$"%SelectAll",$"%SelectTile"]: node.visible = 
 		elif node.name == "RigthTools":
 			for subtool in node.get_children(): if node in [$"%Cursors",$"%All"]: node.visible = $TileMap.visible
 		elif node in [$"%SwitchEditors"]: node.visible = $PatternEditor.visible
@@ -556,3 +553,18 @@ func pick_tile(tile:BTM.TILEID):
 
 func pick_tile_id(tile:BTM.TILEID):
 	DisplayServer.clipboard_set(tilemap._get_id_in_map(tile.v))
+
+
+func show_tile_event(id:String):
+	var tile = _parse_tileset_id(id)
+	
+	if tileset.get_meta("TILE_EVENTS").has(tile):
+		tile_event_panel.event_list = tileset.get_meta("TILE_EVENTS")[tile]
+	else: tile_event_panel.event_list = tile_event_panel.get_empty_list()
+	tile_event_panel.current_tile = tile
+
+func _parse_tileset_id(id:String):
+	var units = id.split(",")
+	var coordx = units[1].split("(")
+	var coordy = units[1].split(")")
+	return Vector3i(int(coordx[1]),int(coordy[0]),int(units[0]))

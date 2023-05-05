@@ -1,7 +1,7 @@
 extends ScrollContainer
 
 
-var dock:Control : set = set_dock
+@export var dock:Control : set = set_dock
 var tilemap:BottledTileMap
 var tileset:TileSet
 var theme_list:Dictionary
