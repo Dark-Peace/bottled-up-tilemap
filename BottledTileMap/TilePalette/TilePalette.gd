@@ -224,6 +224,7 @@ func _ready():
 func _process(delta):
 	if not active: return
 	size = get_parent().size
+	if $BetterTerrain.visible: size.y = max(size.y, 357)
 
 
 
@@ -267,6 +268,7 @@ func update_no_group():
 func get_tiles_without_groups():
 	var no_group:Array[BTM.TILEID]
 	for id in tileset.get_meta("TileList"):
+		print(tileset.get_meta("TileList"))
 		if tilemap.tile_has_any_group(id.v): continue
 		no_group.append(id)
 	return no_group
