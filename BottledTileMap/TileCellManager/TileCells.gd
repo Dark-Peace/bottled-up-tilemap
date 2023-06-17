@@ -14,7 +14,7 @@ extends Control
 var active := false
 var tileset:TileSet
 var tilemap:TileMap
-var id:BTM.TILEID
+var id:Dictionary
 
 # ******************************************************************************
 
