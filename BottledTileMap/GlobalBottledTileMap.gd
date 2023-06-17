@@ -8,39 +8,66 @@ const ALT_T:Array = [4,5,6,7]
 
 ###############################
 
-class TILEID:
-	var source:int
-	var coords:Vector2i
-	var v:Vector3i
-	var alt:int
+# TILE ID
+
+#########
+
+const TILEID:Dictionary = {"source": -1, "coords": Vector2i(-1,-1), "alt": 0, "v": Vector3i(-1,-1,-1)}
+
+func new_TILEID(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1), _alt:int=0):
+	var new_tile = TILEID.duplicate()
+	new_tile["source"] = _source
+	new_tile["coords"] = _coords
+	new_tile["alt"] = _alt
+	new_tile["v"].z = _source
+	new_tile["v"].x = _coords.x
+	new_tile["v"].y = _coords.y
+	return new_tile
 	
-	func _init(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1), _alt:int=0):
-		source = _source
-		coords = _coords
-		alt = _alt
-		
-		if _source < 0:
-			coords.x = _source
-			coords.y = _source
-			
-		v.z = source
-		v.x = coords.x
-		v.y = coords.y
-	
-	func _to_string():
-		return "TILEID< "+str(source)+" ; "+str(coords)+">"
-	
-	func isEqual(other:TILEID):
-		return source == other.source and coords == other.coords
-	
-	func isEqualV3(vect:Vector3i):
-		return v == vect
-		
-	func isIn(list:Array[TILEID]):
-		var res:bool = false
-		for t in list:
-			if isEqual(t): res = true
-		return res
+
+func print(tile:Dictionary):
+	return "TILEID< "+str(tile["source"])+" ; "+str(tile["coords"])+">"
+
+func isEqual(tile:Dictionary, other:Dictionary):
+	return tile["source"] == other["source"] and tile["coords"] == other["coords"]
+
+func isEqualV3(tile:Dictionary, other:Vector3i):
+	return tile["v"] == other
+
+
+#class TILEID:
+#	var source:int
+#	var coords:Vector2i
+#	var v:Vector3i
+#	var alt:int
+#
+#	func _init(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1), _alt:int=0):
+#		source = _source
+#		coords = _coords
+#		alt = _alt
+#
+#		if _source < 0:
+#			coords.x = _source
+#			coords.y = _source
+#
+#		v.z = source
+#		v.x = coords.x
+#		v.y = coords.y
+#
+#	func _to_string():
+#		return "TILEID< "+str(source)+" ; "+str(coords)+">"
+#
+#	func isEqual(other:TILEID):
+#		return source == other.source and coords == other.coords
+#
+#	func isEqualV3(vect:Vector3i):
+#		return v == vect
+#
+#	func isIn(list:Array[TILEID]):
+#		var res:bool = false
+#		for t in list:
+#			if isEqual(t): res = true
+#		return res
 
 
 # canvas input handling ###############################
@@ -181,17 +208,17 @@ func _transform_pattern(action:int):
 
 ################################
 
-func get_tiles_ids(tileset:TileSet) -> Array[TILEID]:
-	var res:Array[TILEID]; var curr_source; var tile:TILEID
+func get_tiles_ids(tileset:TileSet) -> Array[Dictionary]:
+	var res:Array[Dictionary]; var curr_source; var tile:Dictionary
 	for source_id in tileset.get_next_source_id():
 		if not tileset.has_source(source_id): continue
 		curr_source = tileset.get_source(source_id)
 		for index in curr_source.get_tiles_count():
-			tile = TILEID.new(source_id, curr_source.get_tile_id(index))
+			tile = new_TILEID(source_id, curr_source.get_tile_id(index))
 			res.append(tile)
 	return res
 
-func duplicate_tile(tile:TILEID):
+func duplicate_tile(tile:Dictionary):
 	pass
 
 func duplicate_tiledata(tile:TileData):
@@ -249,3 +276,15 @@ func get_bresenham_line(start:Vector2i, end:Vector2i):
 
 func vector2(vect:Vector3i, start:int=0):
 	return Vector2i(vect.x,vect.y)
+
+
+
+#### Tile Event Functions --------------------------------------------
+
+# Built in #
+
+func spawn(instance:StringName):
+	pass
+
+func add_tile(cell:Vector2i, tile:Dictionary, layer:int=tilemap.current_layer, alt:int=current_alt):
+	tilemap.draw_tile(cell, tile, layer, alt)

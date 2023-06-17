@@ -13,10 +13,10 @@ class_name BottledTileMap
 signal cell_entered(_cell:Vector2i) # mouse enters cell in editor
 signal cell_exited(_cell:Vector2i)
 ## Tile Event trigger signals
-signal tile_drawn(_tile:BTM.TILEID, _cell:Vector2i) # drawn in editor
-signal tile_erased(_previous_tile:BTM.TILEID, _cell:Vector2i) # erased in editor
-signal tile_created(_tile:BTM.TILEID, _cell:Vector2i) # created by code at game runtime
-signal tile_destroyed(_previous_tile:BTM.TILEID, _cell:Vector2i) # erased by code at game runtime
+signal tile_drawn(_tile:Dictionary, _cell:Vector2i) # drawn in editor
+signal tile_erased(_previous_tile:Dictionary, _cell:Vector2i) # erased in editor
+signal tile_created(_tile:Dictionary, _cell:Vector2i) # created by code at game runtime
+signal tile_destroyed(_previous_tile:Dictionary, _cell:Vector2i) # erased by code at game runtime
 signal trigger_tile_event(_cell:Vector2i, event_index:String) # send a signal to trigger a specific tile event on a specific cell
 signal trigger_global_event(event_index:String) # send a signal to trigger a specific tile event on the whole map
 
@@ -26,7 +26,7 @@ enum TransfoActions {FLIP_H, FLIP_V, ROTATE_RIGHT, ROTATE_LEFT}
 const PREVIEW_TILE_COLOR:Color = Color(1,1,1,.5)
 const PREVIEW_CELL_SELECTED:Color = Color(0.392157, 0.584314, 0.929412, .3)
 const MAX_BUCKET_RECURSION:int = 100
-var EMPTY_TILE_ARRAY:Array[BTM.TILEID] = [] : get = _EMPTY_TILE_ARRAY
+var EMPTY_TILE_ARRAY:Array[Dictionary] = [] : get = _EMPTY_TILE_ARRAY
 const NO_THEME = "-1"
 const DEFAULT_THEME = "CUSTOM"
 
@@ -45,9 +45,9 @@ const WIPE_TILE = -5
 const NO_TILE_V = Vector3i(-2,-2,-2)
 const ALL_TILES_V = Vector3i(-3,-3,-3)
 const ERASE_TILE_V = Vector3i(-1,-1,-1)
-var NO_TILE_ID:BTM.TILEID = BTM.TILEID.new(NO_TILE)
+var NO_TILE_ID:Dictionary = BTM.new_TILEID(NO_TILE)
 #var ALL_TILES_ID:BTM.TILEID = BTM.TILEID.new(ALL_TILES)
-var ERASE_TILE_ID:BTM.TILEID = BTM.TILEID.new(ERASE_TILE)
+var ERASE_TILE_ID:Dictionary = BTM.new_TILEID(ERASE_TILE)
 
 # CIRCLES
 @export_group("Brushes")
@@ -148,8 +148,8 @@ var tm_hints:Array = []
 
 var curr_tile_reg:Rect2
 var curr_tile_texture:Texture2D
-var current_tile:BTM.TILEID : set = set_current_tile
-var right_click_tile:BTM.TILEID = ERASE_TILE_ID
+var current_tile:Dictionary : set = set_current_tile
+var right_click_tile:Dictionary = ERASE_TILE_ID
 var current_brush_tiles:Dictionary
 var current_cells:Array[Vector2i]
 var curr_cells_shift:Array[Vector2i]
@@ -187,7 +187,7 @@ func init():
 		tile_set.set_meta("TILE_EVENTS", {})
 
 func _on_tileset_changed():
-	var tiles:Array[BTM.TILEID] = BTM.get_tiles_ids(tile_set)
+	var tiles:Array[Dictionary] = BTM.get_tiles_ids(tile_set)
 	tile_set.set_meta("TileList", tiles)
 	_update_id_map()
 	ID_map[ALL_TILES] = ALL_TILES_V
@@ -305,30 +305,30 @@ func _draw_symmetry_axis(display_vector:Vector2i):
 	draw_line(start_point,end_point,limit_color,LINE_WIDTH)
 
 
-func draw_tile_line(start:Vector2i, end:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=current_alt):
+func draw_tile_line(start:Vector2i, end:Vector2i, tile:Dictionary=current_tile, l:int=current_layer, alt:int=current_alt):
 	for cell in BTM.get_bresenham_line(start, end):
 		draw_tile(cell, tile, l, alt)
 
-func draw_tile_rect(start:Vector2i, end:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=current_alt):
+func draw_tile_rect(start:Vector2i, end:Vector2i, tile:Dictionary=current_tile, l:int=current_layer, alt:int=current_alt):
 	for cell in get_rect_from(start, end):
 		draw_tile(cell, tile, l, alt)
 
-func draw_bucket(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=current_alt, replaced:BTM.TILEID=get_cell(xy, l)):
+func draw_bucket(xy:Vector2i, tile:Dictionary=current_tile, l:int=current_layer, alt:int=current_alt, replaced:Dictionary=get_cell(xy, l)):
 	draw_tile(xy, tile, l, alt)
 	var selected = get_bucket_tiles(xy, l, replaced)
 	for cell in selected:
 		draw_tile(cell, tile, l, alt)
 	bucket_explored.clear()
 
-func draw_custom_brush(xy:Vector2i, l:int=current_layer, tile:BTM.TILEID=null):
-	if tile != null:
+func draw_custom_brush(xy:Vector2i, l:int=current_layer, tile:Dictionary={}):
+	if tile != {}:
 		for t in current_brush_tiles.keys():
 			draw_tile(xy+BTM.vector2(t), tile, l+t.z)
 	else:
 		for t in current_brush_tiles.keys():
 			draw_tile(xy+BTM.vector2(t), current_brush_tiles[t], l+t.z)
 
-func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, alt:int=current_alt):
+func draw_tile(xy:Vector2i, tile:Dictionary=current_tile, l:int=current_layer, alt:int=current_alt):
 	# handle random tile in group
 	
 	# multi-cursor handler
@@ -392,8 +392,8 @@ func draw_tile(xy:Vector2i, tile:BTM.TILEID=current_tile, l:int=current_layer, a
 #		else: call_all_draw(xy,tile,l,get_random_subtile(id, tile.coords))
 
 enum CALLTYPE {Single, Brush}
-func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=current_alt, call_type=0):
-	if get_cell(xy,l).isEqualV3(ID_map[no_draw_on]) or (only_draw_on != NO_TILE and not get_cell(xy,l).isEqualV3(ID_map[only_draw_on])) \
+func call_all_draw(xy:Vector2i,tile:Dictionary,l:int=current_layer,alt:int=current_alt, call_type=0):
+	if BTM.isEqualV3(get_cell(xy,l), ID_map[no_draw_on]) or (only_draw_on != NO_TILE and not BTM.isEqualV3(get_cell(xy,l), ID_map[only_draw_on])) \
 		or tile.source < -1:
 			return
 	
@@ -402,7 +402,7 @@ func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=curre
 	if use_alt_random and ((call_type == CALLTYPE.Brush and (allow_random & RandomAccross.BrushShape)) or call_type == CALLTYPE.Single):
 		alt = randi()%8
 	
-	if not tile.isEqual(get_cell(xy, l)):
+	if not BTM.isEqual(tile, get_cell(xy, l)):
 		var test = randf_range(0,1)
 		if scattering > 0 and test <= scattering and (tile.source != ERASE_TILE or scatter_affects_erase): return
 		for tm in used_tilemaps:
@@ -415,22 +415,22 @@ func call_all_draw(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt:int=curre
 		draw_symmetry(xy,tile,l,alt)
 	if allow_autotile: update_bitmask_area(xy)
 
-func match_themes(tile:BTM.TILEID) -> BTM.TILEID:
+func match_themes(tile:Dictionary) -> Dictionary:
 	if used_theme == NO_THEME: return tile
 	var swap_list = tile_set.get_meta("THEMES")[used_theme]
 	for s in swap_list:
 		if ID_map[int(s[0])] == tile.v:
 			# tile in theme
 			var new_tile:Vector3i = ID_map[int(s[1])]
-			return BTM.TILEID.new(new_tile.z, BTM.vector2(new_tile))
+			return BTM.new_TILEID(new_tile.z, BTM.vector2(new_tile))
 			break
 	# tile not affected by theme
 	return tile
 
-func send_draw_signals(xy:Vector2i,tile:BTM.TILEID, l:int=current_layer):
+func send_draw_signals(xy:Vector2i,tile:Dictionary, l:int=current_layer):
 	var cell = get_cell(xy,l)
 	if cell.isEqual(tile): return
-	if tile.isEqual(ERASE_TILE_ID): tile_erased.emit(cell, xy)
+	if BTM.isEqual(tile, ERASE_TILE_ID): tile_erased.emit(cell, xy)
 	else: tile_drawn.emit(tile, xy)
 
 func _on_cell_entered(cell:Vector2i):
@@ -452,9 +452,9 @@ func get_selected_cells():
 	
 	return current_cells
 	
-func select_all_cells(layer:int=current_layer, tile:BTM.TILEID=NO_TILE_ID, keep_selection:bool=false):
+func select_all_cells(layer:int=current_layer, tile:Dictionary=NO_TILE_ID, keep_selection:bool=false):
 	var res:Array[Vector2i]
-	if tile.isEqual(NO_TILE_ID) and not keep_selection:
+	if BTM.isEqual(tile, NO_TILE_ID) and not keep_selection:
 		if layer == ALL_LAYERS:
 			for l in get_layers_count():
 				res.append_array(get_used_cells(l))
@@ -463,15 +463,15 @@ func select_all_cells(layer:int=current_layer, tile:BTM.TILEID=NO_TILE_ID, keep_
 		if layer == ALL_LAYERS:
 			for l in get_layers_count():
 				for t in get_used_cells(l):
-					if not get_cell(t,l).isEqual(tile) and (not keep_selection or t in current_cells): continue
+					if not BTM.isEqual(get_cell(t,l), tile) and (not keep_selection or t in current_cells): continue
 					res.append(t)
 		else:
 			for t in get_used_cells(layer):
-				if not get_cell(t,layer).isEqual(tile) and (not keep_selection or t in current_cells): continue
+				if not BTM.isEqual(get_cell(t,layer), tile) and (not keep_selection or t in current_cells): continue
 				res.append(t)
 	return res
 
-func draw_symmetry(xy:Vector2i,tile:BTM.TILEID,l:int=current_layer,alt=current_alt):
+func draw_symmetry(xy:Vector2i,tile:Dictionary,l:int=current_layer,alt=current_alt):
 	if axis == 0: return
 	if use_tile_random and (allow_random & RandomAccross.Symmetry): tile = pick_random_tile(true)
 	if use_alt_random and (allow_random & RandomAccross.Symmetry): alt = randi()%8
@@ -575,13 +575,13 @@ func get_rect_from(start:Vector2i, end:Vector2i):
 				res.append(Vector2i(x,y))
 	return res
 
-func get_bucket_tiles(xy:Vector2i, l:int=current_layer, replaced:BTM.TILEID=get_cell(xy, l), rec_index=0):
+func get_bucket_tiles(xy:Vector2i, l:int=current_layer, replaced:Dictionary=get_cell(xy, l), rec_index=0):
 	var res:Array[Vector2i]
 	if rec_index > MAX_BUCKET_RECURSION or xy in bucket_explored: return res
 	bucket_explored.append(xy)
 	
 	for cell in get_neighbor_cells(xy):
-		if cell not in bucket_explored and get_cell(cell, l).isEqual(replaced):
+		if cell not in bucket_explored and BTM.isEqual(get_cell(cell, l), replaced):
 			res.append(cell)
 			res.append_array(get_bucket_tiles(cell, l, replaced, rec_index+1))
 	return res
@@ -682,15 +682,15 @@ func spray(center:Vector2i):
 
 enum REPLACE_PARAM {SelectionOnly=0, Global=1}
 func global_replacing(old, new, replace:int=REPLACE_PARAM.SelectionOnly, l=current_layer):
-	var to_replace = []; var tilev; var replacing_tile:BTM.TILEID
+	var to_replace = []; var tilev; var replacing_tile:Dictionary
 	if old == ALL_TILES:
 		to_replace = get_used_cells(current_layer) # replace all tiles
 	elif old is int:
 		tilev = ID_map[new];
-		replacing_tile = match_themes(BTM.TILEID.new(tilev.z, BTM.vector2(tilev)))
+		replacing_tile = match_themes(BTM.new_TILEID(tilev.z, BTM.vector2(tilev)))
 		tilev = ID_map[old]
 		to_replace = get_used_cells_by_id(current_layer, tilev.z, BTM.vector2(tilev))
-	elif old is BTM.TILEID:
+	elif old is Dictionary:
 		tilev = old.v
 		replacing_tile = match_themes(new)
 		to_replace = get_used_cells_by_id(current_layer, tilev.z, BTM.vector2(tilev))
@@ -717,7 +717,7 @@ func set_global_replacing(value):
 	global_replacing(replace_tile, replace_by)
 
 func apply_theme_global(replace:int, layer:int=current_layer):
-	var tile:BTM.TILEID
+	var tile:Dictionary
 	if layer == ALL_LAYERS:
 		for l in get_layers_count():
 			for cell in get_used_cells(l):
@@ -798,7 +798,7 @@ func remove_tile_from_group(id:Vector3i, group:String):
 
 func cells_to_brush(center:Vector2i, l:int=current_layer):
 	current_brush_tiles.clear()
-	var cell:BTM.TILEID
+	var cell:Dictionary
 	if l == ALL_LAYERS:
 		for tile in selected_cells:
 			for layer in get_layers_count():
@@ -844,8 +844,8 @@ func pick_random_tile(use_theme:bool=false):
 
 # SETGETS ########################################################
 
-func get_cell(xy:Vector2i, l:int=current_layer) -> BTM.TILEID:
-	return BTM.TILEID.new(get_cell_source_id(l, xy), get_cell_atlas_coords(l, xy), get_cell_alternative_tile(l, xy))
+func get_cell(xy:Vector2i, l:int=current_layer) -> Dictionary:
+	return BTM.new_TILEID(get_cell_source_id(l, xy), get_cell_atlas_coords(l, xy), get_cell_alternative_tile(l, xy))
 #	return get_cell_source_id(0, xy)
 
 func set_selected_cells(value=null):
@@ -860,7 +860,7 @@ func unset_selected_cells(value=null):
 	for cell in value:
 		if cell in selected_cells: selected_cells.erase(cell)
 
-func set_current_tile(value:BTM.TILEID):
+func set_current_tile(value:Dictionary):
 	current_tile = value
 	curr_tile_texture = tile_set.get_source(value.source).texture
 	curr_tile_reg = tile_set.get_source(value.source).get_tile_texture_region(value.coords)
@@ -932,7 +932,7 @@ func set_axis_pos(value):
 func import_tilesets():
 	scan_for_tilemaps(get_tree().edited_scene_root)
 	
-	var t:TileSet; var imported_tiles:Array[BTM.TILEID];
+	var t:TileSet; var imported_tiles:Array[Dictionary];
 	var new_source:TileSetAtlasSource; var imp_source:TileSetAtlasSource;
 	var new_alt:TileData; var imp_alt:TileData;
 	for tm in used_tilemaps:
@@ -958,7 +958,7 @@ func duplicate_alt_tile(imported:TileData, res:TileData):
 #	for prop in ["collision_polygon_one_way_margin","collision_polygon_points","","","","","","",""]: #TODO
 #		res.call("set_"+prop, imported.call("get_"+prop))
 
-func create_alt_tiles(tile:BTM.TILEID):
+func create_alt_tiles(tile:Dictionary):
 	var source:TileSetAtlasSource = tile_set.get_source(tile.source)
 	for i in 7:
 		i += 1
@@ -968,7 +968,7 @@ func create_alt_tiles(tile:BTM.TILEID):
 		if i > 3: source.get_tile_data(tile.coords, i).transpose = true
 
 
-func _EMPTY_TILE_ARRAY() -> Array[BTM.TILEID]:
+func _EMPTY_TILE_ARRAY() -> Array[Dictionary]:
 	return EMPTY_TILE_ARRAY.duplicate()
 
 
