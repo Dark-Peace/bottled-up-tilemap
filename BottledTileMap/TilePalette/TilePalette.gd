@@ -253,7 +253,7 @@ func _fill_group_view():
 	group_list[GROUPNAME_ALLTILES] = $"%ALL TILES"
 	group_list[GROUPNAME_NOGROUP] = $"%NO GROUP"
 	
-	var tilelist:Array[BTM.TILEID]
+	var tilelist:Array[Dictionary]
 	for g in groups.keys():
 		tilelist = tilemap.EMPTY_TILE_ARRAY as Array
 		create_group(g, groups.get(g, tilelist))
@@ -266,7 +266,7 @@ func update_no_group():
 	$"%NO GROUP".set_meta("TILES", get_tiles_without_groups())
 
 func get_tiles_without_groups():
-	var no_group:Array[BTM.TILEID]
+	var no_group:Array[Dictionary]
 	for id in tileset.get_meta("TileList"):
 		print(tileset.get_meta("TileList"))
 		if tilemap.tile_has_any_group(id.v): continue
@@ -305,7 +305,7 @@ func _fill_list_view(tilelist:Array=tileset.get_meta("TileList")):
 	for id in tilelist:
 		if not id is Vector3i: tilelist_indexes[index] = id
 		else:
-			id = BTM.TILEID.new(id.z, Vector2i(id.x,id.y))
+			id = BTM.new_TILEID(id.z, Vector2i(id.x,id.y))
 			tilelist_indexes[index] = id
 		index += 1
 		$"%ListView".add_item("", tileset.get_source(id.source).texture)
@@ -327,7 +327,7 @@ func _fill_subtile_view():
 	pass
 
 func _fill_alttile_view():
-	var current_tile:BTM.TILEID = tilemap.current_tile
+	var current_tile:Dictionary = tilemap.current_tile
 	var region:Rect2; var alt:TileData;
 	for a in 8:
 		alt = tileset.get_source(current_tile.source).get_tile_data(current_tile.coords, a)
@@ -393,7 +393,7 @@ func _on_fav_group_pressed():
 
 func _on_dupli_group_pressed():
 	var new_name:String = curr_group+"2"
-	var new_content:Array[BTM.TILEID]
+	var new_content:Array[Dictionary]
 	
 	while tilemap.group_exists(new_name): new_name += "2"
 	
@@ -425,7 +425,7 @@ func _on_tileset_changed(new_tileset: TileSet):
 
 func _on_ListView_item_selected(index: int) -> void:
 	if index != selected_right:
-		tilemap.current_tile = tileset.get_meta("TileListIndexes", {}).get(index, BTM.TILEID.new())
+		tilemap.current_tile = tileset.get_meta("TileListIndexes", {}).get(index, BTM.new_TILEID())
 		selected_left = index
 		tilemap.dock_tile_selected = $"%ListView".get_item_tooltip(index)
 	for item in $"%ListView".get_selected_items():
@@ -456,7 +456,7 @@ func _on_EraseAll_pressed() -> void:
 	$"%Selectionlayer".select(0)
 
 func _on_select_all_pressed():
-	var tile:BTM.TILEID = [tilemap.NO_TILE_ID,tilemap.current_tile][int($"%SelectTile".button_pressed)]
+	var tile:Dictionary = [tilemap.NO_TILE_ID,tilemap.current_tile][int($"%SelectTile".button_pressed)]
 	if $"%SelectionType".get_selected_id() == 0: return
 	tilemap.select_all_cells([tilemap.current_layer,tilemap.ALL_LAYERS][$"%SelectionLayer".get_selected_id()], tile, bool($"%SelectionType".get_selected_id()))
 	
@@ -537,23 +537,23 @@ func _on_subtile_item_selected(index):
 		0: pass
 		1: BTM.current_alt = index
 
-func pick_tile(tile:BTM.TILEID):
+func pick_tile(tile:Dictionary):
 	if $"%Tabs_TM".current_tab == 2:
 		pick_tile_id(tile)
 		return
 	var list = tileset.get_meta("TileListIndexes", {})
 	for t in list.keys():
-		if tile.isEqual(list[t]):
+		if BTM.isEqual(tile, list[t]):
 			_on_ListView_item_selected(t)
 			return
 	select_group(GROUPNAME_ALLTILES)
 	tileset.get_meta("TileListIndexes", {})
 	for t in list.keys():
-		if tile.isEqual(list[t]):
+		if BTM.isEqual(tile, list[t]):
 			_on_ListView_item_selected(t)
 			return
 
-func pick_tile_id(tile:BTM.TILEID):
+func pick_tile_id(tile:Dictionary):
 	DisplayServer.clipboard_set(tilemap._get_id_in_map(tile.v))
 
 

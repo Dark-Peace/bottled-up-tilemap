@@ -31,6 +31,7 @@ func set_dock(value):
 	theme_list = tileset.get_meta("THEMES")
 
 func _on_switch_editors_pressed():
+	print("ok")
 	$VBoxContainer.move_child($VBoxContainer.get_child(1),2)
 
 func fill_pattern_list():
@@ -83,7 +84,7 @@ func _get_pattern_rect_size(curr_pattern:Dictionary, max_size:int=SIZE_X):
 
 func draw_pattern(curr_pattern:Dictionary, x:float, y:float, max_size:int=SIZE_X, node:Control=$"%Preview"):
 	var _size = _get_pattern_rect_size(curr_pattern)
-	var id:BTM.TILEID; var texture:Texture2D; var reg:Rect2; var transpose:bool;
+	var id:Dictionary; var texture:Texture2D; var reg:Rect2; var transpose:bool;
 	
 	for v in curr_pattern.keys():
 		id = curr_pattern[v]

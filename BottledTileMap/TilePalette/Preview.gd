@@ -30,7 +30,7 @@ func draw_pattern(curr_pattern:Dictionary, x:float, y:float):
 		s = [s, pattern_size.y, pattern_size.x].max()
 	var _size = SIZE_X/s
 	
-	var id:BTM.TILEID; var texture:Texture2D; var reg:Rect2; var transpose:bool;
+	var id:Dictionary; var texture:Texture2D; var reg:Rect2; var transpose:bool;
 	for v in curr_pattern.keys():
 		id = curr_pattern[v]
 		texture = tileset.get_source(id.source).texture
