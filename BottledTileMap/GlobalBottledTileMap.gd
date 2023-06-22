@@ -35,45 +35,11 @@ func isEqualV3(tile:Dictionary, other:Vector3i):
 	return tile["v"] == other
 
 
-#class TILEID:
-#	var source:int
-#	var coords:Vector2i
-#	var v:Vector3i
-#	var alt:int
-#
-#	func _init(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1), _alt:int=0):
-#		source = _source
-#		coords = _coords
-#		alt = _alt
-#
-#		if _source < 0:
-#			coords.x = _source
-#			coords.y = _source
-#
-#		v.z = source
-#		v.x = coords.x
-#		v.y = coords.y
-#
-#	func _to_string():
-#		return "TILEID< "+str(source)+" ; "+str(coords)+">"
-#
-#	func isEqual(other:TILEID):
-#		return source == other.source and coords == other.coords
-#
-#	func isEqualV3(vect:Vector3i):
-#		return v == vect
-#
-#	func isIn(list:Array[TILEID]):
-#		var res:bool = false
-#		for t in list:
-#			if isEqual(t): res = true
-#		return res
-
-
 # canvas input handling ###############################
 
 const INVALID:int = -1
 var tilemap:BottledTileMap
+var toolbar
 var palette
 
 var current_cell:Vector2i
@@ -87,7 +53,9 @@ var is_shift:bool = false
 var is_ctrl:bool = false
 var is_alt:bool = false
 var is_bucket:bool = false
+var is_terrain:bool = true
 #var is_custom_brush:bool = false
+var drawing_modes:Array[String] = []
 
 func bottled_set_cell(event:InputEvent):
 	# click
@@ -126,6 +94,7 @@ func handle_click_release():
 			if is_ctrl: tilemap.draw_tile_rect(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
 			else: tilemap.draw_tile_line(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
 		elif is_ctrl: palette.pick_tile(tilemap.get_cell(current_cell))
+		elif is_terrain: draw_terrain_cell(current_cell, l, palette.curr_group)
 		else: draw_tile(button_held)
 	
 	# end of action : reset
@@ -224,7 +193,7 @@ func duplicate_tile(tile:Dictionary):
 func duplicate_tiledata(tile:TileData):
 	var new_data:TileData
 
-# this function was made by Miziziziz at https://github.com/Miziziziz/ThineCometh/blob/master/objects/Enemy.gd
+# This function was made by Miziziziz at https://github.com/Miziziziz/ThineCometh/blob/master/objects/Enemy.gd
 # It's an implementation of the bresenham algo : http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
 func get_bresenham_line(start:Vector2i, end:Vector2i):
 	var dx = end.x - start.x
@@ -278,6 +247,88 @@ func vector2(vect:Vector3i, start:int=0):
 	return Vector2i(vect.x,vect.y)
 
 
+
+#### Terrain Manager --------------------------------------------
+
+func _init():
+	randomize()
+
+func get_possible_terrain_tiles(cell:Vector2i, layer:int, terrain, drawing_modes:Array[String]=current_drawing_modes(), allow_random:bool=true):
+	var possible_tiles:Array
+	var max_fulfilled:int = 0
+	var nbr_fulfilled:int = 0
+	for tile in terrain:
+		for rule in tile:
+			if check_rule_for_tile(cell, layer, rule, drawing_modes):
+				nbr_fulfilled += 1
+		
+		if nbr_fulfilled == max_fulfilled:
+			possible_tiles.append(tile)
+		elif nbr_fulfilled > max_fulfilled:
+			max_fulfilled = nbr_fulfilled
+			possible_tiles = [tile]
+	return possible_tiles
+
+enum RULE_LAYERS {Additive, Absolute, Global}
+func check_rule_for_tile(cell:Vector2i, layer:int, rule:Dictionary, drawing_modes:Array[String]=current_drawing_modes()):
+	# check if we're in a valid drawing mode
+	for mode in rule.drawing_modes:
+		if not mode in drawing_modes: return false
+	# check if the cell contains the tile described in the rule
+	var rule_fulfilled:bool
+	match rule.layer_type:
+		RULE_LAYERS.Additive: rule_fulfilled = (tilemap.get_cell(cell+rule.position, layer+rule.layer) == rule.tile)
+		RULE_LAYERS.Absolute: rule_fulfilled = (tilemap.get_cell(cell+rule.position, rule.layer) == rule.tile)
+		RULE_LAYERS.Global:
+			rule_fulfilled = false
+			for l in tilemap.get_layers_count():
+				if (tilemap.get_cell(cell+rule.position, layer+rule.layer) == rule.tile):
+					rule_fulfilled = true
+					break
+	# check if this rule want this tile or not
+	if (rule.prob == 0 and rule_fulfilled) or (rule.prob == 100 and not rule_fulfilled): return false
+	elif not (rule_fulfilled and randi_range(0,100) < rule.prob): return false
+	else: return true
+
+
+const NEIGHBORS_CARDINAL = [Vector2i(1,0),Vector2i(0,1),Vector2i(-1,0),Vector2i(0,-1)]
+const NEIGHBORS_KING = [Vector2i(1,0),Vector2i(0,1),Vector2i(-1,0),Vector2i(0,-1),Vector2i(1,1),Vector2i(-1,-1),Vector2i(-1,1),Vector2i(1,-1)]
+
+func draw_terrain_cell(cell:Vector2i, layer:int, group:String, drawing_modes:Array[String]=current_drawing_modes(), allow_random:bool=true, \
+						update_neighbors:bool=false, neighbors:Array[Vector2i]=[], allow_create:bool=true):
+	var terrain:Dictionary = tilemap.tile_set.get_meta("Terrains", {}).get(group, {})
+	if terrain == {}: return
+	if not allow_create and not tilemap.get_cell(cell, layer) in terrain: return
+	
+	var sum_weights:int = 0
+	var possible:Array = get_possible_terrain_tiles(cell, layer, terrain, drawing_modes, allow_random)
+	if possible.size() == 1:
+		tilemap.draw_tile(cell, possible[0], layer)
+		return true
+	elif possible.is_empty(): return false
+	else:
+		for tile in possible:
+			sum_weights += terrain[tile].weight
+			# TODO : alt tiles
+			
+		var res:int = randi_range(0, sum_weights)
+		sum_weights = 0
+		possible.shuffle()
+		for tile in possible:
+			sum_weights += terrain[tile].weight
+			if not sum_weights >= res: continue
+			tilemap.draw_tile(cell, tile, layer)
+			return true
+
+func update_terrain_cell(cell:Vector2i, layer:int, terrain, drawing_modes:Array[String]=current_drawing_modes(), allow_random:bool=true, update_neighbors:bool=false, neighbors:Array[Vector2i]=[]):
+	draw_terrain_cell(cell, layer, terrain, drawing_modes, allow_random, update_neighbors, neighbors, false)
+
+func update_drawing_modes():
+	palette.sync_rule_settings()
+	toolbar.update_drawing_modes(tilemap.drawing_modes)
+
+func current_drawing_modes():
+	return toolbar.get_drawing_modes()
 
 #### Tile Event Functions --------------------------------------------
 

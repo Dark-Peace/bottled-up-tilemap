@@ -79,3 +79,21 @@ func _on_paint_pressed():
 func _on_bucket_pressed():
 	$Paint.button_pressed = !$Bucket.button_pressed
 	BTM.is_bucket = $Bucket.button_pressed
+
+func _on_use_terrain_pressed():
+	$UseTerrain.button_pressed = !$UseTerrain.button_pressed
+	BTM.is_terrain = $UseTerrain.button_pressed
+
+# drawing modes ---------
+
+func update_drawing_modes(list:Array[String]):
+	$%DrawingModes.get_popup().clear()
+	for m in BTM.palette.tilemap.drawing_modes:
+		$%DrawingModes.get_popup().add_check_item(m)
+
+func get_drawing_modes():
+	var res:Array[String]
+	for m in $%DrawingModes.get_popup().item_count:
+		if not $%DrawingModes.get_popup().is_item_checked(m): continue
+		res.append($%DrawingModes.get_popup().get_item_text(m))
+	return res

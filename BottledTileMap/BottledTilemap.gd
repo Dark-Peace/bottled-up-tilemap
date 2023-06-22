@@ -69,6 +69,7 @@ var use_alt_random:bool = false
 @export var scatter_affects_erase = false
 @export_range(-3,999999,1,"suffix:TileID") var no_draw_on:int = NO_TILE
 @export_range(-3,999999,1,"suffix:TileID") var only_draw_on:int = NO_TILE
+@export var drawing_modes:Array[String] = [] : set = set_drawing_modes
 
 
 # REPLACING
@@ -161,12 +162,6 @@ var current_alt:int=0
 var ID_map:Dictionary
 var used_theme:String = NO_THEME
 
-#var data = {"instances": instance_dict, "cursors": multi_cursor_list, "tilemaps": tilemap_list, "patterns": patterns}
-#@onready var file = FileAccess.new()
-#var url = "res://addons/BottledTileMap/save"
-
-@onready var tilecell
-
 ## Godot 4
 var cell_size = tile_set.tile_size
 var mode = tile_set.tile_shape
@@ -185,6 +180,7 @@ func init():
 		tile_set.set_meta("groups_by_groups", {})
 		tile_set.set_meta("groups_by_ids", {})
 		tile_set.set_meta("TILE_EVENTS", {})
+		tile_set.set_meta("Terrains", {})
 
 func _on_tileset_changed():
 	var tiles:Array[Dictionary] = BTM.get_tiles_ids(tile_set)
@@ -391,10 +387,16 @@ func draw_tile(xy:Vector2i, tile:Dictionary=current_tile, l:int=current_layer, a
 #			can_trigger = true
 #		else: call_all_draw(xy,tile,l,get_random_subtile(id, tile.coords))
 
+func get_v_from_ID(tile:int=-1):
+	match tile:
+		NO_TILE: return NO_TILE_V
+		ALL_TILES: return ALL_TILES_V
+	return ID_map[tile]
+
 enum CALLTYPE {Single, Brush}
 func call_all_draw(xy:Vector2i,tile:Dictionary,l:int=current_layer,alt:int=current_alt, call_type=0):
-	if BTM.isEqualV3(get_cell(xy,l), ID_map[no_draw_on]) or (only_draw_on != NO_TILE and not BTM.isEqualV3(get_cell(xy,l), ID_map[only_draw_on])) \
-		or tile.source < -1:
+	if BTM.isEqualV3(get_cell(xy,l), get_v_from_ID(no_draw_on)) \
+		or (only_draw_on != NO_TILE and not BTM.isEqualV3(get_cell(xy,l), get_v_from_ID(only_draw_on))) or tile.source < -1:
 			return
 	
 	if use_tile_random and ((call_type == CALLTYPE.Brush and (allow_random & RandomAccross.BrushShape)) or call_type == CALLTYPE.Single):
@@ -427,9 +429,9 @@ func match_themes(tile:Dictionary) -> Dictionary:
 	# tile not affected by theme
 	return tile
 
-func send_draw_signals(xy:Vector2i,tile:Dictionary, l:int=current_layer):
+func send_draw_signals(xy:Vector2i, tile:Dictionary, l:int=current_layer):
 	var cell = get_cell(xy,l)
-	if cell.isEqual(tile): return
+	if BTM.isEqual(cell, tile): return
 	if BTM.isEqual(tile, ERASE_TILE_ID): tile_erased.emit(cell, xy)
 	else: tile_drawn.emit(tile, xy)
 
@@ -912,6 +914,12 @@ func set_axis(value):
 func set_axis_pos(value):
 	axis_pos = value
 	queue_redraw()
+
+func set_drawing_modes(value):
+	drawing_modes = value
+	BTM.update_drawing_modes()
+	
+	
 	
 #func load_data():
 #	if !file.file_exists(url): return
