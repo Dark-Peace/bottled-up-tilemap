@@ -1,3 +1,4 @@
+@tool
 extends ScrollContainer
 
 const EMPTY:Array[Dictionary] = []

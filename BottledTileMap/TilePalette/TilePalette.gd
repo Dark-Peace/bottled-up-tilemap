@@ -213,6 +213,7 @@ func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root, _
 func _ready():
 	_on_tab_changed(TAB.TileMap)
 	BTM.palette = self
+	print(tileset)
 	$PatternEditor.dock = self
 	$"%GroupTree".get_child(0).connect("pressed", select_group.bind(GROUPNAME_ALLTILES))
 	$"%GroupTree".get_child(1).connect("pressed", select_group.bind(GROUPNAME_NOGROUP))
@@ -220,6 +221,16 @@ func _ready():
 	$BetterTerrain.paint_type = $"%PaintType"
 	$BetterTerrain.paint_terrain = $"%PaintTerrain"
 	$BetterTerrain.clean_button = $"%Clean"
+
+func assign_tilemap(selected_node:BottledTileMap):
+	BTM.tilemap = selected_node
+	tilemap = selected_node
+	tileset = selected_node.tile_set
+	get_node("BetterTerrain")._tilemap = tilemap
+	get_node("BetterTerrain")._tileset = tileset
+	get_node("BetterTerrain").tiles_changed()
+	$"%TileRuling".p = self
+	$"%TileRuling".get_node("%RuleView").data = $"%TileRuling"
 
 func _process(delta):
 	if not active: return
@@ -268,7 +279,6 @@ func update_no_group():
 func get_tiles_without_groups():
 	var no_group:Array[Dictionary]
 	for id in tileset.get_meta("TileList"):
-		print(tileset.get_meta("TileList"))
 		if tilemap.tile_has_any_group(id.v): continue
 		no_group.append(id)
 	return no_group
@@ -420,7 +430,6 @@ func _on_hide_group_pressed():
 	select_group(GROUPNAME_ALLTILES)
 
 func _on_tileset_changed(new_tileset: TileSet):
-	print("tileset")
 	_fill()
 
 func _on_ListView_item_selected(index: int) -> void:
@@ -480,13 +489,13 @@ func _on_Search_text_changed(new_text: String) -> void:
 			g.visible = (new_text[0] == GROUPCHAR_HIDDEN and new_text.is_subsequence_ofn(GROUPCHAR_HIDDEN+g.text))
 		else: g.visible = new_text.is_subsequence_ofn(g.text)
 
-enum TAB {TileMap, TileSet, Terrains, Patterns}
+enum TAB {TileMap, TileSet, Patterns}
 func _on_tab_changed(tab):
 	if tab == TAB.TileSet:
 		_tab_tileset.emit()
 		tab = TAB.TileMap
 	$TileMap.visible = (tab == TAB.TileMap)
-	$BetterTerrain.visible = (tab == TAB.Terrains)
+#	$BetterTerrain.visible = (tab == TAB.Terrains)
 	$PatternEditor.visible = (tab == TAB.Patterns)
 	$"%Tabs_TM".current_tab = tab
 	
@@ -495,12 +504,15 @@ func _on_tab_changed(tab):
 	
 	for node in $BottledTools.get_children():
 		if node in [$"%ToggleFav",$"%Search Group",$"%MoveTileLeft",$"%MoveTileRight",$"%Clean",$"%ClearInvalid",$"%EraseAll"]:
-			node.visible = $TileMap.visible
-		elif node in [$"%PaintType",$"%PaintTerrain",$"%BitmaskCopy",$"%BitmaskPaste", $"%AutoAlt",$"%CreateAlt",
-						$"%SelectAlt",$"%DeleteAlt"]: node.visible = $BetterTerrain.visible
-		elif node.name == "RigthTools":
-			for subtool in node.get_children(): if node in [$"%Cursors",$"%All"]: node.visible = $TileMap.visible
-		elif node in [$"%SwitchEditors"]: node.visible = $PatternEditor.visible
+			node.visible = (tab == TAB.TileMap)
+#		elif node in [$"%PaintType",$"%PaintTerrain",$"%BitmaskCopy",$"%BitmaskPaste", $"%AutoAlt",$"%CreateAlt",
+#						$"%SelectAlt",$"%DeleteAlt", $"%TabSeparator"]: node.visible = (tab == TAB.Terrains)
+		elif node in [$"%SwitchEditors", $"%TabSeparator"]: node.visible = (tab == TAB.Patterns)
+		
+		if node.name == "RigthTools":
+			for subtool in node.get_children():
+				if node in [$"%Cursors",$"%All"]: node.visible = (tab == TAB.TileMap)
+#				if node in [$"%Export",$"%Import",$"%TerrainRightSeparator"]: node.visible = (tab == TAB.Terrains)
 
 func _on_tile_size_value_changed(value):
 	$"%ListView".fixed_icon_size = Vector2(value,value)
@@ -570,3 +582,17 @@ func _parse_tileset_id(id:String):
 	var coordx = units[1].split("(")
 	var coordy = units[1].split(")")
 	return Vector3i(int(coordx[1]),int(coordy[0]),int(units[0]))
+
+
+func _on_open_rule_editor_toggled(button_pressed):
+	$TileMap/Spacing.visible = button_pressed
+	$"%TileRuling".visible = button_pressed
+	if button_pressed: $"%TileRuling".init_group(curr_group)
+	else:  $"%TileRuling".remove_empty_terrains()
+
+func _on_solve_terrains_pressed():
+	for cell in tilemap.get_selected_cells():
+		BTM.update_terrain_cell(cell, BTM.l, curr_group)
+
+func sync_rule_settings():
+	$"%TileRuling".sync_settings()

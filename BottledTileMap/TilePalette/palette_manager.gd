@@ -61,8 +61,7 @@ func _on_selection_changed():
 		var selected_node = selected_nodes[0]
 		update_button_visibility(selected_node is TileMap)
 		if selected_node is BottledTileMap:
-			_tile_palette.tilemap = selected_node #BottledTileMap
-			_tile_palette.tileset = selected_node.tile_set
+			_tile_palette.assign_tilemap(selected_node)
 			if not layer_select.item_selected.is_connected(selected_node.set_current_layer.bind(layer_select)):
 				layer_select.item_selected.connect(selected_node.set_current_layer.bind(layer_select))
 #			_tilemap_editor.set_deferred("visible", true)
@@ -72,7 +71,6 @@ func _on_selection_changed():
 #			make_bottom_panel_item_visible(_tile_palette)
 			if editor_script_screen.button_pressed:
 				call_deferred("close_bottom_panel", 0.005)
-			BTM.tilemap = selected_node
 			return
 		else:
 			if editor_script_screen.button_pressed: call_deferred("close_bottom_panel", 0.16)
@@ -110,13 +108,7 @@ func _add_tile_palette():
 	_tilemap_editor.get_child(0).add_child(switch_button)
 
 	_on_selection_changed()
-	_tilemap_editor.get_child(0).remove_child(layer_select)
-	_tilemap_editor.get_child(0).remove_child(layer_vis)
-	_tilemap_editor.get_child(0).remove_child(grid_button)
-	toolbar.add_child(layer_select)
-	toolbar.add_child(layer_vis)
-	toolbar.add_child(grid_button)
-	toolbar_theme = toolbar.get_node("../../").get("theme_override_styles/panel").duplicate()
+	_add_toolbar()
 	
 	_tilemap_editor.add_child(_tile_palette)
 	var tilemap_child
@@ -127,6 +119,22 @@ func _add_tile_palette():
 	
 	editor_script_screen = _find_in_editor("EditorTitleBar").get_child(2).get_child(2)
 	
+	_add_buttons_to_tileset_editor()
+	
+	_tile_palette.get_node("BetterTerrain").undo_manager = get_undo_redo()
+	_tile_palette.get_node("BetterTerrain").tile_view.undo_manager = get_undo_redo()
+
+func _add_toolbar():
+	_tilemap_editor.get_child(0).remove_child(layer_select)
+	_tilemap_editor.get_child(0).remove_child(layer_vis)
+	_tilemap_editor.get_child(0).remove_child(grid_button)
+	toolbar.add_child(layer_select)
+	toolbar.add_child(layer_vis)
+	toolbar.add_child(grid_button)
+	toolbar_theme = toolbar.get_node("../../").get("theme_override_styles/panel").duplicate()
+	BTM.toolbar = toolbar
+
+func _add_buttons_to_tileset_editor():
 	tileset_editor = _find_in_editor("TileSetEditor")
 	tileset_editor.get_child(0).hide()
 	_tile_palette._tab_tileset.connect(open_tileset_editor)
@@ -137,6 +145,7 @@ func _add_tile_palette():
 			button_tileset.visibility_changed.connect(hide_tileset_button)
 		elif b.text == "TileMap": button_tilemap = b
 	
+	# event manager
 	var id_label = tileset_editor.get_child(1).get_child(1).get_child(1).get_child(1).get_child(0).get_child(4)
 	var event_button = Button.new()
 	event_button.text = "Events"
@@ -147,6 +156,8 @@ func _add_tile_palette():
 	atlas_tools.add_child(event_button)
 	atlas_tools.get_child(0).text = "Source"
 	atlas_tools.get_child(1).text = "Tile"
+	
+	# tile toolbar
 
 func set_min_size(parent):
 	for child in parent.get_children():
