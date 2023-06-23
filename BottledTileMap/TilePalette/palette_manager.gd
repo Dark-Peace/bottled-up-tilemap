@@ -2,6 +2,7 @@
 extends EditorPlugin
 
 var TileMapInspectorPlugin = load("res://addons/BottledTileMap/TilePalette/tilemap_inspector_plugin.gd")
+var TileSetToolbar = preload("res://addons/BottledTileMap/TileSetToolbar.tscn").instantiate()
 
 var _selection: EditorSelection
 var _tile_palette: Control
@@ -9,24 +10,6 @@ var _tilemap_editor: Control
 
 var _tile_list: ItemList
 var _subtile_list: ItemList
-
-var _checkboxes_parent: Control
-var _disable_autotile_check_box: CheckBox
-var _disable_autotile_check_box_position: int
-var _enable_priority_check_box: CheckBox
-var _enable_priority_check_box_position: int
-
-var _tools_parent: Control
-var _rotate_left_button: Button
-var _rotate_left_button_position: int
-var _rotate_right_button: Button
-var _rotate_right_button_position: int
-var _flip_horizontally_button: Button
-var _flip_horizontally_button_position: int
-var _flip_vertically_button: Button
-var _flip_vertically_button_position: int
-var _clear_transform_button: Button
-var _clear_transform_button_position: int
 
 var _tilemap_inspector_plugin
 
@@ -121,8 +104,6 @@ func _add_tile_palette():
 	
 	_add_buttons_to_tileset_editor()
 	
-	_tile_palette.get_node("BetterTerrain").undo_manager = get_undo_redo()
-	_tile_palette.get_node("BetterTerrain").tile_view.undo_manager = get_undo_redo()
 
 func _add_toolbar():
 	_tilemap_editor.get_child(0).remove_child(layer_select)
@@ -158,6 +139,13 @@ func _add_buttons_to_tileset_editor():
 	atlas_tools.get_child(1).text = "Tile"
 	
 	# tile toolbar
+	var tile_toolbar_place = _find_in_editor("TileSetAtlasSourceEditor").get_child(1).get_child(0)
+	tile_toolbar_place.add_child(TileSetToolbar)
+	tile_toolbar_place.move_child(TileSetToolbar, 3)
+	
+	for b in TileSetToolbar.get_children():
+		b.pressed.connect(_tile_palette._on_tileset_any_button.bind(id_label, b))
+	
 
 func set_min_size(parent):
 	for child in parent.get_children():

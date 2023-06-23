@@ -51,17 +51,13 @@ func _set_tileset(value):
 	if value == null or tileset == value:
 		return
 	tileset = value
-	if tileset: _fill()
+#	if tileset: _fill()
 
 func set_lists(tile_list: ItemList, subtile_list: ItemList):
 	pass
 
 func set_tools(tile_map_editor: Control, interface_display_scale: float = 1):
 	_tile_map_editor = tile_map_editor
-	$"%TileCells"/HBoxContainer4/Dupli.icon = get_theme_icon("Duplicate","EditorIcons")
-	$"%TileCells"/HBoxContainer4/Erase.icon = get_theme_icon("ImportFail","EditorIcons")
-	$"%TileCells"/ScrollContainer/VBoxContainer/HBoxContainer/Right/HBoxContainer/SaveGroups.icon = get_theme_icon("Save","EditorIcons")
-	
 	
 # Bottled TileMap
 func go_to_tile(inc:int):
@@ -86,9 +82,6 @@ func trigger_preview(type:String):
 func show_preview_list():
 	_preview.visible = !_preview.visible
 	return _preview.visible
-
-func toggle_cell_manager():
-	$"%TileCells".visible = $"%ToggleTileCell".pressed
 
 func brush_preview():
 	var preview = _preview
@@ -213,29 +206,22 @@ func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root, _
 func _ready():
 	_on_tab_changed(TAB.TileMap)
 	BTM.palette = self
-	print(tileset)
 	$PatternEditor.dock = self
 	$"%GroupTree".get_child(0).connect("pressed", select_group.bind(GROUPNAME_ALLTILES))
 	$"%GroupTree".get_child(1).connect("pressed", select_group.bind(GROUPNAME_NOGROUP))
-	
-	$BetterTerrain.paint_type = $"%PaintType"
-	$BetterTerrain.paint_terrain = $"%PaintTerrain"
-	$BetterTerrain.clean_button = $"%Clean"
+	$"%TileRuling".get_node("%RuleView").can_run = true
 
 func assign_tilemap(selected_node:BottledTileMap):
 	BTM.tilemap = selected_node
 	tilemap = selected_node
 	tileset = selected_node.tile_set
-	get_node("BetterTerrain")._tilemap = tilemap
-	get_node("BetterTerrain")._tileset = tileset
-	get_node("BetterTerrain").tiles_changed()
 	$"%TileRuling".p = self
 	$"%TileRuling".get_node("%RuleView").data = $"%TileRuling"
+	_fill()
 
 func _process(delta):
 	if not active: return
 	size = get_parent().size
-	if $BetterTerrain.visible: size.y = max(size.y, 357)
 
 
 
@@ -243,7 +229,6 @@ func _process(delta):
 
 func _fill():
 	_clear_group_view()
-#	tilemap.tilecell = get_tilecell()
 	if not tileset.has_meta("TileList"):
 		tileset.set_meta("TileList", BTM.get_tiles_ids(tileset))
 	_fill_group_view()
@@ -265,7 +250,10 @@ func _fill_group_view():
 	group_list[GROUPNAME_NOGROUP] = $"%NO GROUP"
 	
 	var tilelist:Array[Dictionary]
+	for i in _group_tree.get_children():
+		print("still ",i.name)
 	for g in groups.keys():
+		print("create ",g, )
 		tilelist = tilemap.EMPTY_TILE_ARRAY as Array
 		create_group(g, groups.get(g, tilelist))
 	
@@ -288,20 +276,24 @@ func create_group(g:String, group_content:Array, tree=_group_tree):
 	
 	group.text = g
 	group.name = g
+	print("almost new "+g)
 	group.set_meta("TILES", group_content)
 	group_list[g] = group
+	if group.pressed.is_connected(select_group.bind(GROUPNAME_ALLTILES)): group.pressed.disconnect(select_group.bind(GROUPNAME_ALLTILES))
+	group.pressed.connect(select_group.bind(g))
+	_group_tree.add_child(group, true)
+	group.name = group.text
+	print("new "+g)
 	if g == tilemap.dock_group_selected:
 		group.button_pressed = true
 		select_group(g)
 		return true
-	if group.pressed.is_connected(select_group.bind(GROUPNAME_ALLTILES)): group.pressed.disconnect(select_group.bind(GROUPNAME_ALLTILES))
-	group.pressed.connect(select_group.bind(g))
-	_group_tree.add_child(group)
 	return false
 
 func select_group(group:String):
 	curr_group = group
 	for n in _group_tree.get_children():
+		print("actual",n.name)
 		if n.name == group:
 			n.button_pressed = true
 			continue
@@ -366,8 +358,11 @@ func _clear_list_view():
 	$"%ListView".clear()
 
 func _clear_group_view():
+	print("CLEAR")
 	for n in _group_tree.get_children():
 		if n.name in [GROUPNAME_ALLTILES,GROUPNAME_NOGROUP]: continue
+		print("delete ",n.name)
+		n.name = "deleted "+n.name
 		n.queue_free()
 	group_list.clear()
 	_clear_list_view()
@@ -430,6 +425,7 @@ func _on_hide_group_pressed():
 	select_group(GROUPNAME_ALLTILES)
 
 func _on_tileset_changed(new_tileset: TileSet):
+	print("changed")
 	_fill()
 
 func _on_ListView_item_selected(index: int) -> void:
@@ -442,13 +438,6 @@ func _on_ListView_item_selected(index: int) -> void:
 		$"%ListView".deselect(item)
 	_fill_subview()
 	# TODO : display subtile view
-#	init_tilecell()
-
-# Cell Manager
-func init_tilecell():
-	var populate_array = {"tilemap":tilemap.curr_tilemap,"tile_id": tilemap.current_tile}#,"tileset":tileset}
-	$"%TileCells".populate_infos(populate_array)
-
 
 #enum REPLACE_PARAM {Auto, SelectionOnly, Global}
 #enum SELECT {SelectionOnly, WholeLayer, Global, SelectionAllLayers}
@@ -477,12 +466,6 @@ func _on_select_all_pressed():
 	$"%SelectionType".select(0)
 	$"%Selectionlayer".select(0)
 
-func _on_TilePalette_resized() -> void:
-	$"%TileCells".get_node("ScrollContainer").custom_minimum_size.y = max(175, size.y-100)
-
-func get_tilecell():
-	return $"%TileCells"
-
 func _on_Search_text_changed(new_text: String) -> void:
 	for g in _group_tree.get_children():
 		if g.text in hidden_groups:
@@ -495,7 +478,6 @@ func _on_tab_changed(tab):
 		_tab_tileset.emit()
 		tab = TAB.TileMap
 	$TileMap.visible = (tab == TAB.TileMap)
-#	$BetterTerrain.visible = (tab == TAB.Terrains)
 	$PatternEditor.visible = (tab == TAB.Patterns)
 	$"%Tabs_TM".current_tab = tab
 	
@@ -505,14 +487,11 @@ func _on_tab_changed(tab):
 	for node in $BottledTools.get_children():
 		if node in [$"%ToggleFav",$"%Search Group",$"%MoveTileLeft",$"%MoveTileRight",$"%Clean",$"%ClearInvalid",$"%EraseAll"]:
 			node.visible = (tab == TAB.TileMap)
-#		elif node in [$"%PaintType",$"%PaintTerrain",$"%BitmaskCopy",$"%BitmaskPaste", $"%AutoAlt",$"%CreateAlt",
-#						$"%SelectAlt",$"%DeleteAlt", $"%TabSeparator"]: node.visible = (tab == TAB.Terrains)
 		elif node in [$"%SwitchEditors", $"%TabSeparator"]: node.visible = (tab == TAB.Patterns)
 		
 		if node.name == "RigthTools":
 			for subtool in node.get_children():
 				if node in [$"%Cursors",$"%All"]: node.visible = (tab == TAB.TileMap)
-#				if node in [$"%Export",$"%Import",$"%TerrainRightSeparator"]: node.visible = (tab == TAB.Terrains)
 
 func _on_tile_size_value_changed(value):
 	$"%ListView".fixed_icon_size = Vector2(value,value)
@@ -568,6 +547,24 @@ func pick_tile(tile:Dictionary):
 func pick_tile_id(tile:Dictionary):
 	DisplayServer.clipboard_set(tilemap._get_id_in_map(tile.v))
 
+func _on_open_rule_editor_toggled(button_pressed):
+	$TileMap/Spacing.visible = button_pressed
+	$"%TileRuling".visible = button_pressed
+	if button_pressed: $"%TileRuling".init_group(curr_group)
+	else:  $"%TileRuling".remove_empty_terrains()
+
+func _on_solve_terrains_pressed():
+	for cell in tilemap.get_selected_cells():
+		BTM.update_terrain_cell(cell, BTM.l, curr_group)
+
+func sync_rule_settings():
+	$"%TileRuling".sync_settings()
+
+
+
+
+# tileset
+
 
 func show_tile_event(id:String):
 	var tile = _parse_tileset_id(id)
@@ -583,16 +580,13 @@ func _parse_tileset_id(id:String):
 	var coordy = units[1].split(")")
 	return Vector3i(int(coordx[1]),int(coordy[0]),int(units[0]))
 
+func _on_tileset_any_button(label:Label, button:Button):
+	match button.name:
+		"DupliTile": duplicate_tile(_parse_tileset_id(label.text))
+		"CreateAlt": BTM.create_alt_tiles(BTM.new_TILEID(_parse_tileset_id(label.text)))
+		"DeleteAlt": BTM.erase_alt_tiles(BTM.new_TILEID(_parse_tileset_id(label.text)))
+	
 
-func _on_open_rule_editor_toggled(button_pressed):
-	$TileMap/Spacing.visible = button_pressed
-	$"%TileRuling".visible = button_pressed
-	if button_pressed: $"%TileRuling".init_group(curr_group)
-	else:  $"%TileRuling".remove_empty_terrains()
+func duplicate_tile(id:String):
+	pass
 
-func _on_solve_terrains_pressed():
-	for cell in tilemap.get_selected_cells():
-		BTM.update_terrain_cell(cell, BTM.l, curr_group)
-
-func sync_rule_settings():
-	$"%TileRuling".sync_settings()
