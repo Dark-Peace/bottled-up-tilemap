@@ -20,13 +20,11 @@ func _enter_tree():
 		load(plugin_dir + 'icon.png')
 	)
 	
+#	add_autoload_singleton("BTM", "res://addons/BottledTileMap/GlobalBTM.tscn")
+	
 	add_control_to_container(EditorPlugin.CONTAINER_CANVAS_EDITOR_MENU, toolbar)
 	toolbar.visible = false
 	
-	# TILECELL
-	tile_cell_manager = load(plugin_dir + 'TileCellManager/TileCellManager.gd').new()
-	add_child(tile_cell_manager)
-
 	# TILEPALETTE
 	tile_palette_manager = load(plugin_dir + 'TilePalette/palette_manager.gd').new()
 	tile_palette_manager.toolbar = toolbar
@@ -37,10 +35,8 @@ func _exit_tree():
 	remove_custom_type('BottledTileMap')
 	
 	remove_control_from_container(EditorPlugin.CONTAINER_CANVAS_EDITOR_MENU, toolbar)
-
-#	# TILECELL
-#	check_validation()
-#	Nodeselected.disconnect("selection_changed",Callable(self,"on_node_selected"))
+	
+#	remove_autoload_singleton("BTM")
 
 #	# TILEPALETTE
 #	_remove_tile_palette()

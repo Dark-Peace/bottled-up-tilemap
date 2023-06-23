@@ -1,8 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://cqckdh5j8765"]
+[gd_scene load_steps=12 format=3 uid="uid://yq2182w7dj6k"]
 
 [ext_resource type="Texture2D" uid="uid://d2jed36t130x5" path="res://addons/BottledTileMap/resources/Placeholder_tiles.png" id="1"]
 [ext_resource type="Script" path="res://addons/BottledTileMap/BottledTilemap.gd" id="2"]
-[ext_resource type="Script" path="res://PatternTileMap1.gd" id="4_eixau"]
+[ext_resource type="Script" path="res://addons/BottledTileMap/test_TileMap.gd" id="4_dewfk"]
 [ext_resource type="Texture2D" uid="uid://o70mhv1r53lq" path="res://icon.png" id="5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g5768"]
@@ -298,12 +298,26 @@ metadata/TileListIndexes = {
 "v": Vector3i(1, 1, 2)
 }
 }
-metadata/groups_by_groups = {}
-metadata/groups_by_ids = {}
+metadata/groups_by_groups = {
+"ALL TILES2": [Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(0, 0, 2), Vector3i(0, 1, 2), Vector3i(1, 0, 2), Vector3i(1, 1, 2)]
+}
+metadata/groups_by_ids = {
+Vector3i(0, 0, 0): ["ALL TILES2"],
+Vector3i(0, 0, 1): ["ALL TILES2"],
+Vector3i(0, 0, 2): ["ALL TILES2"],
+Vector3i(0, 1, 2): ["ALL TILES2"],
+Vector3i(1, 0, 0): ["ALL TILES2"],
+Vector3i(1, 0, 2): ["ALL TILES2"],
+Vector3i(1, 1, 2): ["ALL TILES2"]
+}
 metadata/TILE_EVENTS = {}
-metadata/Better_terrain = {
-"terrains": [["New terrain", Color(0.808082, 0.734622, 0.531983, 1), 0, []], ["New terrain", Color(0.356863, 0.74902, 0.411765, 1), 0, []], ["New terrain", Color(0.968627, 0.168627, 0.788235, 1), 0, []]],
-"version": "0.1"
+metadata/Terrains = {
+"ALL TILES2": {
+"0": {
+"rules": [],
+"weight": 1
+}
+}
 }
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wrh38"]
@@ -352,13 +366,13 @@ script = ExtResource("2")
 shape_filled = false
 outline_width = 2.0
 multi_cursor_list = Array[Vector2i]([Vector2i(2, 0)])
-dock_group_selected = "ALL TILES"
+dock_group_selected = "ALL TILES2"
 dock_tile_selected = "-1"
 
 [node name="PatternTileMap1" type="TileMap" parent="."]
 tile_set = SubResource("2")
 format = 2
-script = ExtResource("4_eixau")
+script = ExtResource("4_dewfk")
 
 [node name="PatternTileMap12" type="TileMap" parent="."]
 tile_set = SubResource("1")

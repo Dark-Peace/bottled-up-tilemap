@@ -24,6 +24,8 @@ func new_TILEID(_source:int=-1, _coords:Vector2i=Vector2i(-1,-1), _alt:int=0):
 	new_tile["v"].y = _coords.y
 	return new_tile
 	
+func new_TILEID_v3(data:Vector3i, _alt:int=0):
+	return new_TILEID(data.z, Vector2i(data.x,data.y), _alt)
 
 func print(tile:Dictionary):
 	return "TILEID< "+str(tile["source"])+" ; "+str(tile["coords"])+">"
@@ -187,9 +189,6 @@ func get_tiles_ids(tileset:TileSet) -> Array[Dictionary]:
 			res.append(tile)
 	return res
 
-func duplicate_tile(tile:Dictionary):
-	pass
-
 func duplicate_tiledata(tile:TileData):
 	var new_data:TileData
 
@@ -329,6 +328,26 @@ func update_drawing_modes():
 
 func current_drawing_modes():
 	return toolbar.get_drawing_modes()
+
+#### API ----------------------------------
+
+func create_alt_tiles(tile:Dictionary):
+	var source:TileSetAtlasSource = tilemap.tile_set.get_source(tile.source)
+	for i in 7:
+		i += 1
+		source.create_alternative_tile(tile.coords)
+		if i%2 == 1: source.get_tile_data(tile.coords, i).flip_h = true
+		if i in [2,3,6,7]: source.get_tile_data(tile.coords, i).flip_v = true
+		if i > 3: source.get_tile_data(tile.coords, i).transpose = true
+
+func erase_alt_tiles(tile:Dictionary):
+	var source:TileSetAtlasSource = tilemap.tile_set.get_source(tile.source)
+	for alt in source.get_alternative_tiles_count(tile.source):
+		source.remove_alternative_tile(tile.source, alt)
+
+func duplicate_tile(tile:Dictionary):
+	tilemap.tile_set.add_source(tilemap.tile_set.get_source(tile.source).duplicate())
+	
 
 #### Tile Event Functions --------------------------------------------
 

@@ -210,8 +210,8 @@ func _process(delta: float) -> void:
 	if not Engine.is_editor_hint(): set_process(false)
 
 func _ready() -> void:
-	if not Engine.is_editor_hint():
-		scan_for_tileset(get_tree().current_scene)
+	if Engine.is_editor_hint(): return
+	scan_for_tileset(get_tree().current_scene)
 
 func scan_for_tileset(node):
 	var instance; var parent; var entry_i; var entry_p;
@@ -965,15 +965,6 @@ func duplicate_alt_tile(imported:TileData, res:TileData):
 		res.set(prop, imported.get(prop))
 #	for prop in ["collision_polygon_one_way_margin","collision_polygon_points","","","","","","",""]: #TODO
 #		res.call("set_"+prop, imported.call("get_"+prop))
-
-func create_alt_tiles(tile:Dictionary):
-	var source:TileSetAtlasSource = tile_set.get_source(tile.source)
-	for i in 7:
-		i += 1
-		source.create_alternative_tile(tile.coords)
-		if i%2 == 1: source.get_tile_data(tile.coords, i).flip_h = true
-		if i in [2,3,6,7]: source.get_tile_data(tile.coords, i).flip_v = true
-		if i > 3: source.get_tile_data(tile.coords, i).transpose = true
 
 
 func _EMPTY_TILE_ARRAY() -> Array[Dictionary]:
