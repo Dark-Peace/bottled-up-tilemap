@@ -40,7 +40,6 @@ func init_group(group:String):
 	
 	_on_rule_tool_item_selected(RULE_TOOL.Add)
 	
-	$%RuleView.parent_rect = Rect2i(Vector2i.ZERO, PANEL_SIZE)
 
 
 func create_tile_list_view():
@@ -48,6 +47,7 @@ func create_tile_list_view():
 	new_list.custom_minimum_size.x = $%ListTemplate.custom_minimum_size.x
 	new_list.size_flags_horizontal = $%ListTemplate.size_flags_horizontal
 	new_list.clip_contents = true
+	new_list.max_columns = 2
 	new_list.disconnect("empty_clicked", p._on_list_view_empty_clicked)
 	new_list.disconnect("item_clicked", p._on_list_view_item_clicked)
 	new_list.disconnect("item_selected", p._on_ListView_item_selected)
@@ -100,7 +100,23 @@ func remove_empty_terrains():
 func select_tile(index:int):
 	current_tile = str(p.tilemap._get_id_in_map(p.tileset.get_meta("groups_by_groups")[group_name][index]))
 	create_rule(current_tile, {})
+	set_panel_limits()
 	update_panel()
+
+const BASE_LIMIT_X:int = 5
+const BASE_LIMIT_Y:int = 4
+func set_panel_limits():
+	var max_limits:Vector2i = Vector2i(0, 0)
+	var min_limits:Vector2i = Vector2i(0, 0)
+	print(current_group[current_tile].rules)
+	for rule in current_group[current_tile].rules:
+		print("celly ",rule.cell.y)
+		if rule.cell.x > max_limits.x and rule.cell.x > BASE_LIMIT_X: max_limits.x = rule.cell.x
+		if rule.cell.y < max_limits.y and rule.cell.y < -BASE_LIMIT_Y: max_limits.y = rule.cell.y
+		if rule.cell.x < min_limits.x and rule.cell.x < -BASE_LIMIT_X: min_limits.x = rule.cell.x
+		if rule.cell.y > min_limits.y and rule.cell.y > BASE_LIMIT_Y: min_limits.y = rule.cell.y
+	
+	$%RuleView.set_limits(max_limits, min_limits)
 
 func action_on_cell(pos, button:int):
 	match rule_tool:
@@ -119,11 +135,12 @@ func create_rule(tile:String=current_tile, rule:Dictionary=update_current_rule()
 	
 	if rule == {}: return
 	group[tile].rules.append(rule)
+	set_panel_limits()
 	update_panel()
 
 func clear_rules(tile:String=current_tile):
-	for rule in current_group[tile].rules:
-		delete_rule(rule)
+	for rule in current_group[tile].rules.size():
+		delete_rule(current_group[tile].rules.pop_back())
 
 func update_current_rule():
 	var res:Dictionary
@@ -151,13 +168,11 @@ func edit_current_rule(cell:Vector2i=rule_pos):
 		if not $%DrawingModes.get_popup().is_item_checked(mode): continue
 		current_rule["modes"].append($%DrawingModes.get_popup().get_item_text(mode))
 	update_panel()
-#	print("edit ",current_rule, rule_pos)
 	return current_rule
 
 func set_current_rule(res:Dictionary):
 	if res == {}: return
 	current_rule = res
-#	print("set ",current_rule)
 	$%RuleLayers.selected = res["layer"]
 	$%RuleLayerSettings.selected = res["layer_type"]
 	_set_pos_setting(res["cell"])
@@ -255,6 +270,7 @@ func _on_rule_pos_text_submitted(new_text:String):
 			return
 	rule_pos = Vector2i(int(pos[0]),int(pos[1]))
 	set_rule_settings(new_text)
+	set_panel_limits()
 
 func _set_pos_setting(pos):
 	rule_pos = pos
