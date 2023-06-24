@@ -319,56 +319,7 @@ metadata/Terrains = {
 },
 "0": {
 "rules": [{
-"cell": Vector2i(0, -2),
-"layer": 0,
-"layer_type": 0,
-"modes": [],
-"prob": 100.0,
-"tile": ""
-}, {
-"cell": Vector2i(0, -2),
-"layer": 0,
-"layer_type": 1,
-"modes": [],
-"prob": 100.0,
-"tile": ""
-}, {
-"cell": Vector2i(0, -2),
-"layer": 0,
-"layer_type": 2,
-"modes": [],
-"prob": 100.0,
-"tile": ""
-}, {
-"cell": Vector2i(7, 2),
-"layer": 0,
-"layer_type": 0,
-"modes": [],
-"prob": 100.0,
-"tile": ""
-}, {
-"cell": Vector2i(7, 2),
-"layer": 0,
-"layer_type": 0,
-"modes": [],
-"prob": 100.0,
-"tile": ""
-}, {
-"cell": Vector2i(6, 0),
-"layer": 0,
-"layer_type": 0,
-"modes": [],
-"prob": 100.0,
-"tile": ""
-}, {
-"cell": Vector2i(7, 1),
-"layer": 0,
-"layer_type": 0,
-"modes": [],
-"prob": 100.0,
-"tile": ""
-}, {
-"cell": Vector2i(7, 1),
+"cell": Vector2i(0, -7),
 "layer": 0,
 "layer_type": 0,
 "modes": [],
@@ -386,6 +337,18 @@ metadata/Terrains = {
 "weight": 1
 },
 "3": {
+"rules": [],
+"weight": 1
+},
+"4": {
+"rules": [],
+"weight": 1
+},
+"5": {
+"rules": [],
+"weight": 1
+},
+"6": {
 "rules": [],
 "weight": 1
 },
