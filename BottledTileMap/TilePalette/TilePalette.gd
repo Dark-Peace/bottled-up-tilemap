@@ -27,6 +27,7 @@ const GROUPNAME_NOGROUP:String = "NO GROUP"
 @onready var _preview:ScrollContainer = $"%Preview"
 @onready var _preview_list:VBoxContainer = $"%PreviewList"
 
+var bottom_button:Button
 var _tile_map_editor: Control
 var tilemap:BottledTileMap
 var tileset:TileSet : set = _set_tileset
@@ -212,6 +213,7 @@ func _ready():
 	$"%TileRuling".get_node("%RuleView").can_run = true
 
 func assign_tilemap(selected_node:BottledTileMap):
+#	active = true
 	BTM.tilemap = selected_node
 	tilemap = selected_node
 	tileset = selected_node.tile_set
@@ -220,7 +222,7 @@ func assign_tilemap(selected_node:BottledTileMap):
 	_fill()
 
 func _process(delta):
-	if not active: return
+	if not bottom_button.button_pressed: return
 	size = get_parent().size
 
 
@@ -250,10 +252,7 @@ func _fill_group_view():
 	group_list[GROUPNAME_NOGROUP] = $"%NO GROUP"
 	
 	var tilelist:Array[Dictionary]
-	for i in _group_tree.get_children():
-		print("still ",i.name)
 	for g in groups.keys():
-		print("create ",g, )
 		tilelist = tilemap.EMPTY_TILE_ARRAY as Array
 		create_group(g, groups.get(g, tilelist))
 	
@@ -276,14 +275,12 @@ func create_group(g:String, group_content:Array, tree=_group_tree):
 	
 	group.text = g
 	group.name = g
-	print("almost new "+g)
 	group.set_meta("TILES", group_content)
 	group_list[g] = group
 	if group.pressed.is_connected(select_group.bind(GROUPNAME_ALLTILES)): group.pressed.disconnect(select_group.bind(GROUPNAME_ALLTILES))
 	group.pressed.connect(select_group.bind(g))
 	_group_tree.add_child(group, true)
 	group.name = group.text
-	print("new "+g)
 	if g == tilemap.dock_group_selected:
 		group.button_pressed = true
 		select_group(g)
@@ -293,7 +290,6 @@ func create_group(g:String, group_content:Array, tree=_group_tree):
 func select_group(group:String):
 	curr_group = group
 	for n in _group_tree.get_children():
-		print("actual",n.name)
 		if n.name == group:
 			n.button_pressed = true
 			continue
@@ -358,10 +354,8 @@ func _clear_list_view():
 	$"%ListView".clear()
 
 func _clear_group_view():
-	print("CLEAR")
 	for n in _group_tree.get_children():
 		if n.name in [GROUPNAME_ALLTILES,GROUPNAME_NOGROUP]: continue
-		print("delete ",n.name)
 		n.name = "deleted "+n.name
 		n.queue_free()
 	group_list.clear()
@@ -425,7 +419,6 @@ func _on_hide_group_pressed():
 	select_group(GROUPNAME_ALLTILES)
 
 func _on_tileset_changed(new_tileset: TileSet):
-	print("changed")
 	_fill()
 
 func _on_ListView_item_selected(index: int) -> void:

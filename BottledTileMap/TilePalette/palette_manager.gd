@@ -58,6 +58,7 @@ func _on_selection_changed():
 		else:
 			if editor_script_screen.button_pressed: call_deferred("close_bottom_panel", 0.16)
 			toolbar.get_node("../../").set("theme_override_styles/panel", toolbar_theme)
+			_tile_palette.active = false
 	_tile_palette.tileset = null
 
 func update_button_visibility(tm:bool, timer:float=0.16):
@@ -103,6 +104,8 @@ func _add_tile_palette():
 	editor_script_screen = _find_in_editor("EditorTitleBar").get_child(2).get_child(2)
 	
 	_add_buttons_to_tileset_editor()
+	
+	_tile_palette.bottom_button = button_tilemap
 	
 
 func _add_toolbar():

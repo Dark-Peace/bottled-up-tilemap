@@ -2,36 +2,35 @@
 extends BoxContainer
 
 const DEFAULT_TILEDATA:Dictionary = {"weight": 1, "rules":[]}
+const PANEL_SIZE:Vector2i = Vector2i(753,560)
 
 var rule_tool:RULE_TOOL = RULE_TOOL.Add
 @onready var p
 var copied_rules:Dictionary
 
+var group_name:String
 var current_group:Dictionary
 var current_rule:Dictionary
 var current_tile:String
 var rule_pos:Vector2i
+var edited_rule:Dictionary
 
 var mouse_pos:Vector2i
 
 
 func init_group(group:String):
-	if group in ["ALL_TILES","NO_GROUP"]: return
+	if group in ["ALL_TILES","NO_GROUP"]:
+		push_warning("Can't use group "+group+" as a Terrain. Use a group you created instead.")
+		return
 	
+	group_name = group
 	if not p.tileset.get_meta("Terrains", {}).has(group):
 		create_terrain(group, p.tileset.get_meta("Terrains", {}), \
 			str(p.tilemap._get_id_in_map(p.tileset.get_meta("groups_by_groups", {})[group][0])))
 	current_group = p.tileset.get_meta("Terrains", {}).get(group)
 	
-	var new_list:ItemList = p.get_node("%ListView").duplicate()
-	new_list.custom_minimum_size.x = $%ListTemplate.custom_minimum_size.x
-	new_list.size_flags_horizontal = $%ListTemplate.size_flags_horizontal
-	if $Main.get_child_count() > 2: $Main.remove_child($Main.get_child(0))
-	$Main.add_child(new_list)
-	$Main.move_child(new_list, 0)
+	create_tile_list_view()
 	
-#	print(current_group)
-	current_tile = current_group.keys()[0]
 	$%TileWeigth.value = current_group[current_tile].weight
 	for mode in p.tilemap.drawing_modes.size():
 		$"%DrawingModes".get_popup().add_item(p.tilemap.drawing_modes[mode], mode)
@@ -39,9 +38,30 @@ func init_group(group:String):
 	sync_settings()
 	reset_rule_settings()
 	
-	# init panel with first tile
-	# update layers
-	# update drawing modes
+	_on_rule_tool_item_selected(RULE_TOOL.Add)
+	
+	$%RuleView.parent_rect = Rect2i(Vector2i.ZERO, PANEL_SIZE)
+
+
+func create_tile_list_view():
+	var new_list:ItemList = p.get_node("%ListView").duplicate()
+	new_list.custom_minimum_size.x = $%ListTemplate.custom_minimum_size.x
+	new_list.size_flags_horizontal = $%ListTemplate.size_flags_horizontal
+	new_list.clip_contents = true
+	new_list.disconnect("empty_clicked", p._on_list_view_empty_clicked)
+	new_list.disconnect("item_clicked", p._on_list_view_item_clicked)
+	new_list.disconnect("item_selected", p._on_ListView_item_selected)
+	new_list.disconnect("multi_selected", p._on_ListView_item_selected)
+	new_list.connect("item_selected", select_tile)
+	
+	for i in p.get_node("%ListView").item_count:
+		new_list.set_item_icon_region(i, p.get_node("%ListView").get_item_icon_region(i))
+	
+	if $Main.get_child_count() > 2: $Main.remove_child($Main.get_child(0))
+	$Main.add_child(new_list)
+	$Main.move_child(new_list, 0)
+	new_list.select(0)
+	select_tile(0)
 
 func sync_settings():
 	$%RuleLayers.clear()
@@ -77,22 +97,33 @@ func remove_empty_terrains():
 		if not can_remove: continue
 		remove_terrain(group)
 
+func select_tile(index:int):
+	current_tile = str(p.tilemap._get_id_in_map(p.tileset.get_meta("groups_by_groups")[group_name][index]))
+	create_rule(current_tile, {})
+	update_panel()
 
-func action_on_cell(pos):
+func action_on_cell(pos, button:int):
 	match rule_tool:
-		RULE_TOOL.Add: create_rule()
-		RULE_TOOL.Edit: set_current_rule(get_rule_on_cell(pos, $%RuleLayers.selected))
-	
+		RULE_TOOL.Add:
+			if button == MOUSE_BUTTON_RIGHT: delete_rule()
+			elif button == MOUSE_BUTTON_LEFT: create_rule()
+		RULE_TOOL.Edit:
+			set_current_rule(get_rule_on_cell(pos, $%RuleLayers.selected))
+
 func delete_rule(rule:Dictionary=current_rule, tile:String=current_tile):
-	current_group[tile].rules.erase(rule) # TODO improve
+	current_group[tile]["rules"].erase(rule) # TODO improve
 	update_panel()
 
 func create_rule(tile:String=current_tile, rule:Dictionary=update_current_rule(), group:Dictionary=current_group):
-	if not tile in group: group[tile] = DEFAULT_TILEDATA
+	if not tile in group: group[tile] = get_default_tiledata()
 	
 	if rule == {}: return
 	group[tile].rules.append(rule)
 	update_panel()
+
+func clear_rules(tile:String=current_tile):
+	for rule in current_group[tile].rules:
+		delete_rule(rule)
 
 func update_current_rule():
 	var res:Dictionary
@@ -109,15 +140,34 @@ func update_current_rule():
 	update_panel()
 	return res
 
+func edit_current_rule(cell:Vector2i=rule_pos):
+	current_rule["layer"] = $%RuleLayers.selected
+	current_rule["layer_type"] = $%RuleLayerSettings.selected
+	current_rule["cell"] = cell
+	current_rule["tile"] = $%RuleTileID.text
+	current_rule["prob"] = $%RuleProb.value
+	current_rule["modes"] = []
+	for mode in $%DrawingModes.get_popup().item_count:
+		if not $%DrawingModes.get_popup().is_item_checked(mode): continue
+		current_rule["modes"].append($%DrawingModes.get_popup().get_item_text(mode))
+	update_panel()
+#	print("edit ",current_rule, rule_pos)
+	return current_rule
+
 func set_current_rule(res:Dictionary):
+	if res == {}: return
 	current_rule = res
+#	print("set ",current_rule)
 	$%RuleLayers.selected = res["layer"]
 	$%RuleLayerSettings.selected = res["layer_type"]
 	_set_pos_setting(res["cell"])
 	$%RuleTileID.text = res["tile"]
 	$%RuleProb.value = res["prob"]
+	_on_rule_prob_value_changed($%RuleProb.value)
 	for mode in $%DrawingModes.get_popup().item_count:
 		$%DrawingModes.get_popup().set_item_checked(mode, $%DrawingModes.get_popup().get_item_text(mode) in res["modes"])
+	update_panel()
+	print(res)
 
 func reset_rule_settings():
 	$%RuleLayers.selected = 0
@@ -125,18 +175,22 @@ func reset_rule_settings():
 	$%RulePos.text = ""
 	$%RuleTileID.text = ""
 	$%RuleProb.value = 100
+	_on_rule_prob_value_changed($%RuleProb.value)
 	for mode in $%DrawingModes.get_popup().item_count:
 		$%DrawingModes.get_popup().set_item_checked(mode, false)
 
 func _on_next_rule_pressed():
 	for rule in current_group[current_tile].rules:
-		if not (rule.pos == current_rule.pos and rule.layer == current_rule.layer and rule.tile != current_rule.tile): continue
+		if not (rule.cell == current_rule.cell and rule.layer == current_rule.layer): continue
 		set_current_rule(rule)
+		return
 
-func get_rule_on_cell(pos:Vector2i=current_rule.pos, layer:int=current_rule.layer):
+func get_rule_on_cell(pos:Vector2i=current_rule.cell, layer:int=$%RuleLayers.selected):
 	for rule in current_group[current_tile].rules:
-		if not (rule.pos == pos and rule.layer == layer): continue
+#		print("all", rule)
+		if not (rule.cell == pos and rule.layer == layer): continue
 		return rule
+	return {}
 
 enum RULE_TOOL {Add, Edit, Move}
 func _on_rule_tool_item_selected(index):
@@ -179,30 +233,36 @@ func _on_alt_no_rules_pressed():
 
 
 func set_rule_settings(arg):
-	update_current_rule()
+	edit_current_rule()
 
 
 func _on_rule_prob_value_changed(value):
 	var hint:String = "can"
-	match value:
+	match int(value):
 		100: hint = "need"
 		0: hint = "can't"
-	$%ProbLabel.text = "Prob: "+$%RuleProb.value+" ("+hint+")"
+	$%ProbLabel.text = "Prob: "+str($%RuleProb.value)+" ("+hint+")"
 
 func _on_rule_pos_text_submitted(new_text:String):
 	if rule_tool != RULE_TOOL.Edit: return
 	if new_text.count(",") != 1:
 		$%RulePos.set_deferred("text", $%RulePos.text)
 		return
-	var pos:Array[String] = new_text.split(",", false, 1)
+	var pos:PackedStringArray = new_text.split(",", false, 1)
 	for p in pos:
 		if not p.is_valid_int():
 			$%RulePos.set_deferred("text", $%RulePos.text)
 			return
+	rule_pos = Vector2i(int(pos[0]),int(pos[1]))
 	set_rule_settings(new_text)
 
 func _set_pos_setting(pos):
+	rule_pos = pos
+	current_rule = get_rule_on_cell(pos)
 	$%RulePos.text = str(pos.x)+","+str(pos.y)
 
 func _on_rule_layers_pressed():
 	sync_settings()
+
+func get_default_tiledata():
+	return DEFAULT_TILEDATA.duplicate(true)
