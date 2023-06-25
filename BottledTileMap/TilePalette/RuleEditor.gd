@@ -39,8 +39,6 @@ func init_group(group:String):
 	reset_rule_settings()
 	
 	_on_rule_tool_item_selected(RULE_TOOL.Add)
-	
-
 
 func create_tile_list_view():
 	var new_list:ItemList = p.get_node("%ListView").duplicate()
@@ -76,6 +74,7 @@ func update_panel():
 	$%RuleView.queue_redraw()
 
 func create_terrain(group:String, meta:Dictionary, tile:String=current_tile):
+	print(tile)
 	meta[group] = {}
 	create_rule(tile, {}, meta[group])
 	p.tileset.set_meta("Terrains", meta)
@@ -108,9 +107,7 @@ const BASE_LIMIT_Y:int = 4
 func set_panel_limits():
 	var max_limits:Vector2i = Vector2i(0, 0)
 	var min_limits:Vector2i = Vector2i(0, 0)
-	print(current_group[current_tile].rules)
 	for rule in current_group[current_tile].rules:
-		print("celly ",rule.cell.y)
 		if rule.cell.x > max_limits.x and rule.cell.x > BASE_LIMIT_X: max_limits.x = rule.cell.x
 		if rule.cell.y < max_limits.y and rule.cell.y < -BASE_LIMIT_Y: max_limits.y = rule.cell.y
 		if rule.cell.x < min_limits.x and rule.cell.x < -BASE_LIMIT_X: min_limits.x = rule.cell.x
@@ -182,7 +179,6 @@ func set_current_rule(res:Dictionary):
 	for mode in $%DrawingModes.get_popup().item_count:
 		$%DrawingModes.get_popup().set_item_checked(mode, $%DrawingModes.get_popup().get_item_text(mode) in res["modes"])
 	update_panel()
-	print(res)
 
 func reset_rule_settings():
 	$%RuleLayers.selected = 0
@@ -202,7 +198,6 @@ func _on_next_rule_pressed():
 
 func get_rule_on_cell(pos:Vector2i=current_rule.cell, layer:int=$%RuleLayers.selected):
 	for rule in current_group[current_tile].rules:
-#		print("all", rule)
 		if not (rule.cell == pos and rule.layer == layer): continue
 		return rule
 	return {}

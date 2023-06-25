@@ -219,6 +219,7 @@ func assign_tilemap(selected_node:BottledTileMap):
 	tileset = selected_node.tile_set
 	$"%TileRuling".p = self
 	$"%TileRuling".get_node("%RuleView").data = $"%TileRuling"
+	$"%TileRuling".get_node("%RuleView").tileset = tileset
 	_fill()
 
 func _process(delta):
