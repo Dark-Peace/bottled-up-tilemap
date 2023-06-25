@@ -6,7 +6,6 @@ const PANEL_SIZE:Vector2i = Vector2i(753,560)
 
 var rule_tool:RULE_TOOL = RULE_TOOL.Add
 @onready var p
-var copied_rules:Dictionary
 
 var group_name:String
 var current_group:Dictionary
@@ -14,6 +13,7 @@ var current_rule:Dictionary
 var current_tile:String
 var rule_pos:Vector2i
 var edited_rule:Dictionary
+var copied_rules:Array[Dictionary]
 
 var mouse_pos:Vector2i
 
@@ -74,7 +74,6 @@ func update_panel():
 	$%RuleView.queue_redraw()
 
 func create_terrain(group:String, meta:Dictionary, tile:String=current_tile):
-	print(tile)
 	meta[group] = {}
 	create_rule(tile, {}, meta[group])
 	p.tileset.set_meta("Terrains", meta)
@@ -208,22 +207,23 @@ func _on_rule_tool_item_selected(index):
 	$%RulePos.editable = (index == RULE_TOOL.Edit)
 
 func _on_rules_copy_pressed():
-	copied_rules = current_rule
-
+	copied_rules = current_group[current_tile].rules
 
 func _on_rules_paste_pressed():
-	set_current_rule(copied_rules)
-
+	current_group[current_tile].rules = copied_rules.duplicate(true)
+#	set_current_rule(copied_rules)
 
 func _on_rules_export_pressed():
-	var filepath:String
+	var file = FileAccess.open("save_rules_"+group_name+".json", 2)
+	var json = JSON.new()
+	json.parse(json.stringify(current_group))
+	file.store_string(json.to_string())
+	file.close()
 	# JSON
-	print("Ruleset exported to file " + filepath)
-
+	print("Ruleset exported to file " + "save_rules_"+group_name+".json")
 
 func _on_rules_import_pressed():
-	# JSON
-	update_panel()
+	$%GetFile.show()
 
 
 func _on_tile_weigth_value_changed(value):
@@ -277,3 +277,15 @@ func _on_rule_layers_pressed():
 
 func get_default_tiledata():
 	return DEFAULT_TILEDATA.duplicate(true)
+
+func _on_get_file_file_selected(path):
+	# JSON
+	var file = FileAccess.open(".json", FileAccess.READ)
+	var json_as_dict:Dictionary = JSON.parse_string(file.get_as_text())
+	file.close()
+	if json_as_dict:
+		var i:int = 0; var json_array:Array = json_as_dict.keys()
+		for tile in current_group.keys():
+			current_group[tile].rules = json_as_dict.get(json_array[i]).rules
+			i += 1
+	update_panel()
