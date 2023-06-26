@@ -13,6 +13,8 @@ const absent_subtile_border_color: Color = Color(1, 0, 0)
 const absent_subtile_fill_color: Color = Color(1, 0, 0, 0.7)
 const tile_selection_color: Color = Color(0, 0, 1, 0.7)
 const tile_hint_label_font_color: Color = Color(0, 0, 0)
+const BG_COLOR_RIGHT_TILE:Color = Color.DARK_ORANGE
+const BG_COLOR_SELECTED:Color = Color.YELLOW_GREEN
 
 const GROUPCHAR_HIDDEN:String = "*"
 const GROUPCHAR_TILEMAP:String = "$"
@@ -45,6 +47,7 @@ var can_show_subview:bool = true
 
 var selected_left:int = -1
 var selected_right:int = -1
+var selected_tile_items:Array
 var lock_dock:bool = false
 
 
@@ -213,7 +216,7 @@ func _ready():
 	$"%TileRuling".get_node("%RuleView").can_run = true
 
 func assign_tilemap(selected_node:BottledTileMap):
-#	active = true
+	active = true
 	BTM.tilemap = selected_node
 	tilemap = selected_node
 	tileset = selected_node.tile_set
@@ -223,6 +226,7 @@ func assign_tilemap(selected_node:BottledTileMap):
 	_fill()
 
 func _process(delta):
+	if not active: return
 	if not bottom_button.button_pressed: return
 	size = get_parent().size
 
@@ -422,28 +426,11 @@ func _on_hide_group_pressed():
 func _on_tileset_changed(new_tileset: TileSet):
 	_fill()
 
-func _on_ListView_item_selected(index: int) -> void:
-	if index != selected_right:
-		tilemap.current_tile = tileset.get_meta("TileListIndexes", {}).get(index, BTM.new_TILEID())
-		selected_left = index
-		tilemap.dock_tile_selected = $"%ListView".get_item_tooltip(index)
-	for item in $"%ListView".get_selected_items():
-		if item == selected_left or item == selected_right: continue
-		$"%ListView".deselect(item)
-	_fill_subview()
-	# TODO : display subtile view
-
 #enum REPLACE_PARAM {Auto, SelectionOnly, Global}
 #enum SELECT {SelectionOnly, WholeLayer, Global, SelectionAllLayers}
 func _on_EraseAll_pressed() -> void:
 	tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, $"%SelectionType".get_selected_id(), \
 							[tilemap.current_layer,tilemap.ALL_LAYERS][$"%SelectionLayer".get_selected_id()])
-	
-#	match $"%Selections".get_selected_id():
-#		SELECT.SelectionOnly: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly)
-#		SELECT.WholeLayer: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global)
-#		SELECT.Global: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.Global, tilemap.ALL_LAYERS)
-#		SELECT.SelectionAllLayers: tilemap.global_replacing(tilemap.ALL_TILES_V, tilemap.ERASE_TILE_V, REPLACE_PARAM.SelectionOnly, tilemap.ALL_LAYERS)
 	$"%SelectionType".select(0)
 	$"%Selectionlayer".select(0)
 
@@ -451,12 +438,6 @@ func _on_select_all_pressed():
 	var tile:Dictionary = [tilemap.NO_TILE_ID,tilemap.current_tile][int($"%SelectTile".button_pressed)]
 	if $"%SelectionType".get_selected_id() == 0: return
 	tilemap.select_all_cells([tilemap.current_layer,tilemap.ALL_LAYERS][$"%SelectionLayer".get_selected_id()], tile, bool($"%SelectionType".get_selected_id()))
-	
-#	match $"%Selections".get_selected_id():
-#		SELECT.SelectionOnly: return
-#		SELECT.WholeLayer: tilemap.select_all_cells(tilemap.current_layer, tile)
-#		SELECT.Global: tilemap.select_all_cells(tilemap.ALL_LAYERS, tile)
-#		SELECT.SelectionAllLayers: tilemap.select_all_cells(tilemap.ALL_LAYERS, tile, true)
 	$"%SelectionType".select(0)
 	$"%Selectionlayer".select(0)
 
@@ -479,7 +460,7 @@ func _on_tab_changed(tab):
 		c.hide()
 	
 	for node in $BottledTools.get_children():
-		if node in [$"%ToggleFav",$"%Search Group",$"%MoveTileLeft",$"%MoveTileRight",$"%Clean",$"%ClearInvalid",$"%EraseAll"]:
+		if node in [$"%ToggleFav",$"%Search Group",$"%Clean",$"%ClearInvalid",$"%EraseAll"]:
 			node.visible = (tab == TAB.TileMap)
 		elif node in [$"%SwitchEditors", $"%TabSeparator"]: node.visible = (tab == TAB.Patterns)
 		
@@ -498,13 +479,42 @@ func _on_clear_invalid_pressed():
 
 func _on_list_view_empty_clicked(at_position, mouse_button_index):
 	if mouse_button_index != MOUSE_BUTTON_RIGHT: return
+	$%ListView.set_item_custom_bg_color(selected_right, Color.TRANSPARENT)
 	selected_right = -1
 	tilemap.right_click_tile = tilemap.ERASE_TILE_ID
 
 func _on_list_view_item_clicked(index, at_position, mouse_button_index):
-	if mouse_button_index != MOUSE_BUTTON_RIGHT: return
-	selected_right = index
-	tilemap.right_click_tile = tileset.get_meta("TileListIndexes", {}).get(index, tilemap.ERASE_TILE_ID)
+	if mouse_button_index == MOUSE_BUTTON_RIGHT:
+		$%ListView.set_item_custom_bg_color(selected_right, Color.TRANSPARENT)
+		selected_right = index
+		tilemap.right_click_tile = tileset.get_meta("TileListIndexes", {}).get(index, tilemap.ERASE_TILE_ID)
+		$%ListView.set_item_custom_bg_color(index, BG_COLOR_RIGHT_TILE)
+		$"%ListView".deselect(index)
+		$"%ListView".select(selected_left)
+	elif mouse_button_index == MOUSE_BUTTON_LEFT and Input.is_key_pressed(KEY_CTRL):
+		if $%ListView.get_item_custom_bg_color(index) == BG_COLOR_SELECTED:
+			$%ListView.set_item_custom_bg_color(index, Color.TRANSPARENT)
+			selected_tile_items.erase(int($%ListView.get_item_tooltip(index)))
+		else:
+			$%ListView.set_item_custom_bg_color(index, BG_COLOR_SELECTED)
+			selected_tile_items.append(int($%ListView.get_item_tooltip(index)))
+
+func _on_ListView_item_selected(index: int) -> void:
+	if Input.is_key_pressed(KEY_CTRL):
+		$"%ListView".call_deferred("deselect", index)
+		$"%ListView".call_deferred("select", selected_left)
+		return
+#		$"%ListView".deselect(index)
+#		$"%ListView".select(selected_left)
+	if index != selected_right:
+		tilemap.current_tile = tileset.get_meta("TileListIndexes", {}).get(index, BTM.new_TILEID())
+		selected_left = index
+		tilemap.dock_tile_selected = $"%ListView".get_item_tooltip(index)
+	for item in $"%ListView".get_selected_items():
+		if item == selected_left or item == selected_right: continue
+		$"%ListView".deselect(item)
+	_fill_subview()
+	# TODO : display subtile view
 
 func _on_lock_dock_pressed():
 	lock_dock = $"%LockDock".button_pressed
@@ -584,3 +594,23 @@ func _on_tileset_any_button(label:Label, button:Button):
 func duplicate_tile(id:String):
 	pass
 
+
+func _on_add_to_group_pressed():
+	var vect:Vector3i
+	for t in selected_tile_items:
+		vect = tilemap._get_vect_in_map(t)
+		tilemap.add_group_to_tile(vect, $%GroupToAdd.text)
+		tilemap.add_tile_to_group(vect, $%GroupToAdd.text)
+
+func move_tile_index(offset:int):
+	var group:Array[Vector3i] = tileset.get_meta("groups_by_groups", {}).get(curr_group, [])
+	var tile:Vector3i = tilemap._get_vect_in_map(int($%ListView.get_item_tooltip($%ListView.get_selected_items()[-1])))
+	var index:int = group.find(tile)
+	group.remove_at(index)
+	group.insert(index+offset, tile)
+	
+func _on_move_tile_left_pressed():
+	move_tile_index(-1)
+
+func _on_move_tile_right_pressed():
+	move_tile_index(1)
