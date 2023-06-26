@@ -202,6 +202,10 @@ func _get_id_in_map(v:Vector3i):
 	if not v in ID_map.values(): return -1
 	return ID_map.keys()[ID_map.values().find(v,1)]
 
+func _get_vect_in_map(id:int):
+	if not id in ID_map.keys(): return -1
+	return ID_map[id]
+
 func _process(delta: float) -> void:
 	if to_init:
 		to_init = false
