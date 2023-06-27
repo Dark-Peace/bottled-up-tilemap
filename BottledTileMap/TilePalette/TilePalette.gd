@@ -15,6 +15,7 @@ const tile_selection_color: Color = Color(0, 0, 1, 0.7)
 const tile_hint_label_font_color: Color = Color(0, 0, 0)
 const BG_COLOR_RIGHT_TILE:Color = Color.DARK_ORANGE
 const BG_COLOR_SELECTED:Color = Color.YELLOW_GREEN
+const BG_COLOR_ICON:Color = Color.REBECCA_PURPLE
 
 const GROUPCHAR_HIDDEN:String = "*"
 const GROUPCHAR_TILEMAP:String = "$"
@@ -274,18 +275,29 @@ func get_tiles_without_groups():
 		if tilemap.tile_has_any_group(id.v): continue
 		no_group.append(id)
 	return no_group
-	
+
+func _make_group_icon(index:int):
+	var atlas:AtlasTexture = AtlasTexture.new()
+	atlas.atlas = $%ListView.get_item_icon(index)
+	atlas.region = $%ListView.get_item_icon_region(index)
+	tileset.get_meta("groups_icons")[curr_group] = atlas
+	_update_group_icon()
+
+func _update_group_icon():
+	_group_tree.get_node(curr_group).icon = tileset.get_meta("groups_icons")[curr_group]
+
 func create_group(g:String, group_content:Array, tree=_group_tree):
 	var group:Button = _group_tree.get_child(0).duplicate()
-	
 	group.text = g
 	group.name = g
+	group.icon = tileset.get_meta("groups_icons")[g]
 	group.set_meta("TILES", group_content)
 	group_list[g] = group
 	if group.pressed.is_connected(select_group.bind(GROUPNAME_ALLTILES)): group.pressed.disconnect(select_group.bind(GROUPNAME_ALLTILES))
 	group.pressed.connect(select_group.bind(g))
 	_group_tree.add_child(group, true)
 	group.name = group.text
+	
 	if g == tilemap.dock_group_selected:
 		group.button_pressed = true
 		select_group(g)
@@ -326,9 +338,6 @@ func _fill_list_view(tilelist:Array=tileset.get_meta("TileList")):
 func _on_sub_tab_tab_changed(tab):
 	_fill_subview()
 
-func _fill_subtile_view():
-	pass
-
 func _fill_alttile_view():
 	var current_tile:Dictionary = tilemap.current_tile
 	var region:Rect2; var alt:TileData;
@@ -344,7 +353,7 @@ func _fill_alttile_view():
 func _fill_subview():
 	$"%Subtile".clear()
 	match $"%SubTab".current_tab:
-		0: _fill_subtile_view()
+		0: _fill_alttile_view()#_fill_subtile_view()
 		1: _fill_alttile_view()
 
 func get_group_item(n:String, tree:Tree):
@@ -498,14 +507,19 @@ func _on_list_view_item_clicked(index, at_position, mouse_button_index):
 		else:
 			$%ListView.set_item_custom_bg_color(index, BG_COLOR_SELECTED)
 			selected_tile_items.append(int($%ListView.get_item_tooltip(index)))
+	elif mouse_button_index == MOUSE_BUTTON_LEFT and Input.is_key_pressed(KEY_SHIFT):
+		if $%ListView.get_item_custom_bg_color(index) == BG_COLOR_ICON:
+			$%ListView.set_item_custom_bg_color(index, Color.TRANSPARENT)
+			selected_tile_items.erase(int($%ListView.get_item_tooltip(index)))
+		else:
+			$%ListView.set_item_custom_bg_color(index, BG_COLOR_ICON)
+			selected_tile_items.append(int($%ListView.get_item_tooltip(index)))
 
 func _on_ListView_item_selected(index: int) -> void:
 	if Input.is_key_pressed(KEY_CTRL):
 		$"%ListView".call_deferred("deselect", index)
 		$"%ListView".call_deferred("select", selected_left)
 		return
-#		$"%ListView".deselect(index)
-#		$"%ListView".select(selected_left)
 	if index != selected_right:
 		tilemap.current_tile = tileset.get_meta("TileListIndexes", {}).get(index, BTM.new_TILEID())
 		selected_left = index

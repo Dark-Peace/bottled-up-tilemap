@@ -5,6 +5,8 @@ const DEFAULT_TILEDATA:Dictionary = {"weight": 1, "rules":[]}
 const PANEL_SIZE:Vector2i = Vector2i(753,560)
 
 var rule_tool:RULE_TOOL = RULE_TOOL.Add
+enum IMPORT_TYPE {Rules, Col}
+var import_type:IMPORT_TYPE = IMPORT_TYPE.Rules
 @onready var p
 
 var group_name:String
@@ -213,18 +215,63 @@ func _on_rules_paste_pressed():
 	current_group[current_tile].rules = copied_rules.duplicate(true)
 #	set_current_rule(copied_rules)
 
-func _on_rules_export_pressed():
-	var file = FileAccess.open("save_rules_"+group_name+".json", 2)
+func _write_to_json(content, filepath):
+	var file = FileAccess.open(filepath, 2)
 	var json = JSON.new()
-	json.parse(json.stringify(current_group))
+	json.parse(json.stringify(content))
 	file.store_string(json.to_string())
 	file.close()
-	# JSON
+
+func _on_rules_export_pressed():
+	_write_to_json(current_group, "save_rules_"+group_name+".json")
 	print("Ruleset exported to file " + "save_rules_"+group_name+".json")
 
 func _on_rules_import_pressed():
+	import_type = IMPORT_TYPE.Rules
 	$%GetFile.show()
 
+func _on_export_col_pressed():
+	var cols:Dictionary; var tiledata:TileData;
+	for tile in p.tileset.get_meta("groups_by_groups")[group_name]:
+		cols[tile] = {}
+		tiledata = p.tileset.get_source(tile.z).get_tile_data(Vector2i(tile.x, tile.y))
+		for l in p.tileset.get_physics_layers_count():
+			cols[tile][l] = [] 
+			for c in tiledata.get_collision_polygons_count(l):
+				cols[tile][l].append(tiledata.get_collision_polygon_points(l, c))
+	
+	_write_to_json(cols, "collision_set_"+group_name+".json")
+	print("Collision set exported to file " + "collision_set_"+group_name+".json")
+
+func _on_import_col_pressed():
+	import_type = IMPORT_TYPE.Col
+	$%GetFile.show()
+
+func _on_get_file_file_selected(path):
+	var file = FileAccess.open(path, FileAccess.READ)
+	var json_as_dict:Dictionary = JSON.parse_string(file.get_as_text())
+	file.close()
+	if json_as_dict:
+		match import_type:
+			IMPORT_TYPE.Rules: _import_rules(json_as_dict)
+			IMPORT_TYPE.Col: _import_rules(json_as_dict)
+	update_panel()
+
+func _import_cols(cols:Dictionary):
+	var tiledata:TileData; var i:int = 0; var tile_cols:Dictionary
+	for tile in p.tileset.get_meta("groups_by_groups")[group_name]:
+		tiledata = p.tileset.get_source(tile.z).get_tile_data(Vector2i(tile.x, tile.y))
+		tile_cols = cols.keys()[i]
+		for l in tile_cols.keys():
+			for c in tile_cols[l].size():
+				tiledata.set_collision_polygon_points(l, c, tile_cols[l][c])
+		i += 1
+
+func _import_rules(json_as_dict:Dictionary):
+	var i:int = 0; var json_array:Array = json_as_dict.keys()
+	for tile in current_group.keys():
+		current_group[tile].rules = json_as_dict.get(json_array[i]).rules
+		i += 1
 
 func _on_tile_weigth_value_changed(value):
 	current_group[current_tile]["weight"] = value
@@ -277,15 +324,3 @@ func _on_rule_layers_pressed():
 
 func get_default_tiledata():
 	return DEFAULT_TILEDATA.duplicate(true)
-
-func _on_get_file_file_selected(path):
-	# JSON
-	var file = FileAccess.open(".json", FileAccess.READ)
-	var json_as_dict:Dictionary = JSON.parse_string(file.get_as_text())
-	file.close()
-	if json_as_dict:
-		var i:int = 0; var json_array:Array = json_as_dict.keys()
-		for tile in current_group.keys():
-			current_group[tile].rules = json_as_dict.get(json_array[i]).rules
-			i += 1
-	update_panel()

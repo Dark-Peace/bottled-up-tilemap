@@ -17,6 +17,7 @@ const RULE_OFFSET:Vector2i = Vector2i(3,3)
 const OUTLINE_RULE:int = 10
 const OUTLINE_SELECT:int = 6
 const GRID_OFFSET:Vector2i = Vector2i(12,15)
+const TEXT_OFFSET:Vector2i = Vector2i(0,CELL_SIZE/2)
 
 var scroll_offset:Vector2i = Vector2i(0,0)
 
@@ -61,12 +62,18 @@ func _draw():
 	# draw rules
 	var color:Color; var tile:Vector3i
 	for rule in data.current_group[data.current_tile].rules:
-		tile = tileset.get_meta("ID_Map")[int(rule.tile)]
-		draw_texture_rect_region(tileset.get_source(tile.z).texture,Rect2i(((rule.cell+origin)*CELL_SIZE)+GRID_OFFSET, CELL_SIZE_V),\
-			tileset.get_source(tile.z).get_tile_texture_region(Vector2i(tile.x, tile.y)))
-		
-		color = prob_gradient.sample(rule.prob/100)
-		draw_rect(Rect2i(((rule.cell+origin)*CELL_SIZE)+RULE_OFFSET+GRID_OFFSET, RULE_SIZE), color, false, OUTLINE_RULE)
+		if rule.tile.is_valid_int():
+			tile = tileset.get_meta("ID_Map")[int(rule.tile)]
+			draw_texture_rect_region(tileset.get_source(tile.z).texture, Rect2i(((rule.cell+origin)*CELL_SIZE)+GRID_OFFSET, CELL_SIZE_V),\
+				tileset.get_source(tile.z).get_tile_texture_region(Vector2i(tile.x, tile.y)))
+				
+			color = prob_gradient.sample(rule.prob/100)
+			draw_rect(Rect2i(((rule.cell+origin)*CELL_SIZE)+RULE_OFFSET+GRID_OFFSET, RULE_SIZE), color, false, OUTLINE_RULE)
+		else:
+			color = prob_gradient.sample(rule.prob/100)
+			draw_rect(Rect2i(((rule.cell+origin)*CELL_SIZE)+RULE_OFFSET+GRID_OFFSET, RULE_SIZE), color, false, OUTLINE_RULE)
+			
+			draw_string(data.p.tilemap.font, ((rule.cell+origin)*CELL_SIZE)+GRID_OFFSET+TEXT_OFFSET, rule.tile, HORIZONTAL_ALIGNMENT_CENTER)
 	
 	# draw selected
 	if data.current_rule != {}:
