@@ -179,6 +179,7 @@ func init():
 	if not tile_set.has_meta("groups_by_groups"):
 		tile_set.set_meta("groups_by_groups", {})
 		tile_set.set_meta("groups_by_ids", {})
+		tile_set.set_meta("groups_icons", {})
 		tile_set.set_meta("TILE_EVENTS", {})
 		tile_set.set_meta("Terrains", {})
 
