@@ -48,7 +48,7 @@ var can_show_subview:bool = true
 
 var selected_left:int = -1
 var selected_right:int = -1
-var selected_tile_items:Array
+var selected_tile_items:Array[int] = []
 var lock_dock:bool = false
 
 
@@ -290,7 +290,8 @@ func create_group(g:String, group_content:Array, tree=_group_tree):
 	var group:Button = _group_tree.get_child(0).duplicate()
 	group.text = g
 	group.name = g
-	group.icon = tileset.get_meta("groups_icons")[g]
+	print(tilemap, tileset, tileset.get_meta_list())
+	group.icon = tileset.get_meta("groups_icons").get(g, get_theme_icon("VisualShaderNodeTexture2DArrayUniform", "EditorIcons"))
 	group.set_meta("TILES", group_content)
 	group_list[g] = group
 	if group.pressed.is_connected(select_group.bind(GROUPNAME_ALLTILES)): group.pressed.disconnect(select_group.bind(GROUPNAME_ALLTILES))
@@ -323,6 +324,7 @@ func _fill_list_view(tilelist:Array=tileset.get_meta("TileList")):
 			id = BTM.new_TILEID(id.z, Vector2i(id.x,id.y))
 			tilelist_indexes[index] = id
 		index += 1
+		print(id)
 		$"%ListView".add_item("", tileset.get_source(id.source).texture)
 		list_index = $"%ListView".get_item_count()-1
 		$"%ListView".set_item_icon_region(list_index,tileset.get_source(id.source).get_tile_texture_region(id.coords))
@@ -340,9 +342,11 @@ func _on_sub_tab_tab_changed(tab):
 
 func _fill_alttile_view():
 	var current_tile:Dictionary = tilemap.current_tile
+	if current_tile.source < 0: return
 	var region:Rect2; var alt:TileData;
 	for a in 8:
 		alt = tileset.get_source(current_tile.source).get_tile_data(current_tile.coords, a)
+		if not alt: break
 		$"%Subtile".add_item("", tileset.get_source(current_tile.source).texture)
 		region = tileset.get_source(current_tile.source).get_tile_texture_region(current_tile.coords)
 		if alt.flip_h: region.size.x = -region.size.x
@@ -507,6 +511,7 @@ func _on_list_view_item_clicked(index, at_position, mouse_button_index):
 		else:
 			$%ListView.set_item_custom_bg_color(index, BG_COLOR_SELECTED)
 			selected_tile_items.append(int($%ListView.get_item_tooltip(index)))
+			print(int($%ListView.get_item_tooltip(index)), selected_tile_items)
 	elif mouse_button_index == MOUSE_BUTTON_LEFT and Input.is_key_pressed(KEY_SHIFT):
 		if $%ListView.get_item_custom_bg_color(index) == BG_COLOR_ICON:
 			$%ListView.set_item_custom_bg_color(index, Color.TRANSPARENT)
@@ -612,6 +617,7 @@ func duplicate_tile(id:String):
 func _on_add_to_group_pressed():
 	var vect:Vector3i
 	for t in selected_tile_items:
+		if t == -1: continue
 		vect = tilemap._get_vect_in_map(t)
 		tilemap.add_group_to_tile(vect, $%GroupToAdd.text)
 		tilemap.add_tile_to_group(vect, $%GroupToAdd.text)
