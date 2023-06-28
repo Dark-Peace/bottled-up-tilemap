@@ -176,7 +176,7 @@ func init():
 	
 	if not tile_set.has_meta("ID_Map"):
 		_on_tileset_changed()
-	if not tile_set.has_meta("groups_by_groups"):
+	if not tile_set.has_meta("groups_by_icons"):
 		tile_set.set_meta("groups_by_groups", {})
 		tile_set.set_meta("groups_by_ids", {})
 		tile_set.set_meta("groups_icons", {})
@@ -204,7 +204,7 @@ func _get_id_in_map(v:Vector3i):
 	return ID_map.keys()[ID_map.values().find(v,1)]
 
 func _get_vect_in_map(id:int):
-	if not id in ID_map.keys(): return -1
+	if not id in ID_map.keys(): return Vector3(-1,-1,-1)
 	return ID_map[id]
 
 func _process(delta: float) -> void:
@@ -452,13 +452,13 @@ func get_selected_cells():
 			if spray_density > 0: current_cells.append_array(spray(c))
 			else: current_cells.append_array(get_tiles_with_brush(c))
 		else: current_cells.append(c)
-	
+		
 	if axis > 0:
 		for _c in current_cells.size():
 			current_cells.append_array(get_symmetry_tiles(current_cells[_c]))
-	
+		
 	return current_cells
-	
+
 func select_all_cells(layer:int=current_layer, tile:Dictionary=NO_TILE_ID, keep_selection:bool=false):
 	var res:Array[Vector2i]
 	if BTM.isEqual(tile, NO_TILE_ID) and not keep_selection:
@@ -869,6 +869,7 @@ func unset_selected_cells(value=null):
 
 func set_current_tile(value:Dictionary):
 	current_tile = value
+	if value.source == -1: return
 	curr_tile_texture = tile_set.get_source(value.source).texture
 	curr_tile_reg = tile_set.get_source(value.source).get_tile_texture_region(value.coords)
 

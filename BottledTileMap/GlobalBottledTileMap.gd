@@ -85,6 +85,7 @@ func handle_click_pressed(button):
 	is_bucket = Input.is_key_pressed(KEY_SPACE)
 	if is_shift:
 		starter_cell = current_cell
+	print(current_cell)
 
 func handle_click_release():
 	# draw
@@ -108,22 +109,21 @@ func handle_click_release():
 
 func handle_motion():
 	if is_bucket or current_cell == tilemap.local_to_map(tilemap.get_local_mouse_position()):
-		return
-	
+		if is_shift:
+			if is_ctrl: tilemap.curr_cells_shift = tilemap.get_rect_from(starter_cell, current_cell)
+			else: tilemap.curr_cells_shift = get_bresenham_line(starter_cell, current_cell)
+		else:
+			# button held and no line / rect
+			draw_tile(button_held)
+		if is_alt:
+			select_cell(button_held)
 	# update current cell
 	tilemap.cell_exited.emit(current_cell)
 	current_cell = tilemap.local_to_map(tilemap.get_local_mouse_position())
-	if is_shift:
-		if is_ctrl: tilemap.curr_cells_shift = tilemap.get_rect_from(starter_cell, current_cell)
-		else: tilemap.curr_cells_shift = get_bresenham_line(starter_cell, current_cell)
-	else:
-		# button held and no line / rect
-		draw_tile(button_held)
+	if not is_shift:
 		# preview single cell
 		var new_cells_shift:Array[Vector2i] = [current_cell]
 		tilemap.curr_cells_shift = new_cells_shift
-	if is_alt:
-		select_cell(button_held)
 	# draw preview
 	tilemap.cell_entered.emit(current_cell)
 	tilemap.queue_redraw()
@@ -181,11 +181,11 @@ func _transform_pattern(action:int):
 
 func get_tiles_ids(tileset:TileSet) -> Array[Dictionary]:
 	var res:Array[Dictionary]; var curr_source; var tile:Dictionary
-	for source_id in tileset.get_next_source_id():
-		if not tileset.has_source(source_id): continue
-		curr_source = tileset.get_source(source_id)
+	for source_id in tileset.get_source_count():
+#		if not tileset.has_source(source_id): continue
+		curr_source = tileset.get_source(tileset.get_source_id(source_id))
 		for index in curr_source.get_tiles_count():
-			tile = new_TILEID(source_id, curr_source.get_tile_id(index))
+			tile = new_TILEID(tileset.get_source_id(source_id), curr_source.get_tile_id(index))
 			res.append(tile)
 	return res
 
