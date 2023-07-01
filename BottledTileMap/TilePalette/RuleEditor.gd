@@ -27,8 +27,7 @@ func init_group(group:String):
 	
 	group_name = group
 	if not p.tileset.get_meta("Terrains", {}).has(group):
-		create_terrain(group, p.tileset.get_meta("Terrains", {}), \
-			str(p.tilemap._get_id_in_map(p.tileset.get_meta("groups_by_groups", {})[group][0])))
+		create_terrain(group, p.tileset.get_meta("Terrains", {}))
 	current_group = p.tileset.get_meta("Terrains", {}).get(group)
 	
 	create_tile_list_view()
@@ -75,9 +74,10 @@ func sync_settings():
 func update_panel():
 	$%RuleView.queue_redraw()
 
-func create_terrain(group:String, meta:Dictionary, tile:String=current_tile):
+func create_terrain(group:String, meta:Dictionary):#, tile:String=current_tile):
 	meta[group] = {}
-	create_rule(tile, {}, meta[group])
+	for tile in p.tileset.get_meta("groups_by_groups", {})[group]:
+		create_rule(str(p.tilemap._get_id_in_map(tile)), {}, meta[group])
 	p.tileset.set_meta("Terrains", meta)
 
 func remove_terrain(group:String):
@@ -218,8 +218,7 @@ func _on_rules_paste_pressed():
 func _write_to_json(content, filepath):
 	var file = FileAccess.open(filepath, 2)
 	var json = JSON.new()
-	json.parse(json.stringify(content))
-	file.store_string(json.to_string())
+	file.store_string(json.stringify(content, "", false))
 	file.close()
 
 func _on_rules_export_pressed():
@@ -254,7 +253,7 @@ func _on_get_file_file_selected(path):
 	if json_as_dict:
 		match import_type:
 			IMPORT_TYPE.Rules: _import_rules(json_as_dict)
-			IMPORT_TYPE.Col: _import_rules(json_as_dict)
+			IMPORT_TYPE.Col: _import_cols(json_as_dict)
 	update_panel()
 
 func _import_cols(cols:Dictionary):
@@ -271,7 +270,13 @@ func _import_rules(json_as_dict:Dictionary):
 	var i:int = 0; var json_array:Array = json_as_dict.keys()
 	for tile in current_group.keys():
 		current_group[tile].rules = json_as_dict.get(json_array[i]).rules
+		for r in current_group[tile].rules.size():
+			current_group[tile].rules[r].cell = parse_vector2(json_as_dict.get(json_array[i]).rules[r].cell)
 		i += 1
+
+func parse_vector2(text:String):
+	var res:PackedStringArray = text.split(",", false, 1)
+	return Vector2i(res[0].to_int(), res[1].to_int())
 
 func _on_tile_weigth_value_changed(value):
 	current_group[current_tile]["weight"] = value

@@ -210,7 +210,6 @@ func _find_in_editor(target:String="TileMapEditor", node:Node=get_tree().root, _
 
 func _ready():
 	_on_tab_changed(TAB.TileMap)
-	BTM.palette = self
 	$PatternEditor.dock = self
 	$"%GroupTree".get_child(0).connect("pressed", select_group.bind(GROUPNAME_ALLTILES))
 	$"%GroupTree".get_child(1).connect("pressed", select_group.bind(GROUPNAME_NOGROUP))
@@ -219,6 +218,7 @@ func _ready():
 func assign_tilemap(selected_node:BottledTileMap):
 	active = true
 	BTM.tilemap = selected_node
+	BTM.palette = self
 	tilemap = selected_node
 	tileset = selected_node.tile_set
 	$"%TileRuling".p = self
@@ -324,7 +324,6 @@ func _fill_list_view(tilelist:Array=tileset.get_meta("TileList")):
 			id = BTM.new_TILEID(id.z, Vector2i(id.x,id.y))
 			tilelist_indexes[index] = id
 		index += 1
-		print(id)
 		$"%ListView".add_item("", tileset.get_source(id.source).texture)
 		list_index = $"%ListView".get_item_count()-1
 		$"%ListView".set_item_icon_region(list_index,tileset.get_source(id.source).get_tile_texture_region(id.coords))
@@ -344,9 +343,9 @@ func _fill_alttile_view():
 	var current_tile:Dictionary = tilemap.current_tile
 	if current_tile.source < 0: return
 	var region:Rect2; var alt:TileData;
-	for a in 8:
+	for a in tileset.get_source(current_tile.source).get_alternative_tiles_count(current_tile.coords):
+#		if not tileset.get_source(current_tile.source).has_alternative_tile(current_tile.coords, a): break
 		alt = tileset.get_source(current_tile.source).get_tile_data(current_tile.coords, a)
-		if not alt: break
 		$"%Subtile".add_item("", tileset.get_source(current_tile.source).texture)
 		region = tileset.get_source(current_tile.source).get_tile_texture_region(current_tile.coords)
 		if alt.flip_h: region.size.x = -region.size.x
@@ -621,6 +620,7 @@ func _on_add_to_group_pressed():
 		vect = tilemap._get_vect_in_map(t)
 		tilemap.add_group_to_tile(vect, $%GroupToAdd.text)
 		tilemap.add_tile_to_group(vect, $%GroupToAdd.text)
+		print(vect)
 
 func move_tile_index(offset:int):
 	var group:Array[Vector3i] = tileset.get_meta("groups_by_groups", {}).get(curr_group, [])
