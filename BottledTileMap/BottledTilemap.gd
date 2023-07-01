@@ -141,7 +141,8 @@ var to_init = true
 var can_trigger = true
 var can_trigger_multi = true
 var origin = Vector2(0,0)
-var can_origin = true
+var can_origin:bool = true
+var allow_painted_overwrite:bool = false
 
 var label = Label.new()
 var font = label.get_theme_font("")
@@ -174,14 +175,12 @@ func init():
 	cell_entered.connect(_on_cell_entered)
 	self.changed.connect(_on_tileset_changed)
 	
-	if not tile_set.has_meta("ID_Map"):
-		_on_tileset_changed()
-	if not tile_set.has_meta("groups_by_icons"):
-		tile_set.set_meta("groups_by_groups", {})
-		tile_set.set_meta("groups_by_ids", {})
-		tile_set.set_meta("groups_icons", {})
-		tile_set.set_meta("TILE_EVENTS", {})
-		tile_set.set_meta("Terrains", {})
+	if not tile_set.has_meta("ID_Map"): _on_tileset_changed()
+	if not tile_set.has_meta("groups_by_icons"): tile_set.set_meta("groups_icons", {})
+	if not tile_set.has_meta("groups_by_groups"): tile_set.set_meta("groups_by_groups", {})
+	if not tile_set.has_meta("groups_by_ids"): tile_set.set_meta("groups_by_ids", {})
+	if not tile_set.has_meta("TILE_EVENTS"): tile_set.set_meta("TILE_EVENTS", {})
+	if not tile_set.has_meta("Terrains"): tile_set.set_meta("Terrains", {})
 
 func _on_tileset_changed():
 	var tiles:Array[Dictionary] = BTM.get_tiles_ids(tile_set)
@@ -417,10 +416,16 @@ func call_all_draw(xy:Vector2i,tile:Dictionary,l:int=current_layer,alt:int=curre
 			if use_alt_random and (allow_random & RandomAccross.TileMaps): alt = randi()%8
 			tm.set_cell(l,xy,tile.source,tile.coords,alt)
 #			draw_symmetry(xy,tile,l,alt) #TODO multi tilemap symmetry
-		send_draw_signals(xy, tile, l)
-		super.set_cell(l,xy,tile.source,tile.coords,alt)
+		_call_draw(xy,tile,l,alt)
 		draw_symmetry(xy,tile,l,alt)
 	if allow_autotile: update_bitmask_area(xy)
+
+func _call_draw(xy:Vector2i,tile:Dictionary,l:int=current_layer,alt:int=current_alt):
+	if not allow_painted_overwrite and Vector3i(xy.x,xy.y,l) in BTM.painted_cells: return
+	super.set_cell(l,xy,tile.source,tile.coords,alt)
+	send_draw_signals(xy, tile, l)
+	if tile.source == ERASE_TILE: return
+	BTM.painted_cells.append(Vector3i(xy.x,xy.y,l))
 
 func match_themes(tile:Dictionary) -> Dictionary:
 	if used_theme == NO_THEME: return tile
@@ -486,26 +491,25 @@ func draw_symmetry(xy:Vector2i,tile:Dictionary,l:int=current_layer,alt=current_a
 	var id=tile.source; var _a = tile.coords;
 	if axis == X_AXIS:
 		var new_vect:Vector2i = xy+Vector2i(0,-2*(xy.x-axis_pos.x)-1)
-		super.set_cell(l,new_vect,id,_a,alt)
-		if allow_autotile: update_bitmask_area(new_vect)
-		send_draw_signals(new_vect, tile, l)
+		_call_draw(new_vect,tile,l,alt)
+#		super.set_cell(l,new_vect,id,_a,alt)
+#		send_draw_signals(new_vect, tile, l)
 	elif axis == Y_AXIS:
 		var new_vect:Vector2i = xy+Vector2i(-2*(xy.y-axis_pos.y)-1,0)
-		super.set_cell(l,new_vect,id,_a,alt)
-		if allow_autotile: update_bitmask_area(new_vect)
-		send_draw_signals(new_vect, tile, l)
+		_call_draw(new_vect,tile,l,alt)
+#		super.set_cell(l,new_vect,id,_a,alt)
+#		send_draw_signals(new_vect, tile, l)
 	elif axis == BOTH_AXIS:
 		var part_vect:Vector2i = Vector2i((-2*(xy.x-axis_pos.x)-1),(-2*(xy.y-axis_pos.y)-1))
-		super.set_cell(l,xy+Vector2i(part_vect.x,0),id,_a,alt)
-		super.set_cell(l,xy+Vector2i(0,part_vect.y),id,_a,alt)
-		super.set_cell(l,xy+Vector2i(part_vect.x,part_vect.y),id,_a,alt)
-		if allow_autotile:
-			update_bitmask_area(xy+Vector2i(part_vect.x,0))
-			update_bitmask_area(xy+Vector2i(0,part_vect.y))
-			update_bitmask_area(xy+Vector2i(part_vect.x,part_vect.y))
-		send_draw_signals(xy+Vector2i(part_vect.x,0), tile, l)
-		send_draw_signals(xy+Vector2i(0,part_vect.y), tile, l)
-		send_draw_signals(xy+Vector2i(part_vect.x,part_vect.y), tile, l)
+		_call_draw(xy+Vector2i(part_vect.x,0),tile,l,alt)
+		_call_draw(xy+Vector2i(0,part_vect.y),tile,l,alt)
+		_call_draw(xy+Vector2i(part_vect.x,part_vect.y),tile,l,alt)
+#		super.set_cell(l,xy+Vector2i(part_vect.x,0),id,_a,alt)
+#		super.set_cell(l,xy+Vector2i(0,part_vect.y),id,_a,alt)
+#		super.set_cell(l,xy+Vector2i(part_vect.x,part_vect.y),id,_a,alt)
+#		send_draw_signals(xy+Vector2i(part_vect.x,0), tile, l)
+#		send_draw_signals(xy+Vector2i(0,part_vect.y), tile, l)
+#		send_draw_signals(xy+Vector2i(part_vect.x,part_vect.y), tile, l)
 
 func get_symmetry_tiles(xy:Vector2i):
 	if axis == 0: return
@@ -573,12 +577,12 @@ func get_rect_from(start:Vector2i, end:Vector2i):
 	var res:Array[Vector2i]
 	var step = Vector2i(sign(end.x-start.x), sign(end.y-start.y))
 	# rect is an horizontal / vertical line
-	if step.x == 0: for y in range(start.y, end.y, step.y): res.append(Vector2i(start.x,y))
-	elif step.y == 0: for x in range(start.x, end.x, step.x): res.append(Vector2i(x,start.y))
+	if step.x == 0: for y in range(start.y, end.y+sign(step.y), step.y): res.append(Vector2i(start.x,y))
+	elif step.y == 0: for x in range(start.x, end.x+sign(step.x), step.x): res.append(Vector2i(x,start.y))
 	# rect is an area
 	else:
-		for x in range(start.x, end.x, step.x):
-			for y in range(start.y, end.y, step.y):
+		for x in range(start.x, end.x+sign(step.x), step.x):
+			for y in range(start.y, end.y+sign(step.y), step.y):
 				res.append(Vector2i(x,y))
 	return res
 

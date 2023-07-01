@@ -607,63 +607,366 @@ metadata/ID_Map = {
 metadata/TileListIndexes = {
 0: {
 "alt": 0,
-"coords": Vector2i(2, 2),
-"source": 5,
-"v": Vector3i(2, 2, 5)
-},
-1: {
-"alt": 0,
-"coords": Vector2i(2, 1),
-"source": 5,
-"v": Vector3i(2, 1, 5)
-},
-2: {
-"alt": 0,
-"coords": Vector2i(2, 0),
-"source": 5,
-"v": Vector3i(2, 0, 5)
-},
-3: {
-"alt": 0,
 "coords": Vector2i(0, 0),
 "source": 5,
 "v": Vector3i(0, 0, 5)
 },
-4: {
+1: {
 "alt": 0,
 "coords": Vector2i(0, 1),
 "source": 5,
 "v": Vector3i(0, 1, 5)
 },
-5: {
+2: {
 "alt": 0,
 "coords": Vector2i(0, 2),
 "source": 5,
 "v": Vector3i(0, 2, 5)
 },
-6: {
+3: {
 "alt": 0,
 "coords": Vector2i(1, 0),
 "source": 5,
 "v": Vector3i(1, 0, 5)
 },
-7: {
+4: {
 "alt": 0,
 "coords": Vector2i(1, 1),
 "source": 5,
 "v": Vector3i(1, 1, 5)
 },
-8: {
+5: {
 "alt": 0,
 "coords": Vector2i(1, 2),
 "source": 5,
 "v": Vector3i(1, 2, 5)
+},
+6: {
+"alt": 0,
+"coords": Vector2i(2, 0),
+"source": 5,
+"v": Vector3i(2, 0, 5)
+},
+7: {
+"alt": 0,
+"coords": Vector2i(2, 1),
+"source": 5,
+"v": Vector3i(2, 1, 5)
+},
+8: {
+"alt": 0,
+"coords": Vector2i(2, 2),
+"source": 5,
+"v": Vector3i(2, 2, 5)
 }
 }
-metadata/groups_by_groups = {}
-metadata/groups_by_ids = {}
+metadata/groups_by_groups = {
+"grass": [Vector3i(0, 0, 5), Vector3i(0, 1, 5), Vector3i(0, 2, 5), Vector3i(1, 0, 5), Vector3i(1, 1, 5), Vector3i(1, 2, 5), Vector3i(2, 0, 5), Vector3i(2, 1, 5), Vector3i(2, 2, 5)]
+}
+metadata/groups_by_ids = {
+Vector3i(0, 0, 5): ["grass"],
+Vector3i(0, 1, 5): ["grass"],
+Vector3i(0, 2, 5): ["grass"],
+Vector3i(1, 0, 5): ["grass"],
+Vector3i(1, 1, 5): ["grass"],
+Vector3i(1, 2, 5): ["grass"],
+Vector3i(2, 0, 5): ["grass"],
+Vector3i(2, 1, 5): ["grass"],
+Vector3i(2, 2, 5): ["grass"]
+}
 metadata/TILE_EVENTS = {}
-metadata/Terrains = {}
+metadata/Terrains = {
+"grass": {
+"363": {
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"364": {
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"365": {
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"366": {
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"367": {
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"368": {
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"369": {
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"370": {
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"371": {
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+}
+}
+}
 metadata/groups_icons = {}
 metadata/TileList = Array[Dictionary]([{
 "alt": 0,
@@ -806,7 +1109,7 @@ outline_width = 2.0
 drawing_modes = Array[String](["stuff"])
 multi_cursor_list = Array[Vector2i]([Vector2i(2, 0)])
 dock_group_selected = "grass"
-dock_tile_selected = "368"
+dock_tile_selected = "-1"
 
 [node name="PatternTileMap1" type="TileMap" parent="."]
 tile_set = SubResource("2")
