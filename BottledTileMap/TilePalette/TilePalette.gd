@@ -620,7 +620,6 @@ func _on_add_to_group_pressed():
 		vect = tilemap._get_vect_in_map(t)
 		tilemap.add_group_to_tile(vect, $%GroupToAdd.text)
 		tilemap.add_tile_to_group(vect, $%GroupToAdd.text)
-		print(vect)
 
 func move_tile_index(offset:int):
 	var group:Array[Vector3i] = tileset.get_meta("groups_by_groups", {}).get(curr_group, [])
