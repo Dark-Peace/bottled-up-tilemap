@@ -81,19 +81,23 @@ func _on_bucket_pressed():
 	BTM.is_bucket = $Bucket.button_pressed
 
 func _on_use_terrain_pressed():
-	$UseTerrain.button_pressed = !$UseTerrain.button_pressed
 	BTM.is_terrain = $UseTerrain.button_pressed
+	if $SolveTerrain.button_pressed and $UseTerrain.button_pressed: $SolveTerrain.button_pressed = false
+
+func _on_solve_terrain_pressed():
+	BTM.is_solving = $SolveTerrain.button_pressed
+	if $SolveTerrain.button_pressed and $UseTerrain.button_pressed: $UseTerrain.button_pressed = false
 
 # drawing modes ---------
 
 func update_drawing_modes(list:Array[String]):
-	$%DrawingModes.get_popup().clear()
+	$DrawingModes.get_popup().clear()
 	for m in BTM.palette.tilemap.drawing_modes:
-		$%DrawingModes.get_popup().add_check_item(m)
+		$DrawingModes.get_popup().add_check_item(m)
 
 func get_drawing_modes():
 	var res:Array[String]
-	for m in $%DrawingModes.get_popup().item_count:
-		if not $%DrawingModes.get_popup().is_item_checked(m): continue
-		res.append($%DrawingModes.get_popup().get_item_text(m))
+	for m in $DrawingModes.get_popup().item_count:
+		if not $DrawingModes.get_popup().is_item_checked(m): continue
+		res.append($DrawingModes.get_popup().get_item_text(m))
 	return res

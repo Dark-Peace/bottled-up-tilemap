@@ -60,8 +60,13 @@ var is_ctrl:bool = false
 var is_alt:bool = false
 var is_bucket:bool = false
 var is_terrain:bool = true
+var is_solving:bool = false
 #var is_custom_brush:bool = false
 var drawing_modes:Array[String] = []
+
+
+
+## input handling ##
 
 func bottled_set_cell(event:InputEvent):
 	# click
@@ -74,28 +79,69 @@ func bottled_set_cell(event:InputEvent):
 
 func handle_click_pressed(button):
 	# cancel line / rect by clicking with the other mouse button
-	if button == (button_held%2)+1:
-		cancel_action = true
-		tilemap.curr_cells_shift.clear()
-		tilemap.get_selected_cells()
-		tilemap.queue_redraw()
-	# setup
+	if button == (button_held%2)+1: _cancel_shape_draw()
+	# SETUP
+	_setup_var_on_click(button)
+
+func handle_click_release():
+	# draw
+	_draw_on_release()
+	# end of action : reset
+	_reset_var_on_release()
+
+func handle_motion():
+	if is_bucket: return
+	if current_cell == tilemap.local_to_map(tilemap.get_local_mouse_position()):
+		if not _draw_first_tile_if_motion(): return
+	
+	# update current exited cell to newly entered cell
+	tilemap.cell_exited.emit(current_cell)
+	current_cell = tilemap.local_to_map(tilemap.get_local_mouse_position())
+	
+	_draw_on_motion()
+	
+	# draw preview on newly entered cell
+	tilemap.cell_entered.emit(current_cell)
+	tilemap.queue_redraw()
+
+
+
+## actions on input ##
+
+func _setup_var_on_click(button):
 	current_cell = tilemap.local_to_map(tilemap.get_local_mouse_position())
 	start_hold_cell = current_cell
 	button_held = button
-	# remember starter cell if SHIFT
 	is_shift = Input.is_key_pressed(KEY_SHIFT)
 	is_ctrl = Input.is_key_pressed(KEY_CTRL)
 	is_alt = Input.is_key_pressed(KEY_ALT)
 	is_bucket = Input.is_key_pressed(KEY_SPACE)
-	if is_shift:
-		starter_cell = current_cell
+	# remember starter cell if SHIFT for drawing rect / lines
+	if is_shift: starter_cell = current_cell
 
-func handle_click_release():
-	# draw
+func _reset_var_on_release():
+	button_held = INVALID
+	is_ctrl = false
+	is_shift = false
+	is_alt = false
+	cancel_action = false
+	if is_terrain: _solve_autotile_shape()
+	painted_cells.clear()
+	tilemap.curr_cells_shift = []
+	tilemap.get_selected_cells()
+	tilemap.queue_redraw()
+
+func _cancel_shape_draw():
+	cancel_action = true
+	tilemap.curr_cells_shift.clear()
+	tilemap.get_selected_cells()
+	tilemap.queue_redraw()
+	
+func _draw_on_release():
 	if is_alt: select_cell(button_held)
 	elif is_bucket:
 		tilemap.draw_bucket(current_cell, match_button_action(button_held),l,current_alt)
+	elif is_solving: pass
 	elif not cancel_action:
 		if is_shift:
 			if is_ctrl: tilemap.draw_tile_rect(starter_cell, current_cell, match_button_action(button_held),l,current_alt)
@@ -103,49 +149,36 @@ func handle_click_release():
 		elif is_ctrl: palette.pick_tile(tilemap.get_cell(current_cell))
 		elif is_terrain: draw_terrain_cell(button_held)
 		else: draw_tile(button_held)
-	
-	# end of action : reset
-	button_held = INVALID
-	is_ctrl = false
-	is_shift = false
-	is_alt = false
-	cancel_action = false
-	if is_terrain:
-		update_terrain_space(painted_cells, 0)
-		painted_cells.reverse()
-		update_terrain_space(painted_cells, 0)
-	painted_cells.clear()
-	tilemap.curr_cells_shift = []
-	tilemap.get_selected_cells()
-	tilemap.queue_redraw()
 
-func handle_motion():
-	if is_bucket: return
-	if current_cell == tilemap.local_to_map(tilemap.get_local_mouse_position()):
-		if current_cell != start_hold_cell: return
-		start_hold_cell = FARAWAY
-		if is_shift: return
-		if not is_terrain: draw_tile(button_held)
-	
-	# update current cell
-	tilemap.cell_exited.emit(current_cell)
-	current_cell = tilemap.local_to_map(tilemap.get_local_mouse_position())
-#	if not Vector3i(current_cell.x, current_cell.y, l) in painted_cells:
+func _draw_on_motion():
+	# draw
 	if is_shift:
 		if is_ctrl: tilemap.curr_cells_shift = tilemap.get_rect_from(starter_cell, current_cell)
 		else: tilemap.curr_cells_shift = get_bresenham_line(starter_cell, current_cell)
 	elif is_terrain: draw_terrain_cell(button_held)
-	else:
+	elif is_solving: update_terrain_cell()
+	elif not is_alt:
 		# button held and no line / rect
 		draw_tile(button_held)
 		# preview single cell
-		var new_cells_shift:Array[Vector2i] = [current_cell]
-		tilemap.curr_cells_shift = new_cells_shift
-	if is_alt:
-		select_cell(button_held)
-	# draw preview
-	tilemap.cell_entered.emit(current_cell)
-	tilemap.queue_redraw()
+		tilemap.curr_cells_shift = [current_cell]
+	# other actions
+	if is_alt: select_cell(button_held)
+
+func _draw_first_tile_if_motion() -> bool:
+	if current_cell != start_hold_cell: return false
+	start_hold_cell = FARAWAY
+	if is_shift: return false
+	if not is_terrain: draw_tile(button_held)
+	return true
+
+func _solve_autotile_shape():
+	update_terrain_space(painted_cells, 0)
+	painted_cells.reverse() # why doing that ? idk but it doesn't work without
+	update_terrain_space(painted_cells, 0)
+
+
+
 
 
 func match_button_action(button:int):
@@ -175,7 +208,6 @@ func select_cell(button:int):
 		match button:
 			MOUSE_BUTTON_LEFT: tilemap.set_selected_cells()
 			MOUSE_BUTTON_RIGHT: tilemap.unset_selected_cells()
-			INVALID: return
 
 func _on_key_pressed(event:InputEventKey):
 	if Input.is_key_pressed(KEY_CTRL) and event.keycode in [KEY_C, KEY_X] and not tilemap.selected_cells.is_empty():
@@ -196,77 +228,8 @@ func _set_current_alt(value):
 func _transform_pattern(action:int):
 	tilemap.transform_brush(action)
 
-################################
 
-func get_tiles_ids(tileset:TileSet) -> Array[Dictionary]:
-	var res:Array[Dictionary]; var curr_source; var tile:Dictionary
-	for source_id in tileset.get_source_count():
-#		if not tileset.has_source(source_id): continue
-		curr_source = tileset.get_source(tileset.get_source_id(source_id))
-		for index in curr_source.get_tiles_count():
-			tile = new_TILEID(tileset.get_source_id(source_id), curr_source.get_tile_id(index))
-			res.append(tile)
-	return res
-
-func duplicate_tiledata(tile:TileData):
-	var new_data:TileData
-
-# This function was made by Miziziziz at https://github.com/Miziziziz/ThineCometh/blob/master/objects/Enemy.gd
-# It's an implementation of the bresenham algo : http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
-func get_bresenham_line(start:Vector2i, end:Vector2i):
-	var dx = end.x - start.x
-	var dy = end.y - start.y
-	# Determine how steep the line is
-	var is_steep = abs(dy) > abs(dx)
-	var tmp = 0
-	# Rotate line
-	if is_steep:
-		tmp = start.x
-		start.x = start.y
-		start.y = tmp
-		tmp = end.x
-		end.x = end.y
-		end.y = tmp
-	# Swap start and end points if necessary and store swap state
-	var swapped = false
-	if start.x > end.x:
-		tmp = start.x
-		start.x = end.x
-		end.x = tmp
-		tmp = start.y
-		start.y = end.y
-		end.y = tmp
-		swapped = true
-	# Recalculate differentials
-	dx = end.x - start.x
-	dy = end.y - start.y
-	
-	# Calculate error
-	var error = int(dx / 2.0)
-	var ystep = 1 if start.y < end.y else -1
-
-	# Iterate over bounding box generating points between start and end
-	var y = start.y
-	var points:Array[Vector2i]
-	for x in range(start.x, end.x + 1):
-		var coord = Vector2i(y,x) if is_steep else Vector2i(x,y)
-		points.append(coord)
-		error -= abs(dy)
-		if error < 0:
-			y += ystep
-			error += dx
-	# handles negative coordinates
-	if swapped:
-		points.reverse()
-	
-	return points
-
-func vector2(vect:Vector3i, start:int=0):
-	return Vector2i(vect.x,vect.y)
-
-
-
-#### Terrain Manager --------------------------------------------
+#### Terrain Manager ------
 
 func _init():
 	randomize()
@@ -380,6 +343,78 @@ func update_drawing_modes():
 
 func current_drawing_modes():
 	return toolbar.get_drawing_modes()
+
+################################
+
+func get_tiles_ids(tileset:TileSet) -> Array[Dictionary]:
+	var res:Array[Dictionary]; var curr_source; var tile:Dictionary
+	for source_id in tileset.get_source_count():
+#		if not tileset.has_source(source_id): continue
+		curr_source = tileset.get_source(tileset.get_source_id(source_id))
+		for index in curr_source.get_tiles_count():
+			tile = new_TILEID(tileset.get_source_id(source_id), curr_source.get_tile_id(index))
+			res.append(tile)
+	return res
+
+func duplicate_tiledata(tile:TileData):
+	var new_data:TileData
+
+# This function was made by Miziziziz at https://github.com/Miziziziz/ThineCometh/blob/master/objects/Enemy.gd
+# It's an implementation of the bresenham algo : http://www.roguebasin.com/index.php?title=Bresenham%27s_Line_Algorithm
+func get_bresenham_line(start:Vector2i, end:Vector2i):
+	var dx = end.x - start.x
+	var dy = end.y - start.y
+	# Determine how steep the line is
+	var is_steep = abs(dy) > abs(dx)
+	var tmp = 0
+	# Rotate line
+	if is_steep:
+		tmp = start.x
+		start.x = start.y
+		start.y = tmp
+		tmp = end.x
+		end.x = end.y
+		end.y = tmp
+	# Swap start and end points if necessary and store swap state
+	var swapped = false
+	if start.x > end.x:
+		tmp = start.x
+		start.x = end.x
+		end.x = tmp
+		tmp = start.y
+		start.y = end.y
+		end.y = tmp
+		swapped = true
+	# Recalculate differentials
+	dx = end.x - start.x
+	dy = end.y - start.y
+	
+	# Calculate error
+	var error = int(dx / 2.0)
+	var ystep = 1 if start.y < end.y else -1
+
+	# Iterate over bounding box generating points between start and end
+	var y = start.y
+	var points:Array[Vector2i]
+	for x in range(start.x, end.x + 1):
+		var coord = Vector2i(y,x) if is_steep else Vector2i(x,y)
+		points.append(coord)
+		error -= abs(dy)
+		if error < 0:
+			y += ystep
+			error += dx
+	# handles negative coordinates
+	if swapped:
+		points.reverse()
+	
+	return points
+
+func vector2(vect:Vector3i, start:int=0):
+	return Vector2i(vect.x,vect.y)
+
+
+
+
 
 #### API ----------------------------------
 
