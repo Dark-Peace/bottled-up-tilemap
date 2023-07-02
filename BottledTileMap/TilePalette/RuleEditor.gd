@@ -1,7 +1,7 @@
 @tool
 extends BoxContainer
 
-const DEFAULT_TILEDATA:Dictionary = {"weight": 1, "rules":[]}
+const DEFAULT_TILEDATA:Dictionary = {"weight": 1, "rules":[], "drawing_modes": []}
 const PANEL_SIZE:Vector2i = Vector2i(753,560)
 
 var rule_tool:RULE_TOOL = RULE_TOOL.Add
@@ -33,8 +33,8 @@ func init_group(group:String):
 	create_tile_list_view()
 	
 	$%TileWeigth.value = current_group[current_tile].weight
-	for mode in p.tilemap.drawing_modes.size():
-		$"%DrawingModes".get_popup().add_item(p.tilemap.drawing_modes[mode], mode)
+#	for mode in p.tileset.drawing_modes.size():
+#		$"%DrawingModes".get_popup().add_item(p.tilemap.drawing_modes[mode], mode)
 	
 	sync_settings()
 	reset_rule_settings()
@@ -64,15 +64,24 @@ func create_tile_list_view():
 
 func sync_settings():
 	$%RuleLayers.clear()
-	$%DrawingModes.get_popup().clear()
+#	$%DrawingModes.get_popup().clear()
 	for l in p.tilemap.get_layers_count():
 		$%RuleLayers.add_item(p.tilemap.get_layer_name(l))
-	for m in p.tilemap.drawing_modes:
-		$%DrawingModes.get_popup().add_check_item(m)
+#	for m in p.tilemap.drawing_modes:
+#		$%DrawingModes.get_popup().add_check_item(m)
 	
 
 func update_panel():
 	$%RuleView.queue_redraw()
+
+func update_drawing_modes():
+	if not p.tileset.get_meta("Terrain_data").has(group_name): p.tileset.get_meta("Terrain_data")[group_name] = {}
+	var all_modes:Array[String]
+	for tile in current_group:
+		for m in tile.drawing_modes:
+			if m in all_modes: continue
+			all_modes.append(m)
+	p.tileset.get_meta("Terrain_data")[group_name]["drawing_modes"] = all_modes
 
 func create_terrain(group:String, meta:Dictionary):#, tile:String=current_tile):
 	meta[group] = {}
@@ -148,9 +157,9 @@ func update_current_rule():
 	res["tile"] = $%RuleTileID.text
 	res["prob"] = $%RuleProb.value
 	res["modes"] = []
-	for mode in $%DrawingModes.get_popup().item_count:
-		if not $%DrawingModes.get_popup().is_item_checked(mode): continue
-		res["modes"].append($%DrawingModes.get_popup().get_item_text(mode))
+#	for mode in $%DrawingModes.get_popup().item_count:
+#		if not $%DrawingModes.get_popup().is_item_checked(mode): continue
+#		res["modes"].append($%DrawingModes.get_popup().get_item_text(mode))
 	current_rule = res
 	update_panel()
 	return res
@@ -162,9 +171,9 @@ func edit_current_rule(cell:Vector2i=rule_pos):
 	current_rule["tile"] = $%RuleTileID.text
 	current_rule["prob"] = $%RuleProb.value
 	current_rule["modes"] = []
-	for mode in $%DrawingModes.get_popup().item_count:
-		if not $%DrawingModes.get_popup().is_item_checked(mode): continue
-		current_rule["modes"].append($%DrawingModes.get_popup().get_item_text(mode))
+#	for mode in $%DrawingModes.get_popup().item_count:
+#		if not $%DrawingModes.get_popup().is_item_checked(mode): continue
+#		current_rule["modes"].append($%DrawingModes.get_popup().get_item_text(mode))
 	update_panel()
 	return current_rule
 
@@ -177,8 +186,8 @@ func set_current_rule(res:Dictionary):
 	$%RuleTileID.text = res["tile"]
 	$%RuleProb.value = res["prob"]
 	_on_rule_prob_value_changed($%RuleProb.value)
-	for mode in $%DrawingModes.get_popup().item_count:
-		$%DrawingModes.get_popup().set_item_checked(mode, $%DrawingModes.get_popup().get_item_text(mode) in res["modes"])
+#	for mode in $%DrawingModes.get_popup().item_count:
+#		$%DrawingModes.get_popup().set_item_checked(mode, $%DrawingModes.get_popup().get_item_text(mode) in res["modes"])
 	update_panel()
 
 func reset_rule_settings():
@@ -188,8 +197,8 @@ func reset_rule_settings():
 	$%RuleTileID.text = ""
 	$%RuleProb.value = 100
 	_on_rule_prob_value_changed($%RuleProb.value)
-	for mode in $%DrawingModes.get_popup().item_count:
-		$%DrawingModes.get_popup().set_item_checked(mode, false)
+#	for mode in $%DrawingModes.get_popup().item_count:
+#		$%DrawingModes.get_popup().set_item_checked(mode, false)
 
 func _on_next_rule_pressed():
 	for rule in current_group[current_tile].rules:
@@ -329,3 +338,7 @@ func _on_rule_layers_pressed():
 
 func get_default_tiledata():
 	return DEFAULT_TILEDATA.duplicate(true)
+
+func _on_drawing_modes_text_set():
+	current_group[current_tile]["drawing_modes"] = $%DrawingModes.text.split("\n")
+	update_drawing_modes()

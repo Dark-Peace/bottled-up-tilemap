@@ -73,50 +73,51 @@ func count_tiles_in_texture():
 	pass
 
 func trigger_preview(type:String):
-	clear_preview_list()
-	if curr_preview_type in ["", type] and not show_preview_list():
-		curr_preview_type = ""
-		return
+#	if curr_preview_type in ["", type] and not show_preview_list():
+#		curr_preview_type = ""
+#		return
 	match type:
-		"Pattern": pattern_list()
 		"Cursors": cursor_list()
-		"TileMaps": tilemap_list()
+		"DM": show_drawing_modes()
 		"Brush": brush_preview()
-	curr_preview_type = type
+	show_side_panel()
+#	curr_preview_type = type
 
-func show_preview_list():
-	_preview.visible = !_preview.visible
-	return _preview.visible
+func show_drawing_modes():
+	var meta:Dictionary = tileset.get_meta("Terrains_data")
+	if not meta.has(curr_group) or not meta[curr_group].has("drawing_modes"): return
+	
+	clear_preview_list($%DrawingModes.get_node("PreviewList"))
+	var mode_button:CheckBox
+	for mode in meta[curr_group]["drawing_modes"]:
+		mode_button = $%DrawingModes.get_node("PreviewList/Template").duplicate()
+		mode_button.text = mode
+		mode_button.toggled.connect(select_drawing_mode.bind(mode))
+	
+	$%DrawingModes.visible = !$%DrawingModes.visible
+	show_side_panel()
+
+func show_side_panel():
+	$%SideTools.visible = (_preview.visible or $%DrawingModes.visible)
+	return $%SideTools.visible
+
+func select_drawing_mode(pressed:bool, id:String):
+	if pressed:
+		if id in BTM.drawing_modes: return
+		BTM.drawing_modes.append(id)
+	else: BTM.drawing_modes.erase(id)
 
 func brush_preview():
-	var preview = _preview
-	preview.draw_type = preview.DrawType.Brush
-	preview.brush_pos = tilemap.get_tiles_with_brush(Vector2.ZERO)
-	preview.queue_redraw()
-
-func pattern_list(): #TODO
-	var preview = _preview
-	preview.draw_type = preview.DrawType.Pattern
-	preview.tileset = tileset
-	preview.pattern_list = tilemap.pattern_list
-	preview.queue_redraw()
-	
-	var new_pattern:CheckBox; var value:Dictionary;
-	for c in tilemap.pattern_list.size():
-		value = tilemap.pattern_list[c]
-		if value.is_empty(): continue
-		new_pattern = _preview.get_node("List/Template").duplicate()
-		new_pattern.visible = true
-		new_pattern.text = str(c)
-		new_pattern.set_meta("id", c)
-		new_pattern.custom_minimum_size.y = preview.SIZE_Y+preview.SPACE_Y
-		new_pattern.connect("pressed",Callable(self,"select").bind(c, "p_id"))
-		_preview.get_node("List").add_child(new_pattern)
+	_preview.draw_type = _preview.DrawType.Brush
+	_preview.brush_pos = tilemap.get_tiles_with_brush(Vector2.ZERO)
+	_preview.queue_redraw()
 
 func cursor_list():
+	_preview.visible = !_preview.visible
+	clear_preview_list()
 	var new_cursor:CheckBox; var value:Vector2;
-	for c in tilemap.c_multi_cursor_list.size():
-		value = tilemap.c_multi_cursor_list[c]
+	for c in tilemap.multi_cursor_list.size():
+		value = tilemap.multi_cursor_list[c]
 		if value == Vector2(0,0): continue
 		new_cursor = _preview.get_node("List/Template").duplicate()
 		new_cursor.visible = true
@@ -131,8 +132,9 @@ func cursor_list():
 		new_cursor.connect("pressed",Callable(self,"select").bind(c, "c_use"))
 		_preview_list.add_child(new_cursor)
 	
-func clear_preview_list():
-	for n in _preview_list.get_children():
+	
+func clear_preview_list(list=_preview_list):
+	for n in list.get_children():
 		if n.name != "Template": n.queue_free()
 
 func tilemap_list():
@@ -472,7 +474,7 @@ func _on_tab_changed(tab):
 		c.hide()
 	
 	for node in $BottledTools.get_children():
-		if node in [$"%ToggleFav",$"%Search Group",$"%Clean",$"%ClearInvalid",$"%EraseAll"]:
+		if node in [$"%ToggleFav",$"%Search Group",$"%ClearInvalid",$"%EraseAll"]:
 			node.visible = (tab == TAB.TileMap)
 		elif node in [$"%SwitchEditors", $"%TabSeparator"]: node.visible = (tab == TAB.Patterns)
 		
