@@ -40,6 +40,7 @@ func init_group(group:String):
 	reset_rule_settings()
 	
 	_on_rule_tool_item_selected(RULE_TOOL.Add)
+	infer_all()
 
 func create_tile_list_view():
 	var new_list:ItemList = p.get_node("%ListView").duplicate()
@@ -64,24 +65,28 @@ func create_tile_list_view():
 
 func sync_settings():
 	$%RuleLayers.clear()
-#	$%DrawingModes.get_popup().clear()
 	for l in p.tilemap.get_layers_count():
 		$%RuleLayers.add_item(p.tilemap.get_layer_name(l))
-#	for m in p.tilemap.drawing_modes:
-#		$%DrawingModes.get_popup().add_check_item(m)
-	
 
 func update_panel():
 	$%RuleView.queue_redraw()
 
 func update_drawing_modes():
-	if not p.tileset.get_meta("Terrain_data").has(group_name): p.tileset.get_meta("Terrain_data")[group_name] = {}
+	if not p.tileset.get_meta("Terrains_data").has(group_name): p.tileset.get_meta("Terrains_data")[group_name] = {}
 	var all_modes:Array[String]
 	for tile in current_group:
-		for m in tile.drawing_modes:
+		for m in current_group[tile].drawing_modes:
 			if m in all_modes: continue
 			all_modes.append(m)
-	p.tileset.get_meta("Terrain_data")[group_name]["drawing_modes"] = all_modes
+	p.tileset.get_meta("Terrains_data")[group_name]["drawing_modes"] = all_modes
+
+func update_inferred_updates(pos:Vector2i, erase:bool=false):
+	if not p.tileset.get_meta("Terrains_data").has(group_name): p.tileset.get_meta("Terrains_data")[group_name] = {}
+	var data = p.tileset.get_meta("Terrains_data")[group_name]
+	if not data.has("inferred_updates"): data["inferred_updates"] = []
+	if not erase:
+		if not Vector2i(-pos.x,-pos.y) in data["inferred_updates"]: data["inferred_updates"].append(Vector2i(-pos.x,-pos.y))
+	else: data["inferred_updates"].erase(Vector2i(-pos.x,-pos.y))
 
 func create_terrain(group:String, meta:Dictionary):#, tile:String=current_tile):
 	meta[group] = {}
@@ -108,6 +113,10 @@ func remove_empty_terrains():
 
 func select_tile(index:int):
 	current_tile = str(p.tilemap._get_id_in_map(p.tileset.get_meta("groups_by_groups")[group_name][index]))
+	$%TileWeigth.value = current_group[current_tile].weight
+	$%DrawingModes.text = ""
+	for m in current_group[current_tile].drawing_modes:
+		$%DrawingModes.text += m+"\n"
 	create_rule(current_tile, {})
 	set_panel_limits()
 	update_panel()
@@ -136,6 +145,7 @@ func action_on_cell(pos, button:int):
 func delete_rule(rule:Dictionary=current_rule, tile:String=current_tile):
 	current_group[tile]["rules"].erase(rule) # TODO improve
 	update_panel()
+	update_inferred_updates(rule.cell, true)
 
 func create_rule(tile:String=current_tile, rule:Dictionary=update_current_rule(), group:Dictionary=current_group):
 	if not tile in group: group[tile] = get_default_tiledata()
@@ -144,6 +154,7 @@ func create_rule(tile:String=current_tile, rule:Dictionary=update_current_rule()
 	group[tile].rules.append(rule)
 	set_panel_limits()
 	update_panel()
+	update_inferred_updates(rule.cell)
 
 func clear_rules(tile:String=current_tile):
 	for rule in current_group[tile].rules.size():
@@ -156,10 +167,6 @@ func update_current_rule():
 	res["cell"] = rule_pos
 	res["tile"] = $%RuleTileID.text
 	res["prob"] = $%RuleProb.value
-	res["modes"] = []
-#	for mode in $%DrawingModes.get_popup().item_count:
-#		if not $%DrawingModes.get_popup().is_item_checked(mode): continue
-#		res["modes"].append($%DrawingModes.get_popup().get_item_text(mode))
 	current_rule = res
 	update_panel()
 	return res
@@ -170,11 +177,8 @@ func edit_current_rule(cell:Vector2i=rule_pos):
 	current_rule["cell"] = cell
 	current_rule["tile"] = $%RuleTileID.text
 	current_rule["prob"] = $%RuleProb.value
-	current_rule["modes"] = []
-#	for mode in $%DrawingModes.get_popup().item_count:
-#		if not $%DrawingModes.get_popup().is_item_checked(mode): continue
-#		current_rule["modes"].append($%DrawingModes.get_popup().get_item_text(mode))
 	update_panel()
+	update_inferred_updates(cell)
 	return current_rule
 
 func set_current_rule(res:Dictionary):
@@ -186,19 +190,15 @@ func set_current_rule(res:Dictionary):
 	$%RuleTileID.text = res["tile"]
 	$%RuleProb.value = res["prob"]
 	_on_rule_prob_value_changed($%RuleProb.value)
-#	for mode in $%DrawingModes.get_popup().item_count:
-#		$%DrawingModes.get_popup().set_item_checked(mode, $%DrawingModes.get_popup().get_item_text(mode) in res["modes"])
 	update_panel()
 
 func reset_rule_settings():
 	$%RuleLayers.selected = 0
 	$%RuleLayerSettings.selected = 0
 	$%RulePos.text = ""
-	$%RuleTileID.text = ""
+	$%RuleTileID.text = group_name
 	$%RuleProb.value = 100
 	_on_rule_prob_value_changed($%RuleProb.value)
-#	for mode in $%DrawingModes.get_popup().item_count:
-#		$%DrawingModes.get_popup().set_item_checked(mode, false)
 
 func _on_next_rule_pressed():
 	for rule in current_group[current_tile].rules:
@@ -222,7 +222,6 @@ func _on_rules_copy_pressed():
 
 func _on_rules_paste_pressed():
 	current_group[current_tile].rules = copied_rules.duplicate(true)
-#	set_current_rule(copied_rules)
 
 func _write_to_json(content, filepath):
 	var file = FileAccess.open(filepath, 2)
@@ -339,6 +338,17 @@ func _on_rule_layers_pressed():
 func get_default_tiledata():
 	return DEFAULT_TILEDATA.duplicate(true)
 
-func _on_drawing_modes_text_set():
-	current_group[current_tile]["drawing_modes"] = $%DrawingModes.text.split("\n")
+func _on_prob_0_pressed():
+	$%RuleProb.value = 0
+
+func _on_prob_100_pressed():
+	$%RuleProb.value = 100
+
+func infer_all():
+	for tile in current_group.keys():
+		for r in current_group[tile].rules:
+			update_inferred_updates(r.cell)
+
+func _on_drawing_modes_focus_exited():
+	current_group[current_tile]["drawing_modes"] = $%DrawingModes.text.split("\n", false)
 	update_drawing_modes()

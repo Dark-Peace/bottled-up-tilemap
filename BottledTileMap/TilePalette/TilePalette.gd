@@ -73,15 +73,11 @@ func count_tiles_in_texture():
 	pass
 
 func trigger_preview(type:String):
-#	if curr_preview_type in ["", type] and not show_preview_list():
-#		curr_preview_type = ""
-#		return
 	match type:
 		"Cursors": cursor_list()
 		"DM": show_drawing_modes()
 		"Brush": brush_preview()
 	show_side_panel()
-#	curr_preview_type = type
 
 func show_drawing_modes():
 	var meta:Dictionary = tileset.get_meta("Terrains_data")
@@ -93,6 +89,9 @@ func show_drawing_modes():
 		mode_button = $%DrawingModes.get_node("PreviewList/Template").duplicate()
 		mode_button.text = mode
 		mode_button.toggled.connect(select_drawing_mode.bind(mode))
+		mode_button.visible = true
+		$%DrawingModes.get_node("PreviewList").add_child(mode_button)
+		print(mode_button.text)
 	
 	$%DrawingModes.visible = !$%DrawingModes.visible
 	show_side_panel()
@@ -106,6 +105,7 @@ func select_drawing_mode(pressed:bool, id:String):
 		if id in BTM.drawing_modes: return
 		BTM.drawing_modes.append(id)
 	else: BTM.drawing_modes.erase(id)
+	print(BTM.drawing_modes)
 
 func brush_preview():
 	_preview.draw_type = _preview.DrawType.Brush
