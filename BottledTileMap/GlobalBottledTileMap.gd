@@ -234,16 +234,24 @@ func _transform_pattern(action:int):
 func _init():
 	randomize()
 
-func get_possible_terrain_tiles(cell:Vector2i, layer:int, terrain, drawing_modes:Array[String]=current_drawing_modes(), allow_random:bool=true):
+func is_tile_in_drawing_mode(tile_modes, _drawing_modes:Array[String]=drawing_modes):
+	if _drawing_modes.is_empty(): return true
+	for mode in tile_modes:
+		if not mode in _drawing_modes: return false
+	return true
+
+func get_possible_terrain_tiles(cell:Vector2i, layer:int, terrain, _drawing_modes:Array[String]=drawing_modes, allow_random:bool=true):
 	var possible_tiles:Array
 	var max_fulfilled:int = 0
 	var nbr_fulfilled:int = 0
 	
 	for tile in terrain.keys():
+		# check if we're in a valid drawing mode
+		if not is_tile_in_drawing_mode(terrain[tile].get(drawing_modes, []), _drawing_modes): continue
 		nbr_fulfilled = 0
 #		print("\n")
 		for rule in terrain[tile].rules:
-			if check_rule_for_tile(cell, layer, rule, drawing_modes):
+			if check_rule_for_tile(cell, layer, rule):
 				nbr_fulfilled += 1
 #		print(tile, " ", nbr_fulfilled)
 		if nbr_fulfilled == max_fulfilled:
@@ -254,10 +262,7 @@ func get_possible_terrain_tiles(cell:Vector2i, layer:int, terrain, drawing_modes
 	return possible_tiles
 
 enum RULE_LAYERS {Additive, Absolute, Global}
-func check_rule_for_tile(cell:Vector2i, layer:int, rule:Dictionary, drawing_modes:Array[String]=current_drawing_modes()):
-	# check if we're in a valid drawing mode
-	for mode in rule.modes:
-		if not mode in drawing_modes: return false
+func check_rule_for_tile(cell:Vector2i, layer:int, rule:Dictionary):
 	# check if the cell contains the tile described in the rule
 	var rule_fulfilled:bool
 	match int(rule.layer_type):
@@ -288,7 +293,7 @@ func _match_tile_or_group(rule:Dictionary, cell:Vector2i, layer:int):
 const NEIGHBORS_CARDINAL = [Vector2i(1,0),Vector2i(0,1),Vector2i(-1,0),Vector2i(0,-1)]
 const NEIGHBORS_KING = [Vector2i(1,0),Vector2i(0,1),Vector2i(-1,0),Vector2i(0,-1),Vector2i(1,1),Vector2i(-1,-1),Vector2i(-1,1),Vector2i(1,-1)]
 
-func draw_terrain_cell(button:int, cell:Vector2i=current_cell, layer:int=l, group:String=palette.curr_group, drawing_modes:Array[String]=current_drawing_modes(), \
+func draw_terrain_cell(button:int, cell:Vector2i=current_cell, layer:int=l, group:String=palette.curr_group, _drawing_modes:Array[String]=drawing_modes, \
 						allow_random:bool=true, update_neighbors:bool=true, neighbors:Array[Vector2i]=[], allow_create:bool=true):
 	if match_button_action(button) == null: return
 	if button == MOUSE_BUTTON_RIGHT:
@@ -299,7 +304,7 @@ func draw_terrain_cell(button:int, cell:Vector2i=current_cell, layer:int=l, grou
 	if not allow_create and not str(tilemap._get_id_in_map(tilemap.get_cell(cell, layer).v)) in terrain: return
 	
 	var sum_weights:int = 0
-	var possible:Array = get_possible_terrain_tiles(cell, layer, terrain, drawing_modes, allow_random) 
+	var possible:Array = get_possible_terrain_tiles(cell, layer, terrain, _drawing_modes, allow_random) 
 	if possible.size() == 1:
 #		print("one",possible[0])
 		tilemap.draw_tile(cell, new_TILEID_v3(tilemap._get_vect_in_map(int(possible[0]))), layer)
@@ -318,31 +323,31 @@ func draw_terrain_cell(button:int, cell:Vector2i=current_cell, layer:int=l, grou
 			tilemap.draw_tile(cell, new_TILEID_v3(tilemap._get_vect_in_map(int(tile))), layer)
 			break
 	
-	if update_neighbors: update_terrain_space(painted_cells, 1, group, allow_random, drawing_modes)
+	if update_neighbors: update_terrain_space(painted_cells, 1, group, allow_random, _drawing_modes)
 
-func update_terrain_space(area:Array[Vector3i], ignore:int=1, group:String=palette.curr_group, allow_random:bool=false, drawing_modes:Array[String]=current_drawing_modes()):
+func update_terrain_space(area:Array[Vector3i], ignore:int=1, group:String=palette.curr_group, allow_random:bool=false, _drawing_modes:Array[String]=drawing_modes):
 	if area.size() <= 1: return
 	tilemap.allow_painted_overwrite = true
 	for c in area.size()-ignore:
-		update_terrain_cell(vector2(area[-1-ignore-c]), area[-1-ignore-c].z, group, drawing_modes, allow_random, false)
+		update_terrain_cell(vector2(area[-1-ignore-c]), area[-1-ignore-c].z, group, _drawing_modes, allow_random, false)
 	tilemap.allow_painted_overwrite = false
 
-func update_terrain_area(area:Array[Vector2i], group:String=palette.curr_group, allow_random:bool=false, drawing_modes:Array[String]=current_drawing_modes()):
+func update_terrain_area(area:Array[Vector2i], group:String=palette.curr_group, allow_random:bool=false, _drawing_modes:Array[String]=drawing_modes):
 	if area.size() <= 1: return
 	tilemap.allow_painted_overwrite = true
 	for c in area.size()-1:
-		update_terrain_cell(area[-2-c], l, group, drawing_modes, allow_random, false)
+		update_terrain_cell(area[-2-c], l, group, _drawing_modes, allow_random, false)
 	tilemap.allow_painted_overwrite = false
 
-func update_terrain_cell(cell:Vector2i=current_cell, layer:int=l, terrain:String=palette.curr_group, drawing_modes:Array[String]=current_drawing_modes(), allow_random:bool=true, update_neighbors:bool=false, neighbors:Array[Vector2i]=[]):
-	draw_terrain_cell(MOUSE_BUTTON_LEFT, cell, layer, terrain, drawing_modes, allow_random, update_neighbors, neighbors, false)
+func update_terrain_cell(cell:Vector2i=current_cell, layer:int=l, terrain:String=palette.curr_group, _drawing_modes:Array[String]=drawing_modes, allow_random:bool=true, update_neighbors:bool=false, neighbors:Array[Vector2i]=[]):
+	draw_terrain_cell(MOUSE_BUTTON_LEFT, cell, layer, terrain, _drawing_modes, allow_random, update_neighbors, neighbors, false)
 
 func update_drawing_modes():
 	palette.sync_rule_settings()
 	toolbar.update_drawing_modes(tilemap.drawing_modes)
 
-func current_drawing_modes():
-	return toolbar.get_drawing_modes()
+#func current_drawing_modes():
+#	return toolbar.get_drawing_modes()
 
 ################################
 

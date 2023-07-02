@@ -69,7 +69,7 @@ var use_alt_random:bool = false
 @export var scatter_affects_erase = false
 @export_range(-3,999999,1,"suffix:TileID") var no_draw_on:int = NO_TILE
 @export_range(-3,999999,1,"suffix:TileID") var only_draw_on:int = NO_TILE
-@export var drawing_modes:Array[String] = [] : set = set_drawing_modes
+#@export var drawing_modes:Array[String] = [] : set = set_drawing_modes
 
 
 # REPLACING
@@ -181,6 +181,7 @@ func init():
 	if not tile_set.has_meta("groups_by_ids"): tile_set.set_meta("groups_by_ids", {})
 	if not tile_set.has_meta("TILE_EVENTS"): tile_set.set_meta("TILE_EVENTS", {})
 	if not tile_set.has_meta("Terrains"): tile_set.set_meta("Terrains", {})
+	if not tile_set.has_meta("Terrains_data"): tile_set.set_meta("Terrains_data", {})
 
 func _on_tileset_changed():
 	var tiles:Array[Dictionary] = BTM.get_tiles_ids(tile_set)
@@ -925,9 +926,9 @@ func set_axis_pos(value):
 	axis_pos = value
 	queue_redraw()
 
-func set_drawing_modes(value):
-	drawing_modes = value
-	BTM.update_drawing_modes()
+#func set_drawing_modes(value):
+#	drawing_modes = value
+#	BTM.update_drawing_modes()
 	
 	
 	
