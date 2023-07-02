@@ -130,7 +130,8 @@ var curr_tilemap:TileMap : set = set_curr_tilemap
 
 # store dock var
 @export var dock_group_selected:String = "ALL_TILES"
-@export var dock_tile_selected:String = "0"
+@export var dock_save_selected_tiles:Dictionary
+#@export var dock_tile_selected:String = "0"
 
 # INSTANCES
 #var instance_dict = {}
@@ -182,6 +183,7 @@ func init():
 	if not tile_set.has_meta("TILE_EVENTS"): tile_set.set_meta("TILE_EVENTS", {})
 	if not tile_set.has_meta("Terrains"): tile_set.set_meta("Terrains", {})
 	if not tile_set.has_meta("Terrains_data"): tile_set.set_meta("Terrains_data", {})
+	_update_id_map()
 
 func _on_tileset_changed():
 	var tiles:Array[Dictionary] = BTM.get_tiles_ids(tile_set)
@@ -204,6 +206,7 @@ func _get_id_in_map(v:Vector3i):
 	return ID_map.keys()[ID_map.values().find(v,1)]
 
 func _get_vect_in_map(id:int):
+	print(id, ID_map.keys())
 	if not id in ID_map.keys(): return Vector3(-1,-1,-1)
 	return ID_map[id]
 

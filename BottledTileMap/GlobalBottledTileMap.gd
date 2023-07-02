@@ -300,26 +300,26 @@ func draw_terrain_cell(button:int, cell:Vector2i=current_cell, layer:int=l, grou
 		draw_tile(MOUSE_BUTTON_RIGHT)
 		return
 	var terrain:Dictionary = tilemap.tile_set.get_meta("Terrains", {}).get(group, {})
-	if terrain == {}: return
+	if terrain == {}:
+		draw_tile(MOUSE_BUTTON_LEFT)
+		return
 	if not allow_create and not str(tilemap._get_id_in_map(tilemap.get_cell(cell, layer).v)) in terrain: return
 	
 	var sum_weights:int = 0
 	var possible:Array = get_possible_terrain_tiles(cell, layer, terrain, _drawing_modes, allow_random) 
 	if possible.size() == 1:
-#		print("one",possible[0])
 		tilemap.draw_tile(cell, new_TILEID_v3(tilemap._get_vect_in_map(int(possible[0]))), layer)
 	else:
 		for tile in possible:
-#			print("more",tile)
 			sum_weights += terrain[tile].weight
 			# TODO : alt tiles
-			
 		var res:int = randi_range(0, sum_weights)
 		sum_weights = 0
 		possible.shuffle()
 		for tile in possible:
 			sum_weights += terrain[tile].weight
 			if not sum_weights >= res: continue
+			print(new_TILEID_v3(tilemap._get_vect_in_map(int(tile))).v)
 			tilemap.draw_tile(cell, new_TILEID_v3(tilemap._get_vect_in_map(int(tile))), layer)
 			break
 	
