@@ -69,7 +69,6 @@ var use_alt_random:bool = false
 @export var scatter_affects_erase = false
 @export_range(-3,999999,1,"suffix:TileID") var no_draw_on:int = NO_TILE
 @export_range(-3,999999,1,"suffix:TileID") var only_draw_on:int = NO_TILE
-#@export var drawing_modes:Array[String] = [] : set = set_drawing_modes
 
 
 # REPLACING
@@ -206,7 +205,6 @@ func _get_id_in_map(v:Vector3i):
 	return ID_map.keys()[ID_map.values().find(v,1)]
 
 func _get_vect_in_map(id:int):
-	print(id, ID_map.keys())
 	if not id in ID_map.keys(): return Vector3(-1,-1,-1)
 	return ID_map[id]
 
@@ -429,7 +427,8 @@ func _call_draw(xy:Vector2i,tile:Dictionary,l:int=current_layer,alt:int=current_
 	super.set_cell(l,xy,tile.source,tile.coords,alt)
 	send_draw_signals(xy, tile, l)
 	if tile.source == ERASE_TILE: return
-	BTM.painted_cells.append(Vector3i(xy.x,xy.y,l))
+	BTM.add_painted_cell(Vector3i(xy.x,xy.y,l))
+#	BTM.painted_cells.append(Vector3i(xy.x,xy.y,l))
 
 func match_themes(tile:Dictionary) -> Dictionary:
 	if used_theme == NO_THEME: return tile
