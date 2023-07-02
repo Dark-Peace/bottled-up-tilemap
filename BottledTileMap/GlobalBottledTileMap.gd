@@ -242,23 +242,33 @@ func is_tile_in_drawing_mode(tile_modes, _drawing_modes:Array[String]=drawing_mo
 
 func get_possible_terrain_tiles(cell:Vector2i, layer:int, terrain, _drawing_modes:Array[String]=drawing_modes, allow_random:bool=true):
 	var possible_tiles:Array
-	var max_fulfilled:int = 0
-	var nbr_fulfilled:int = 0
+	var tile_fulfill:bool = true
+#	var max_fulfilled:int = 0;# var min_unfulfilled:int = INF
+#	var nbr_fulfilled:int = 0;# var nbr_unfulfilled:int = 0;
 	
 	for tile in terrain.keys():
 		# check if we're in a valid drawing mode
 		if not is_tile_in_drawing_mode(terrain[tile].get(drawing_modes, []), _drawing_modes): continue
-		nbr_fulfilled = 0
-#		print("\n")
+#		nbr_fulfilled = 0
+#		nbr_unfulfilled = 0
+		tile_fulfill = true
 		for rule in terrain[tile].rules:
-			if check_rule_for_tile(cell, layer, rule):
-				nbr_fulfilled += 1
+			if not check_rule_for_tile(cell, layer, rule):
+#				print(cell)
+				tile_fulfill = false
+				break
+#				nbr_fulfilled += 1
+#			else: continue
+#			else: nbr_unfulfilled += 1
 #		print(tile, " ", nbr_fulfilled)
-		if nbr_fulfilled == max_fulfilled:
-			possible_tiles.append(tile)
-		elif nbr_fulfilled > max_fulfilled:
-			max_fulfilled = nbr_fulfilled
-			possible_tiles = [tile]
+		if tile_fulfill: possible_tiles.append(tile)
+#		if nbr_fulfilled == max_fulfilled:# and nbr_unfulfilled < min_unfulfilled:
+#			possible_tiles.append(tile)
+##			min_unfulfilled = nbr_unfulfilled
+#		elif nbr_fulfilled > max_fulfilled: # and nbr_unfulfilled < min_unfulfilled:
+#			max_fulfilled = nbr_fulfilled
+##			min_unfulfilled = nbr_unfulfilled
+#			possible_tiles = [tile]
 	return possible_tiles
 
 enum RULE_LAYERS {Additive, Absolute, Global}
@@ -275,15 +285,14 @@ func check_rule_for_tile(cell:Vector2i, layer:int, rule:Dictionary):
 					rule_fulfilled = true
 					break
 	# check if this rule want this tile or not
-#	print(cell+rule.cell, " ", rule.prob, " ", rule_fulfilled)
+	
 	if (rule.prob == 0 and rule_fulfilled) or (rule.prob == 100 and not rule_fulfilled): return false
 	if (rule.prob == 0 and not rule_fulfilled) or (rule.prob == 100 and rule_fulfilled): return true
-	elif not (rule_fulfilled and randi_range(0,100) < rule.prob): return false
+	elif (rule_fulfilled and randi_range(0,100) < rule.prob): return true
 	else: return false
 
 func _match_tile_or_group(rule:Dictionary, cell:Vector2i, layer:int):
 	var tile_vect = tilemap.get_cell(cell+rule.cell, layer).v
-#	print(tile_vect, rule.tile)
 	if rule.tile.is_valid_int():
 		return (tilemap._get_id_in_map(tile_vect) == rule.tile)
 	else:
@@ -306,7 +315,7 @@ func draw_terrain_cell(button:int, cell:Vector2i=current_cell, layer:int=l, grou
 	if not allow_create and not str(tilemap._get_id_in_map(tilemap.get_cell(cell, layer).v)) in terrain: return
 	
 	var sum_weights:int = 0
-	var possible:Array = get_possible_terrain_tiles(cell, layer, terrain, _drawing_modes, allow_random) 
+	var possible:Array = get_possible_terrain_tiles(cell, layer, terrain, _drawing_modes, allow_random)
 	if possible.size() == 1:
 		tilemap.draw_tile(cell, new_TILEID_v3(tilemap._get_vect_in_map(int(possible[0]))), layer)
 	else:
