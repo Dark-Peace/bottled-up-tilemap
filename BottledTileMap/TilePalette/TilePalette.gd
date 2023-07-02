@@ -320,23 +320,31 @@ func select_group(group:String):
 func _fill_list_view(tilelist:Array=tileset.get_meta("TileList")):
 	$"%ListView".clear()
 	var tilelist_indexes:Dictionary; var index:int=0; var list_index:int; var unique_id:String
+	var any_selected:bool = false
 	for id in tilelist:
 		if not id is Vector3i: tilelist_indexes[index] = id
 		else:
 			id = BTM.new_TILEID(id.z, Vector2i(id.x,id.y))
 			tilelist_indexes[index] = id
-		index += 1
 		$"%ListView".add_item("", tileset.get_source(id.source).texture)
 		list_index = $"%ListView".get_item_count()-1
 		$"%ListView".set_item_icon_region(list_index,tileset.get_source(id.source).get_tile_texture_region(id.coords))
 		$"%ListView".set_item_tooltip_enabled(list_index,true)
 		unique_id = str(tilemap._get_id_in_map(id.v))
 		$"%ListView".set_item_tooltip(list_index, unique_id)
-		if unique_id == tilemap.dock_tile_selected:
-			$"%ListView".select(index-1)
-			_on_ListView_item_selected(index-1)
-	if not $"%ListView".is_anything_selected(): $"%ListView".select(0)
+		if unique_id == tilemap.dock_save_selected_tiles.get(curr_group, ""):
+			any_selected = true
+			$"%ListView".call_deferred("select", index)
+			call_deferred("_on_ListView_item_selected", index)
+#			$"%ListView".select(index-1)
+#			_on_ListView_item_selected(index-1)
+		index += 1
 	tileset.set_meta("TileListIndexes", tilelist_indexes)
+	if not any_selected:
+		$"%ListView".select(0)
+		_on_ListView_item_selected(0)
+	
+	call_deferred("_fill_subview")
 
 func _on_sub_tab_tab_changed(tab):
 	_fill_subview()
@@ -346,7 +354,7 @@ func _fill_alttile_view():
 	if current_tile.source < 0: return
 	var region:Rect2; var alt:TileData;
 	for a in tileset.get_source(current_tile.source).get_alternative_tiles_count(current_tile.coords):
-#		if not tileset.get_source(current_tile.source).has_alternative_tile(current_tile.coords, a): break
+		if not tileset.get_source(current_tile.source).has_alternative_tile(current_tile.coords, a): break
 		alt = tileset.get_source(current_tile.source).get_tile_data(current_tile.coords, a)
 		$"%Subtile".add_item("", tileset.get_source(current_tile.source).texture)
 		region = tileset.get_source(current_tile.source).get_tile_texture_region(current_tile.coords)
@@ -354,12 +362,11 @@ func _fill_alttile_view():
 		if alt.flip_v: region.size.y = -region.size.y
 		if alt.transpose: $"%Subtile".set_item_icon_transposed(a, true)
 		$"%Subtile".set_item_icon_region(a,region)
+	$"%SubView".visible = ($"%Subtile".item_count > 1)
 
 func _fill_subview():
 	$"%Subtile".clear()
-	match $"%SubTab".current_tab:
-		0: _fill_alttile_view()#_fill_subtile_view()
-		1: _fill_alttile_view()
+	_fill_alttile_view()
 
 func get_group_item(n:String, tree:Tree):
 	var children:Array[TreeItem] = tree.get_root().get_children()
@@ -529,7 +536,8 @@ func _on_ListView_item_selected(index: int) -> void:
 	if index != selected_right:
 		tilemap.current_tile = tileset.get_meta("TileListIndexes", {}).get(index, BTM.new_TILEID())
 		selected_left = index
-		tilemap.dock_tile_selected = $"%ListView".get_item_tooltip(index)
+		tilemap.dock_save_selected_tiles[curr_group] = $"%ListView".get_item_tooltip(index)
+#		tilemap.dock_tile_selected = $"%ListView".get_item_tooltip(index)
 	for item in $"%ListView".get_selected_items():
 		if item == selected_left or item == selected_right: continue
 		$"%ListView".deselect(item)
@@ -624,11 +632,12 @@ func _on_add_to_group_pressed():
 		tilemap.add_tile_to_group(vect, $%GroupToAdd.text)
 
 func move_tile_index(offset:int):
-	var group:Array[Vector3i] = tileset.get_meta("groups_by_groups", {}).get(curr_group, [])
+	var group:Array = tileset.get_meta("groups_by_groups", {}).get(curr_group, [])
 	var tile:Vector3i = tilemap._get_vect_in_map(int($%ListView.get_item_tooltip($%ListView.get_selected_items()[-1])))
 	var index:int = group.find(tile)
 	group.remove_at(index)
 	group.insert(index+offset, tile)
+	_fill_list_view(_group_tree.get_node(curr_group).get_meta("TILES",tilemap.EMPTY_TILE_ARRAY))
 	
 func _on_move_tile_left_pressed():
 	move_tile_index(-1)
