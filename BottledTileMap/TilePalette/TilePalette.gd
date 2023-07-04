@@ -291,6 +291,7 @@ func create_group(g:String, group_content:Array, tree=_group_tree):
 	group.text = g
 	group.name = g
 	group.icon = tileset.get_meta("groups_icons").get(g, get_theme_icon("VisualShaderNodeTexture2DArrayUniform", "EditorIcons"))
+	group.set_meta("TILES", group_content)
 	group_list[g] = group
 	if group.pressed.is_connected(select_group.bind(GROUPNAME_ALLTILES)): group.pressed.disconnect(select_group.bind(GROUPNAME_ALLTILES))
 	group.pressed.connect(select_group.bind(g))
