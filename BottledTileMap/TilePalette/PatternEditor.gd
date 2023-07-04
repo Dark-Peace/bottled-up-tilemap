@@ -31,7 +31,6 @@ func set_dock(value):
 	theme_list = tileset.get_meta("THEMES")
 
 func _on_switch_editors_pressed():
-	print("ok")
 	$VBoxContainer.move_child($VBoxContainer.get_child(1),2)
 
 func fill_pattern_list():

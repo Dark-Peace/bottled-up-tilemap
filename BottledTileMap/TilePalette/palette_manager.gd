@@ -54,12 +54,23 @@ func _on_selection_changed():
 #			make_bottom_panel_item_visible(_tile_palette)
 			if editor_script_screen.button_pressed:
 				call_deferred("close_bottom_panel", 0.005)
+			if should_be_custom_editor != is_custom_editor():
+				switch_editor()
+			hide_tileset_button(is_custom_editor())
 			return
+			# dont write anything after this you dummy, there's a damn return above
+		elif selected_node is TileMap:
+			hide_tileset_button(false)
+			if is_custom_editor(): switch_editor()
 		else:
+			hide_tileset_button(true)
 			if editor_script_screen.button_pressed: call_deferred("close_bottom_panel", 0.16)
 			toolbar.get_node("../../").set("theme_override_styles/panel", toolbar_theme)
 			_tile_palette.active = false
 	_tile_palette.tileset = null
+
+func is_custom_editor():
+	return pool_nodes[0].name != "TilePalette"
 
 func update_button_visibility(tm:bool, timer:float=0.16):
 	await get_tree().create_timer(timer).timeout
@@ -86,9 +97,9 @@ func _add_tile_palette():
 	layer_vis = _tilemap_editor.get_child(0).get_child(5)
 	grid_button = _tilemap_editor.get_child(0).get_child(7)
 	_tile_palette.set_tools(_tilemap_editor, get_editor_interface().get_editor_scale())
-	_tile_palette.get_node("%DisplayOld").pressed.connect(switch_editor)
+	_tile_palette.get_node("%DisplayOld").pressed.connect(_switch_editor)
 	var switch_button = _tile_palette.get_node("%DisplayOld").duplicate()
-	switch_button.pressed.connect(switch_editor)
+	switch_button.pressed.connect(_switch_editor)
 	_tilemap_editor.get_child(0).add_child(switch_button)
 
 	_on_selection_changed()
@@ -126,7 +137,7 @@ func _add_buttons_to_tileset_editor():
 	for b in _tilemap_editor.get_parent().get_child(-1).get_child(0).get_children():
 		if b.text == "TileSet":
 			button_tileset = b
-			button_tileset.visibility_changed.connect(hide_tileset_button)
+			
 		elif b.text == "TileMap": button_tilemap = b
 	
 	# event manager
@@ -155,11 +166,18 @@ func set_min_size(parent):
 		child.visible = false
 		set_min_size(child)
 
-func hide_tileset_button():
-	button_tileset.hide()
+func hide_tileset_button(hide:bool=true, timer:float=0.16):
+	await get_tree().create_timer(timer).timeout
+	if hide: button_tileset.hide()
+	else: button_tileset.show()
 
 func open_tileset_editor():
 	make_bottom_panel_item_visible(tileset_editor)
+
+var should_be_custom_editor:bool = true
+func _switch_editor():
+	should_be_custom_editor = !should_be_custom_editor
+	switch_editor()
 
 func switch_editor():
 	var temp:Array

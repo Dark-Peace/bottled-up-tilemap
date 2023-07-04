@@ -91,7 +91,6 @@ func show_drawing_modes():
 		mode_button.toggled.connect(select_drawing_mode.bind(mode))
 		mode_button.visible = true
 		$%DrawingModes.get_node("PreviewList").add_child(mode_button)
-		print(mode_button.text)
 	
 	$%DrawingModes.visible = !$%DrawingModes.visible
 	show_side_panel()
@@ -105,7 +104,6 @@ func select_drawing_mode(pressed:bool, id:String):
 		if id in BTM.drawing_modes: return
 		BTM.drawing_modes.append(id)
 	else: BTM.drawing_modes.erase(id)
-	print(BTM.drawing_modes)
 
 func brush_preview():
 	_preview.draw_type = _preview.DrawType.Brush
@@ -292,9 +290,7 @@ func create_group(g:String, group_content:Array, tree=_group_tree):
 	var group:Button = _group_tree.get_child(0).duplicate()
 	group.text = g
 	group.name = g
-	print(tilemap, tileset, tileset.get_meta_list())
 	group.icon = tileset.get_meta("groups_icons").get(g, get_theme_icon("VisualShaderNodeTexture2DArrayUniform", "EditorIcons"))
-	group.set_meta("TILES", group_content)
 	group_list[g] = group
 	if group.pressed.is_connected(select_group.bind(GROUPNAME_ALLTILES)): group.pressed.disconnect(select_group.bind(GROUPNAME_ALLTILES))
 	group.pressed.connect(select_group.bind(g))
@@ -519,7 +515,6 @@ func _on_list_view_item_clicked(index, at_position, mouse_button_index):
 		else:
 			$%ListView.set_item_custom_bg_color(index, BG_COLOR_SELECTED)
 			selected_tile_items.append(int($%ListView.get_item_tooltip(index)))
-			print(int($%ListView.get_item_tooltip(index)), selected_tile_items)
 	elif mouse_button_index == MOUSE_BUTTON_LEFT and Input.is_key_pressed(KEY_SHIFT):
 		if $%ListView.get_item_custom_bg_color(index) == BG_COLOR_ICON:
 			$%ListView.set_item_custom_bg_color(index, Color.TRANSPARENT)
