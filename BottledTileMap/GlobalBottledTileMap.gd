@@ -240,7 +240,6 @@ func _init():
 
 func is_tile_in_drawing_mode(tile_modes, _drawing_modes:Array[String]=drawing_modes):
 	if tile_modes.is_empty(): return true
-	print(drawing_modes)
 	var ok_modes:Array[String] = _drawing_modes.duplicate()
 	for mode in tile_modes:
 		if not mode in _drawing_modes: return false
@@ -307,6 +306,9 @@ func draw_terrain_cell(button:int, cell:Vector2i=current_cell, layer:int=l, grou
 	var possible:Array = get_possible_terrain_tiles(cell, layer, terrain, _drawing_modes, allow_random)
 	if possible.size() == 1:
 		tilemap.draw_tile(cell, new_TILEID_v3(tilemap._get_vect_in_map(int(possible[0]))), layer)
+	elif possible.is_empty(): # disable some random features :(
+#		tilemap.draw_tile(cell, new_TILEID_v3(tilemap.tile_set.get_meta("groups_by_groups")[group][0]), layer)
+		tilemap.draw_tile(cell, tilemap.current_tile, layer)
 	else:
 		for tile in possible:
 			sum_weights += terrain[tile].weight
