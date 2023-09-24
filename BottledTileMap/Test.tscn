@@ -1,8 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://cqckdh5j8765"]
+[gd_scene load_steps=16 format=3 uid="uid://yq2182w7dj6k"]
 
 [ext_resource type="Texture2D" uid="uid://d2jed36t130x5" path="res://addons/BottledTileMap/resources/Placeholder_tiles.png" id="1"]
 [ext_resource type="Script" path="res://addons/BottledTileMap/BottledTilemap.gd" id="2"]
-[ext_resource type="Script" path="res://PatternTileMap1.gd" id="4_eixau"]
+[ext_resource type="Texture2D" uid="uid://ca5wgrdrcpw5d" path="res://addons/BottledTileMap/resources/Full_TileSet.png" id="2_v22tw"]
+[ext_resource type="Texture2D" uid="uid://bpkksd7v0sdfh" path="res://addons/BottledTileMap/resources/nature-paltformer-tileset-16x16.png" id="3_hqn2y"]
+[ext_resource type="Script" path="res://addons/BottledTileMap/test_TileMap.gd" id="4_dewfk"]
 [ext_resource type="Texture2D" uid="uid://o70mhv1r53lq" path="res://icon.png" id="5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g5768"]
@@ -168,6 +170,98 @@ texture_region_size = Vector2i(32, 32)
 0:0/7/flip_v = true
 0:0/7/transpose = true
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_18n45"]
+texture = ExtResource("2_v22tw")
+texture_region_size = Vector2i(32, 32)
+11:2/0 = 0
+12:2/0 = 0
+13:2/0 = 0
+14:2/0 = 0
+15:2/0 = 0
+16:2/0 = 0
+17:2/0 = 0
+18:2/0 = 0
+19:2/0 = 0
+20:2/0 = 0
+11:3/0 = 0
+12:3/0 = 0
+13:3/0 = 0
+14:3/0 = 0
+15:3/0 = 0
+16:3/0 = 0
+17:3/0 = 0
+18:3/0 = 0
+19:3/0 = 0
+20:3/0 = 0
+12:4/0 = 0
+13:4/0 = 0
+14:4/0 = 0
+15:4/0 = 0
+16:4/0 = 0
+17:4/0 = 0
+18:4/0 = 0
+19:4/0 = 0
+20:4/0 = 0
+12:5/0 = 0
+13:5/0 = 0
+14:5/0 = 0
+15:5/0 = 0
+16:5/0 = 0
+17:5/0 = 0
+18:5/0 = 0
+19:5/0 = 0
+20:5/0 = 0
+11:6/0 = 0
+12:6/0 = 0
+14:6/0 = 0
+15:6/0 = 0
+16:6/0 = 0
+17:6/0 = 0
+11:7/0 = 0
+12:7/0 = 0
+13:7/0 = 0
+14:7/0 = 0
+15:7/0 = 0
+16:7/0 = 0
+17:7/0 = 0
+18:7/0 = 0
+19:7/0 = 0
+20:7/0 = 0
+13:8/0 = 0
+14:8/0 = 0
+15:8/0 = 0
+16:8/0 = 0
+19:8/0 = 0
+20:8/0 = 0
+12:9/0 = 0
+13:9/0 = 0
+15:9/0 = 0
+16:9/0 = 0
+17:9/0 = 0
+18:9/0 = 0
+19:9/0 = 0
+20:9/0 = 0
+11:10/0 = 0
+12:10/0 = 0
+13:10/0 = 0
+14:10/0 = 0
+15:10/0 = 0
+16:10/0 = 0
+17:10/0 = 0
+18:10/0 = 0
+19:10/0 = 0
+20:10/0 = 0
+11:11/0 = 0
+12:11/0 = 0
+13:11/0 = 0
+14:11/0 = 0
+15:11/0 = 0
+16:11/0 = 0
+17:11/0 = 0
+18:11/0 = 0
+19:11/0 = 0
+20:11/0 = 0
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6siyu"]
 texture = ExtResource("5")
 texture_region_size = Vector2i(18, 17)
@@ -194,6 +288,18 @@ texture_region_size = Vector2i(18, 17)
 0:0/7/transpose = true
 1:0/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ov7yy"]
+texture = ExtResource("3_hqn2y")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+
 [sub_resource type="TileSet" id="1"]
 tile_size = Vector2i(32, 32)
 custom_data_layer_0/name = "test"
@@ -202,46 +308,12 @@ sources/0 = SubResource("TileSetAtlasSource_g5768")
 sources/1 = SubResource("TileSetAtlasSource_sotwq")
 sources/2 = SubResource("TileSetAtlasSource_mjqk6")
 sources/4 = SubResource("TileSetAtlasSource_6siyu")
+sources/5 = SubResource("TileSetAtlasSource_ov7yy")
+sources/3 = SubResource("TileSetAtlasSource_18n45")
 metadata/_better_terrain = {
 "terrains": [["New terrain", Color(0.462745, 0.92549, 0.52549, 1), 0, []], ["New terrain", Color(0.676644, 0.385876, 0.0952066, 1), 0, []], ["New terrain", Color(0.953524, 0.500877, 0.274994, 1), 0, []], ["New terrain", Color(0.804345, 0.153478, 0.485206, 1), 0, []], ["New terrain", Color(0.80664, 0.715003, 0.420192, 1), 0, []], ["New terrain", Color(0.409048, 0.569297, 0.626676, 1), 0, []], ["New terrain", Color(0.752941, 0.835294, 0.772549, 1), 0, []]],
 "version": "0.1"
 }
-metadata/TileList = Array[Dictionary]([{
-"alt": 0,
-"coords": Vector2i(0, 0),
-"source": 0,
-"v": Vector3i(0, 0, 0)
-}, {
-"alt": 0,
-"coords": Vector2i(1, 0),
-"source": 0,
-"v": Vector3i(1, 0, 0)
-}, {
-"alt": 0,
-"coords": Vector2i(0, 0),
-"source": 1,
-"v": Vector3i(0, 0, 1)
-}, {
-"alt": 0,
-"coords": Vector2i(0, 0),
-"source": 2,
-"v": Vector3i(0, 0, 2)
-}, {
-"alt": 0,
-"coords": Vector2i(0, 1),
-"source": 2,
-"v": Vector3i(0, 1, 2)
-}, {
-"alt": 0,
-"coords": Vector2i(1, 0),
-"source": 2,
-"v": Vector3i(1, 0, 2)
-}, {
-"alt": 0,
-"coords": Vector2i(1, 1),
-"source": 2,
-"v": Vector3i(1, 1, 2)
-}])
 metadata/ID_Map = {
 -3: Vector3i(-3, -3, -3),
 -2: Vector3i(-2, -2, -2),
@@ -252,7 +324,412 @@ metadata/ID_Map = {
 4: Vector3i(0, 1, 2),
 5: Vector3i(1, 0, 2),
 6: Vector3i(1, 1, 2),
-"__NEXT_ID__": 7
+7: Vector3i(0, 0, 4),
+8: Vector3i(1, 0, 4),
+9: Vector3i(0, 0, 3),
+10: Vector3i(1, 0, 3),
+11: Vector3i(2, 0, 3),
+12: Vector3i(3, 0, 3),
+13: Vector3i(4, 0, 3),
+14: Vector3i(5, 0, 3),
+15: Vector3i(6, 0, 3),
+16: Vector3i(7, 0, 3),
+17: Vector3i(8, 0, 3),
+18: Vector3i(0, 1, 3),
+19: Vector3i(1, 1, 3),
+20: Vector3i(2, 1, 3),
+21: Vector3i(3, 1, 3),
+22: Vector3i(4, 1, 3),
+23: Vector3i(5, 1, 3),
+24: Vector3i(6, 1, 3),
+25: Vector3i(7, 1, 3),
+26: Vector3i(8, 1, 3),
+27: Vector3i(9, 1, 3),
+28: Vector3i(10, 1, 3),
+29: Vector3i(0, 2, 3),
+30: Vector3i(1, 2, 3),
+31: Vector3i(2, 2, 3),
+32: Vector3i(3, 2, 3),
+33: Vector3i(4, 2, 3),
+34: Vector3i(5, 2, 3),
+35: Vector3i(6, 2, 3),
+36: Vector3i(7, 2, 3),
+37: Vector3i(8, 2, 3),
+38: Vector3i(9, 2, 3),
+39: Vector3i(10, 2, 3),
+40: Vector3i(11, 2, 3),
+41: Vector3i(0, 3, 3),
+42: Vector3i(1, 3, 3),
+43: Vector3i(2, 3, 3),
+44: Vector3i(3, 3, 3),
+45: Vector3i(4, 3, 3),
+46: Vector3i(5, 3, 3),
+47: Vector3i(6, 3, 3),
+48: Vector3i(7, 3, 3),
+49: Vector3i(8, 3, 3),
+50: Vector3i(9, 3, 3),
+51: Vector3i(10, 3, 3),
+52: Vector3i(11, 3, 3),
+53: Vector3i(0, 4, 3),
+54: Vector3i(1, 4, 3),
+55: Vector3i(2, 4, 3),
+56: Vector3i(3, 4, 3),
+57: Vector3i(4, 4, 3),
+58: Vector3i(5, 4, 3),
+59: Vector3i(6, 4, 3),
+60: Vector3i(7, 4, 3),
+61: Vector3i(8, 4, 3),
+62: Vector3i(9, 4, 3),
+63: Vector3i(10, 4, 3),
+64: Vector3i(11, 4, 3),
+65: Vector3i(0, 5, 3),
+66: Vector3i(1, 5, 3),
+67: Vector3i(2, 5, 3),
+68: Vector3i(3, 5, 3),
+69: Vector3i(4, 5, 3),
+70: Vector3i(5, 5, 3),
+71: Vector3i(6, 5, 3),
+72: Vector3i(7, 5, 3),
+73: Vector3i(8, 5, 3),
+74: Vector3i(9, 5, 3),
+75: Vector3i(0, 6, 3),
+76: Vector3i(1, 6, 3),
+77: Vector3i(2, 6, 3),
+78: Vector3i(3, 6, 3),
+79: Vector3i(4, 6, 3),
+80: Vector3i(5, 6, 3),
+81: Vector3i(6, 6, 3),
+82: Vector3i(7, 6, 3),
+83: Vector3i(8, 6, 3),
+84: Vector3i(9, 6, 3),
+85: Vector3i(10, 6, 3),
+86: Vector3i(1, 7, 3),
+87: Vector3i(2, 7, 3),
+88: Vector3i(3, 7, 3),
+89: Vector3i(4, 7, 3),
+90: Vector3i(5, 7, 3),
+91: Vector3i(6, 7, 3),
+92: Vector3i(7, 7, 3),
+93: Vector3i(8, 7, 3),
+94: Vector3i(9, 7, 3),
+95: Vector3i(10, 7, 3),
+96: Vector3i(0, 8, 3),
+97: Vector3i(1, 8, 3),
+98: Vector3i(2, 8, 3),
+99: Vector3i(3, 8, 3),
+100: Vector3i(4, 8, 3),
+101: Vector3i(5, 8, 3),
+102: Vector3i(6, 8, 3),
+103: Vector3i(7, 8, 3),
+104: Vector3i(8, 8, 3),
+105: Vector3i(9, 8, 3),
+106: Vector3i(0, 9, 3),
+107: Vector3i(1, 9, 3),
+108: Vector3i(2, 9, 3),
+109: Vector3i(3, 9, 3),
+110: Vector3i(4, 9, 3),
+111: Vector3i(5, 9, 3),
+112: Vector3i(2, 10, 3),
+113: Vector3i(3, 10, 3),
+114: Vector3i(4, 10, 3),
+115: Vector3i(2, 11, 3),
+116: Vector3i(3, 11, 3),
+117: Vector3i(4, 11, 3),
+118: Vector3i(9, 0, 3),
+119: Vector3i(10, 0, 3),
+120: Vector3i(11, 0, 3),
+121: Vector3i(13, 0, 3),
+122: Vector3i(14, 0, 3),
+123: Vector3i(15, 0, 3),
+124: Vector3i(16, 0, 3),
+125: Vector3i(17, 0, 3),
+126: Vector3i(11, 1, 3),
+127: Vector3i(12, 1, 3),
+128: Vector3i(13, 1, 3),
+129: Vector3i(14, 1, 3),
+130: Vector3i(15, 1, 3),
+131: Vector3i(16, 1, 3),
+132: Vector3i(17, 1, 3),
+133: Vector3i(12, 2, 3),
+134: Vector3i(13, 2, 3),
+135: Vector3i(14, 2, 3),
+136: Vector3i(15, 2, 3),
+137: Vector3i(17, 2, 3),
+138: Vector3i(18, 2, 3),
+139: Vector3i(12, 3, 3),
+140: Vector3i(13, 3, 3),
+141: Vector3i(14, 3, 3),
+142: Vector3i(15, 3, 3),
+143: Vector3i(16, 3, 3),
+144: Vector3i(17, 3, 3),
+145: Vector3i(18, 3, 3),
+146: Vector3i(19, 3, 3),
+147: Vector3i(20, 3, 3),
+148: Vector3i(12, 4, 3),
+149: Vector3i(13, 4, 3),
+150: Vector3i(14, 4, 3),
+151: Vector3i(15, 4, 3),
+152: Vector3i(16, 4, 3),
+153: Vector3i(17, 4, 3),
+154: Vector3i(21, 4, 3),
+155: Vector3i(22, 4, 3),
+156: Vector3i(23, 4, 3),
+157: Vector3i(10, 5, 3),
+158: Vector3i(11, 5, 3),
+159: Vector3i(12, 5, 3),
+160: Vector3i(13, 5, 3),
+161: Vector3i(14, 5, 3),
+162: Vector3i(16, 5, 3),
+163: Vector3i(18, 5, 3),
+164: Vector3i(19, 5, 3),
+165: Vector3i(20, 5, 3),
+166: Vector3i(21, 5, 3),
+167: Vector3i(22, 5, 3),
+168: Vector3i(23, 5, 3),
+169: Vector3i(24, 5, 3),
+170: Vector3i(14, 6, 3),
+171: Vector3i(15, 6, 3),
+172: Vector3i(16, 6, 3),
+173: Vector3i(17, 6, 3),
+174: Vector3i(18, 6, 3),
+175: Vector3i(19, 6, 3),
+176: Vector3i(20, 6, 3),
+177: Vector3i(21, 6, 3),
+178: Vector3i(22, 6, 3),
+179: Vector3i(23, 6, 3),
+180: Vector3i(24, 6, 3),
+181: Vector3i(11, 7, 3),
+182: Vector3i(12, 7, 3),
+183: Vector3i(15, 7, 3),
+184: Vector3i(17, 7, 3),
+185: Vector3i(18, 7, 3),
+186: Vector3i(20, 7, 3),
+187: Vector3i(21, 7, 3),
+188: Vector3i(22, 7, 3),
+189: Vector3i(23, 7, 3),
+190: Vector3i(24, 7, 3),
+191: Vector3i(10, 8, 3),
+192: Vector3i(11, 8, 3),
+193: Vector3i(12, 8, 3),
+194: Vector3i(13, 8, 3),
+195: Vector3i(16, 8, 3),
+196: Vector3i(18, 8, 3),
+197: Vector3i(19, 8, 3),
+198: Vector3i(21, 8, 3),
+199: Vector3i(22, 8, 3),
+200: Vector3i(23, 8, 3),
+201: Vector3i(6, 9, 3),
+202: Vector3i(7, 9, 3),
+203: Vector3i(8, 9, 3),
+204: Vector3i(9, 9, 3),
+205: Vector3i(10, 9, 3),
+206: Vector3i(11, 9, 3),
+207: Vector3i(12, 9, 3),
+208: Vector3i(13, 9, 3),
+209: Vector3i(15, 9, 3),
+210: Vector3i(16, 9, 3),
+211: Vector3i(17, 9, 3),
+212: Vector3i(18, 9, 3),
+213: Vector3i(19, 9, 3),
+214: Vector3i(1, 10, 3),
+215: Vector3i(5, 10, 3),
+216: Vector3i(6, 10, 3),
+217: Vector3i(7, 10, 3),
+218: Vector3i(8, 10, 3),
+219: Vector3i(9, 10, 3),
+220: Vector3i(10, 10, 3),
+221: Vector3i(11, 10, 3),
+222: Vector3i(12, 10, 3),
+223: Vector3i(15, 10, 3),
+224: Vector3i(17, 10, 3),
+225: Vector3i(18, 10, 3),
+226: Vector3i(1, 11, 3),
+227: Vector3i(5, 11, 3),
+228: Vector3i(7, 11, 3),
+229: Vector3i(8, 11, 3),
+230: Vector3i(9, 11, 3),
+231: Vector3i(1, 12, 3),
+232: Vector3i(2, 12, 3),
+233: Vector3i(3, 12, 3),
+234: Vector3i(4, 12, 3),
+235: Vector3i(5, 12, 3),
+236: Vector3i(7, 12, 3),
+237: Vector3i(8, 12, 3),
+238: Vector3i(9, 12, 3),
+239: Vector3i(12, 12, 3),
+240: Vector3i(13, 12, 3),
+241: Vector3i(14, 12, 3),
+242: Vector3i(17, 12, 3),
+243: Vector3i(18, 12, 3),
+244: Vector3i(19, 12, 3),
+245: Vector3i(1, 13, 3),
+246: Vector3i(2, 13, 3),
+247: Vector3i(3, 13, 3),
+248: Vector3i(4, 13, 3),
+249: Vector3i(5, 13, 3),
+250: Vector3i(6, 13, 3),
+251: Vector3i(7, 13, 3),
+252: Vector3i(8, 13, 3),
+253: Vector3i(9, 13, 3),
+254: Vector3i(10, 13, 3),
+255: Vector3i(11, 13, 3),
+256: Vector3i(12, 13, 3),
+257: Vector3i(13, 13, 3),
+258: Vector3i(14, 13, 3),
+259: Vector3i(15, 13, 3),
+260: Vector3i(16, 13, 3),
+261: Vector3i(17, 13, 3),
+262: Vector3i(18, 13, 3),
+263: Vector3i(19, 13, 3),
+264: Vector3i(20, 13, 3),
+265: Vector3i(2, 14, 3),
+266: Vector3i(3, 14, 3),
+267: Vector3i(4, 14, 3),
+268: Vector3i(6, 14, 3),
+269: Vector3i(7, 14, 3),
+270: Vector3i(8, 14, 3),
+271: Vector3i(9, 14, 3),
+272: Vector3i(10, 14, 3),
+273: Vector3i(11, 14, 3),
+274: Vector3i(12, 14, 3),
+275: Vector3i(13, 14, 3),
+276: Vector3i(14, 14, 3),
+277: Vector3i(15, 14, 3),
+278: Vector3i(16, 14, 3),
+279: Vector3i(17, 14, 3),
+280: Vector3i(18, 14, 3),
+281: Vector3i(19, 14, 3),
+282: Vector3i(20, 14, 3),
+283: Vector3i(2, 15, 3),
+284: Vector3i(3, 15, 3),
+285: Vector3i(4, 15, 3),
+286: Vector3i(6, 15, 3),
+287: Vector3i(7, 15, 3),
+288: Vector3i(8, 15, 3),
+289: Vector3i(9, 15, 3),
+290: Vector3i(10, 15, 3),
+291: Vector3i(11, 15, 3),
+292: Vector3i(12, 15, 3),
+293: Vector3i(13, 15, 3),
+294: Vector3i(14, 15, 3),
+295: Vector3i(15, 15, 3),
+296: Vector3i(16, 15, 3),
+297: Vector3i(17, 15, 3),
+298: Vector3i(18, 15, 3),
+299: Vector3i(19, 15, 3),
+300: Vector3i(20, 15, 3),
+301: Vector3i(1, 16, 3),
+302: Vector3i(2, 16, 3),
+303: Vector3i(3, 16, 3),
+304: Vector3i(4, 16, 3),
+305: Vector3i(5, 16, 3),
+306: Vector3i(7, 16, 3),
+307: Vector3i(8, 16, 3),
+308: Vector3i(9, 16, 3),
+309: Vector3i(12, 16, 3),
+310: Vector3i(13, 16, 3),
+311: Vector3i(14, 16, 3),
+312: Vector3i(17, 16, 3),
+313: Vector3i(18, 16, 3),
+314: Vector3i(19, 16, 3),
+315: Vector3i(1, 17, 3),
+316: Vector3i(2, 17, 3),
+317: Vector3i(3, 17, 3),
+318: Vector3i(4, 17, 3),
+319: Vector3i(5, 17, 3),
+320: Vector3i(6, 17, 3),
+321: Vector3i(7, 17, 3),
+322: Vector3i(8, 17, 3),
+323: Vector3i(9, 17, 3),
+324: Vector3i(10, 17, 3),
+325: Vector3i(11, 17, 3),
+326: Vector3i(12, 17, 3),
+327: Vector3i(13, 17, 3),
+328: Vector3i(1, 18, 3),
+329: Vector3i(2, 18, 3),
+330: Vector3i(3, 18, 3),
+331: Vector3i(4, 18, 3),
+332: Vector3i(5, 18, 3),
+333: Vector3i(9, 18, 3),
+334: Vector3i(10, 18, 3),
+335: Vector3i(2, 19, 3),
+336: Vector3i(3, 19, 3),
+337: Vector3i(4, 19, 3),
+338: Vector3i(5, 19, 3),
+339: Vector3i(6, 19, 3),
+340: Vector3i(7, 19, 3),
+341: Vector3i(4, 20, 3),
+342: Vector3i(5, 20, 3),
+343: Vector3i(6, 20, 3),
+344: Vector3i(7, 20, 3),
+345: Vector3i(8, 20, 3),
+346: Vector3i(4, 21, 3),
+347: Vector3i(5, 21, 3),
+348: Vector3i(6, 21, 3),
+349: Vector3i(7, 21, 3),
+350: Vector3i(8, 21, 3),
+351: Vector3i(4, 22, 3),
+352: Vector3i(5, 22, 3),
+353: Vector3i(6, 22, 3),
+354: Vector3i(7, 22, 3),
+355: Vector3i(8, 22, 3),
+356: Vector3i(5, 23, 3),
+357: Vector3i(6, 23, 3),
+358: Vector3i(7, 23, 3),
+359: Vector3i(21, 24, 3),
+360: Vector3i(22, 24, 3),
+361: Vector3i(23, 24, 3),
+362: Vector3i(24, 24, 3),
+363: Vector3i(0, 0, 5),
+364: Vector3i(1, 0, 5),
+365: Vector3i(2, 0, 5),
+366: Vector3i(0, 1, 5),
+367: Vector3i(1, 1, 5),
+368: Vector3i(2, 1, 5),
+369: Vector3i(0, 2, 5),
+370: Vector3i(1, 2, 5),
+371: Vector3i(2, 2, 5),
+372: Vector3i(0, 1, 4),
+373: Vector3i(0, 2, 4),
+374: Vector3i(1, 1, 4),
+375: Vector3i(1, 2, 4),
+376: Vector3i(2, 0, 4),
+377: Vector3i(2, 1, 4),
+378: Vector3i(2, 2, 4),
+379: Vector3i(16, 2, 3),
+380: Vector3i(19, 2, 3),
+381: Vector3i(20, 2, 3),
+382: Vector3i(18, 4, 3),
+383: Vector3i(19, 4, 3),
+384: Vector3i(20, 4, 3),
+385: Vector3i(15, 5, 3),
+386: Vector3i(17, 5, 3),
+387: Vector3i(11, 6, 3),
+388: Vector3i(12, 6, 3),
+389: Vector3i(13, 7, 3),
+390: Vector3i(14, 7, 3),
+391: Vector3i(16, 7, 3),
+392: Vector3i(19, 7, 3),
+393: Vector3i(14, 8, 3),
+394: Vector3i(15, 8, 3),
+395: Vector3i(20, 8, 3),
+396: Vector3i(20, 9, 3),
+397: Vector3i(13, 10, 3),
+398: Vector3i(14, 10, 3),
+399: Vector3i(16, 10, 3),
+400: Vector3i(19, 10, 3),
+401: Vector3i(20, 10, 3),
+402: Vector3i(11, 11, 3),
+403: Vector3i(12, 11, 3),
+404: Vector3i(13, 11, 3),
+405: Vector3i(14, 11, 3),
+406: Vector3i(15, 11, 3),
+407: Vector3i(16, 11, 3),
+408: Vector3i(17, 11, 3),
+409: Vector3i(18, 11, 3),
+410: Vector3i(19, 11, 3),
+411: Vector3i(20, 11, 3),
+"__NEXT_ID__": 412
 }
 metadata/TileListIndexes = {
 0: {
@@ -296,14 +773,5062 @@ metadata/TileListIndexes = {
 "coords": Vector2i(1, 1),
 "source": 2,
 "v": Vector3i(1, 1, 2)
+},
+7: {
+"alt": 0,
+"coords": Vector2i(14, 4),
+"source": 3,
+"v": Vector3i(14, 4, 3)
+},
+8: {
+"alt": 0,
+"coords": Vector2i(15, 2),
+"source": 3,
+"v": Vector3i(15, 2, 3)
+},
+9: {
+"alt": 0,
+"coords": Vector2i(15, 3),
+"source": 3,
+"v": Vector3i(15, 3, 3)
+},
+10: {
+"alt": 0,
+"coords": Vector2i(16, 2),
+"source": 3,
+"v": Vector3i(16, 2, 3)
+},
+11: {
+"alt": 0,
+"coords": Vector2i(16, 3),
+"source": 3,
+"v": Vector3i(16, 3, 3)
+},
+12: {
+"alt": 0,
+"coords": Vector2i(16, 4),
+"source": 3,
+"v": Vector3i(16, 4, 3)
+},
+13: {
+"alt": 0,
+"coords": Vector2i(16, 5),
+"source": 3,
+"v": Vector3i(16, 5, 3)
+},
+14: {
+"alt": 0,
+"coords": Vector2i(0, 0),
+"source": 4,
+"v": Vector3i(0, 0, 4)
+},
+15: {
+"alt": 0,
+"coords": Vector2i(1, 0),
+"source": 4,
+"v": Vector3i(1, 0, 4)
 }
 }
-metadata/groups_by_groups = {}
-metadata/groups_by_ids = {}
+metadata/groups_by_groups = {
+"blocks": [Vector3i(11, 2, 3), Vector3i(11, 3, 3), Vector3i(11, 6, 3), Vector3i(11, 7, 3), Vector3i(11, 10, 3), Vector3i(11, 11, 3), Vector3i(12, 3, 3), Vector3i(12, 2, 3), Vector3i(12, 5, 3), Vector3i(12, 4, 3), Vector3i(12, 6, 3), Vector3i(12, 7, 3), Vector3i(12, 9, 3), Vector3i(12, 10, 3), Vector3i(12, 11, 3), Vector3i(13, 2, 3), Vector3i(13, 3, 3), Vector3i(13, 4, 3), Vector3i(13, 5, 3), Vector3i(13, 7, 3), Vector3i(13, 8, 3), Vector3i(13, 9, 3), Vector3i(13, 10, 3), Vector3i(13, 11, 3), Vector3i(17, 3, 3), Vector3i(17, 2, 3), Vector3i(16, 11, 3), Vector3i(16, 10, 3), Vector3i(16, 9, 3), Vector3i(16, 8, 3), Vector3i(16, 7, 3), Vector3i(16, 6, 3), Vector3i(15, 11, 3), Vector3i(15, 10, 3), Vector3i(15, 9, 3), Vector3i(15, 8, 3), Vector3i(15, 7, 3), Vector3i(15, 6, 3), Vector3i(15, 4, 3), Vector3i(15, 5, 3), Vector3i(14, 11, 3), Vector3i(14, 10, 3), Vector3i(14, 7, 3), Vector3i(14, 8, 3), Vector3i(14, 6, 3), Vector3i(14, 5, 3), Vector3i(14, 3, 3), Vector3i(14, 2, 3), Vector3i(17, 4, 3), Vector3i(17, 5, 3), Vector3i(17, 6, 3), Vector3i(17, 7, 3), Vector3i(17, 9, 3), Vector3i(17, 10, 3), Vector3i(17, 11, 3), Vector3i(18, 2, 3), Vector3i(18, 3, 3), Vector3i(18, 4, 3), Vector3i(18, 5, 3), Vector3i(18, 7, 3), Vector3i(18, 9, 3), Vector3i(18, 10, 3), Vector3i(18, 11, 3), Vector3i(19, 2, 3), Vector3i(19, 3, 3), Vector3i(19, 4, 3), Vector3i(19, 5, 3), Vector3i(19, 7, 3), Vector3i(19, 8, 3), Vector3i(19, 9, 3), Vector3i(19, 10, 3), Vector3i(19, 11, 3), Vector3i(20, 2, 3), Vector3i(20, 3, 3), Vector3i(20, 4, 3), Vector3i(20, 5, 3), Vector3i(20, 7, 3), Vector3i(20, 8, 3), Vector3i(20, 9, 3), Vector3i(20, 10, 3), Vector3i(20, 11, 3)],
+"grass": [Vector3i(0, 0, 5), Vector3i(0, 1, 5), Vector3i(0, 2, 5), Vector3i(1, 1, 5), Vector3i(1, 0, 5), Vector3i(1, 2, 5), Vector3i(2, 0, 5), Vector3i(2, 1, 5), Vector3i(2, 2, 5)]
+}
+metadata/groups_by_ids = {
+Vector3i(0, 0, 5): ["grass"],
+Vector3i(0, 1, 5): ["grass"],
+Vector3i(0, 2, 5): ["grass"],
+Vector3i(1, 0, 5): ["grass"],
+Vector3i(1, 1, 5): ["grass"],
+Vector3i(1, 2, 5): ["grass"],
+Vector3i(2, 0, 5): ["grass"],
+Vector3i(2, 1, 5): ["grass"],
+Vector3i(2, 2, 5): ["grass"],
+Vector3i(11, 2, 3): ["blocks"],
+Vector3i(11, 3, 3): ["blocks"],
+Vector3i(11, 6, 3): ["blocks"],
+Vector3i(11, 7, 3): ["blocks"],
+Vector3i(11, 10, 3): ["blocks"],
+Vector3i(11, 11, 3): ["blocks"],
+Vector3i(12, 2, 3): ["blocks"],
+Vector3i(12, 3, 3): ["blocks"],
+Vector3i(12, 4, 3): ["blocks"],
+Vector3i(12, 5, 3): ["blocks"],
+Vector3i(12, 6, 3): ["blocks"],
+Vector3i(12, 7, 3): ["blocks"],
+Vector3i(12, 9, 3): ["blocks"],
+Vector3i(12, 10, 3): ["blocks"],
+Vector3i(12, 11, 3): ["blocks"],
+Vector3i(13, 2, 3): ["blocks"],
+Vector3i(13, 3, 3): ["blocks"],
+Vector3i(13, 4, 3): ["blocks"],
+Vector3i(13, 5, 3): ["blocks"],
+Vector3i(13, 7, 3): ["blocks"],
+Vector3i(13, 8, 3): ["blocks"],
+Vector3i(13, 9, 3): ["blocks"],
+Vector3i(13, 10, 3): ["blocks"],
+Vector3i(13, 11, 3): ["blocks"],
+Vector3i(14, 2, 3): ["blocks"],
+Vector3i(14, 3, 3): ["blocks"],
+Vector3i(14, 5, 3): ["blocks"],
+Vector3i(14, 6, 3): ["blocks"],
+Vector3i(14, 7, 3): ["blocks"],
+Vector3i(14, 8, 3): ["blocks"],
+Vector3i(14, 10, 3): ["blocks"],
+Vector3i(14, 11, 3): ["blocks"],
+Vector3i(15, 4, 3): ["blocks"],
+Vector3i(15, 5, 3): ["blocks"],
+Vector3i(15, 6, 3): ["blocks"],
+Vector3i(15, 7, 3): ["blocks"],
+Vector3i(15, 8, 3): ["blocks"],
+Vector3i(15, 9, 3): ["blocks"],
+Vector3i(15, 10, 3): ["blocks"],
+Vector3i(15, 11, 3): ["blocks"],
+Vector3i(16, 6, 3): ["blocks"],
+Vector3i(16, 7, 3): ["blocks"],
+Vector3i(16, 8, 3): ["blocks"],
+Vector3i(16, 9, 3): ["blocks"],
+Vector3i(16, 10, 3): ["blocks"],
+Vector3i(16, 11, 3): ["blocks"],
+Vector3i(17, 2, 3): ["blocks"],
+Vector3i(17, 3, 3): ["blocks"],
+Vector3i(17, 4, 3): ["blocks"],
+Vector3i(17, 5, 3): ["blocks"],
+Vector3i(17, 6, 3): ["blocks"],
+Vector3i(17, 7, 3): ["blocks"],
+Vector3i(17, 9, 3): ["blocks"],
+Vector3i(17, 10, 3): ["blocks"],
+Vector3i(17, 11, 3): ["blocks"],
+Vector3i(18, 2, 3): ["blocks"],
+Vector3i(18, 3, 3): ["blocks"],
+Vector3i(18, 4, 3): ["blocks"],
+Vector3i(18, 5, 3): ["blocks"],
+Vector3i(18, 7, 3): ["blocks"],
+Vector3i(18, 9, 3): ["blocks"],
+Vector3i(18, 10, 3): ["blocks"],
+Vector3i(18, 11, 3): ["blocks"],
+Vector3i(19, 2, 3): ["blocks"],
+Vector3i(19, 3, 3): ["blocks"],
+Vector3i(19, 4, 3): ["blocks"],
+Vector3i(19, 5, 3): ["blocks"],
+Vector3i(19, 7, 3): ["blocks"],
+Vector3i(19, 8, 3): ["blocks"],
+Vector3i(19, 9, 3): ["blocks"],
+Vector3i(19, 10, 3): ["blocks"],
+Vector3i(19, 11, 3): ["blocks"],
+Vector3i(20, 2, 3): ["blocks"],
+Vector3i(20, 3, 3): ["blocks"],
+Vector3i(20, 4, 3): ["blocks"],
+Vector3i(20, 5, 3): ["blocks"],
+Vector3i(20, 7, 3): ["blocks"],
+Vector3i(20, 8, 3): ["blocks"],
+Vector3i(20, 9, 3): ["blocks"],
+Vector3i(20, 10, 3): ["blocks"],
+Vector3i(20, 11, 3): ["blocks"]
+}
 metadata/TILE_EVENTS = {}
-metadata/Better_terrain = {
-"terrains": [["New terrain", Color(0.808082, 0.734622, 0.531983, 1), 0, []], ["New terrain", Color(0.356863, 0.74902, 0.411765, 1), 0, []], ["New terrain", Color(0.968627, 0.168627, 0.788235, 1), 0, []]],
-"version": "0.1"
+metadata/Terrains = {
+"blocks": {
+"133": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"134": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"135": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"137": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"138": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"139": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"140": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"141": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"144": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"145": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -3),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"146": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"147": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1.0
+},
+"148": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"149": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"151": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"153": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"159": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"160": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"161": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"163": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"164": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"165": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"170": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"171": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"172": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"173": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"181": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"182": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"183": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"184": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"185": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"186": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"194": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"195": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"197": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"207": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"208": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"209": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"210": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"211": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"212": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"213": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"221": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(2, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(2, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"222": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"223": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"224": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"225": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"380": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"381": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"382": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"383": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"384": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"385": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"386": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"387": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"388": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"389": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"390": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -3),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"391": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"392": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -3),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"393": {
+"drawing_modes": PackedStringArray(),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -3),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"394": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"395": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -3),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"396": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"397": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"398": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -3),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"399": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-2, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-2, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"40": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"400": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 5.0
+},
+"401": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"402": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(2, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(2, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"403": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"404": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -4),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"405": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"406": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"407": {
+"drawing_modes": PackedStringArray("diagonal"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-2, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-2, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"408": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"409": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"410": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"411": {
+"drawing_modes": PackedStringArray("straight"),
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -2),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(5, -3),
+"layer": 0,
+"layer_type": 0,
+"prob": 100.0,
+"tile": "blocks"
+}],
+"weight": 1
+},
+"52": {
+"drawing_modes": [],
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 100.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}, {
+"cell": Vector2i(-1, 1),
+"layer": 0,
+"layer_type": 0,
+"modes": [],
+"prob": 0.0,
+"tile": "blocks"
+}],
+"weight": 1
+}
+},
+"grass": {
+"363": {
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"364": {
+"rules": [{
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"365": {
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"366": {
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"367": {
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"368": {
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"369": {
+"rules": [{
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"370": {
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+},
+"371": {
+"rules": [{
+"cell": Vector2i(-1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, -1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 100.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(1, 0),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}, {
+"cell": Vector2i(0, 1),
+"layer": 0.0,
+"layer_type": 0.0,
+"modes": [],
+"prob": 0.0,
+"tile": "grass"
+}],
+"weight": 1
+}
+}
+}
+metadata/groups_icons = {}
+metadata/TileList = Array[Dictionary]([{
+"alt": 0,
+"coords": Vector2i(0, 0),
+"source": 0,
+"v": Vector3i(0, 0, 0)
+}, {
+"alt": 0,
+"coords": Vector2i(1, 0),
+"source": 0,
+"v": Vector3i(1, 0, 0)
+}, {
+"alt": 0,
+"coords": Vector2i(0, 0),
+"source": 1,
+"v": Vector3i(0, 0, 1)
+}, {
+"alt": 0,
+"coords": Vector2i(0, 0),
+"source": 2,
+"v": Vector3i(0, 0, 2)
+}, {
+"alt": 0,
+"coords": Vector2i(0, 1),
+"source": 2,
+"v": Vector3i(0, 1, 2)
+}, {
+"alt": 0,
+"coords": Vector2i(1, 0),
+"source": 2,
+"v": Vector3i(1, 0, 2)
+}, {
+"alt": 0,
+"coords": Vector2i(1, 1),
+"source": 2,
+"v": Vector3i(1, 1, 2)
+}, {
+"alt": 0,
+"coords": Vector2i(11, 2),
+"source": 3,
+"v": Vector3i(11, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(11, 3),
+"source": 3,
+"v": Vector3i(11, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(11, 6),
+"source": 3,
+"v": Vector3i(11, 6, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(11, 7),
+"source": 3,
+"v": Vector3i(11, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(11, 10),
+"source": 3,
+"v": Vector3i(11, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(11, 11),
+"source": 3,
+"v": Vector3i(11, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 2),
+"source": 3,
+"v": Vector3i(12, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 3),
+"source": 3,
+"v": Vector3i(12, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 4),
+"source": 3,
+"v": Vector3i(12, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 5),
+"source": 3,
+"v": Vector3i(12, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 6),
+"source": 3,
+"v": Vector3i(12, 6, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 7),
+"source": 3,
+"v": Vector3i(12, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 9),
+"source": 3,
+"v": Vector3i(12, 9, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 10),
+"source": 3,
+"v": Vector3i(12, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(12, 11),
+"source": 3,
+"v": Vector3i(12, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 2),
+"source": 3,
+"v": Vector3i(13, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 3),
+"source": 3,
+"v": Vector3i(13, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 4),
+"source": 3,
+"v": Vector3i(13, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 5),
+"source": 3,
+"v": Vector3i(13, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 7),
+"source": 3,
+"v": Vector3i(13, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 8),
+"source": 3,
+"v": Vector3i(13, 8, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 9),
+"source": 3,
+"v": Vector3i(13, 9, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 10),
+"source": 3,
+"v": Vector3i(13, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(13, 11),
+"source": 3,
+"v": Vector3i(13, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 2),
+"source": 3,
+"v": Vector3i(14, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 3),
+"source": 3,
+"v": Vector3i(14, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 4),
+"source": 3,
+"v": Vector3i(14, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 5),
+"source": 3,
+"v": Vector3i(14, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 6),
+"source": 3,
+"v": Vector3i(14, 6, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 7),
+"source": 3,
+"v": Vector3i(14, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 8),
+"source": 3,
+"v": Vector3i(14, 8, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 10),
+"source": 3,
+"v": Vector3i(14, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(14, 11),
+"source": 3,
+"v": Vector3i(14, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 2),
+"source": 3,
+"v": Vector3i(15, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 3),
+"source": 3,
+"v": Vector3i(15, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 4),
+"source": 3,
+"v": Vector3i(15, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 5),
+"source": 3,
+"v": Vector3i(15, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 6),
+"source": 3,
+"v": Vector3i(15, 6, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 7),
+"source": 3,
+"v": Vector3i(15, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 8),
+"source": 3,
+"v": Vector3i(15, 8, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 9),
+"source": 3,
+"v": Vector3i(15, 9, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 10),
+"source": 3,
+"v": Vector3i(15, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(15, 11),
+"source": 3,
+"v": Vector3i(15, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 2),
+"source": 3,
+"v": Vector3i(16, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 3),
+"source": 3,
+"v": Vector3i(16, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 4),
+"source": 3,
+"v": Vector3i(16, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 5),
+"source": 3,
+"v": Vector3i(16, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 6),
+"source": 3,
+"v": Vector3i(16, 6, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 7),
+"source": 3,
+"v": Vector3i(16, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 8),
+"source": 3,
+"v": Vector3i(16, 8, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 9),
+"source": 3,
+"v": Vector3i(16, 9, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 10),
+"source": 3,
+"v": Vector3i(16, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(16, 11),
+"source": 3,
+"v": Vector3i(16, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 2),
+"source": 3,
+"v": Vector3i(17, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 3),
+"source": 3,
+"v": Vector3i(17, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 4),
+"source": 3,
+"v": Vector3i(17, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 5),
+"source": 3,
+"v": Vector3i(17, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 6),
+"source": 3,
+"v": Vector3i(17, 6, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 7),
+"source": 3,
+"v": Vector3i(17, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 9),
+"source": 3,
+"v": Vector3i(17, 9, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 10),
+"source": 3,
+"v": Vector3i(17, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(17, 11),
+"source": 3,
+"v": Vector3i(17, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(18, 2),
+"source": 3,
+"v": Vector3i(18, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(18, 3),
+"source": 3,
+"v": Vector3i(18, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(18, 4),
+"source": 3,
+"v": Vector3i(18, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(18, 5),
+"source": 3,
+"v": Vector3i(18, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(18, 7),
+"source": 3,
+"v": Vector3i(18, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(18, 9),
+"source": 3,
+"v": Vector3i(18, 9, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(18, 10),
+"source": 3,
+"v": Vector3i(18, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(18, 11),
+"source": 3,
+"v": Vector3i(18, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 2),
+"source": 3,
+"v": Vector3i(19, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 3),
+"source": 3,
+"v": Vector3i(19, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 4),
+"source": 3,
+"v": Vector3i(19, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 5),
+"source": 3,
+"v": Vector3i(19, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 7),
+"source": 3,
+"v": Vector3i(19, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 8),
+"source": 3,
+"v": Vector3i(19, 8, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 9),
+"source": 3,
+"v": Vector3i(19, 9, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 10),
+"source": 3,
+"v": Vector3i(19, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(19, 11),
+"source": 3,
+"v": Vector3i(19, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 2),
+"source": 3,
+"v": Vector3i(20, 2, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 3),
+"source": 3,
+"v": Vector3i(20, 3, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 4),
+"source": 3,
+"v": Vector3i(20, 4, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 5),
+"source": 3,
+"v": Vector3i(20, 5, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 7),
+"source": 3,
+"v": Vector3i(20, 7, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 8),
+"source": 3,
+"v": Vector3i(20, 8, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 9),
+"source": 3,
+"v": Vector3i(20, 9, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 10),
+"source": 3,
+"v": Vector3i(20, 10, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(20, 11),
+"source": 3,
+"v": Vector3i(20, 11, 3)
+}, {
+"alt": 0,
+"coords": Vector2i(0, 0),
+"source": 4,
+"v": Vector3i(0, 0, 4)
+}, {
+"alt": 0,
+"coords": Vector2i(1, 0),
+"source": 4,
+"v": Vector3i(1, 0, 4)
+}, {
+"alt": 0,
+"coords": Vector2i(0, 0),
+"source": 5,
+"v": Vector3i(0, 0, 5)
+}, {
+"alt": 0,
+"coords": Vector2i(0, 1),
+"source": 5,
+"v": Vector3i(0, 1, 5)
+}, {
+"alt": 0,
+"coords": Vector2i(0, 2),
+"source": 5,
+"v": Vector3i(0, 2, 5)
+}, {
+"alt": 0,
+"coords": Vector2i(1, 0),
+"source": 5,
+"v": Vector3i(1, 0, 5)
+}, {
+"alt": 0,
+"coords": Vector2i(1, 1),
+"source": 5,
+"v": Vector3i(1, 1, 5)
+}, {
+"alt": 0,
+"coords": Vector2i(1, 2),
+"source": 5,
+"v": Vector3i(1, 2, 5)
+}, {
+"alt": 0,
+"coords": Vector2i(2, 0),
+"source": 5,
+"v": Vector3i(2, 0, 5)
+}, {
+"alt": 0,
+"coords": Vector2i(2, 1),
+"source": 5,
+"v": Vector3i(2, 1, 5)
+}, {
+"alt": 0,
+"coords": Vector2i(2, 2),
+"source": 5,
+"v": Vector3i(2, 2, 5)
+}])
+metadata/Terrains_data = {
+"blocks": {
+"drawing_modes": Array[String](["straight", "diagonal"]),
+"inferred_updates": [Vector2i(1, 0), Vector2i(0, 1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(1, 1), Vector2i(-2, 0), Vector2i(-2, -1), Vector2i(2, -1), Vector2i(2, 0), Vector2i(-2, 1), Vector2i(2, 1), Vector2i(-5, 4), Vector2i(-5, 3), Vector2i(-5, 2), Vector2i(2, 4), Vector2i(3, 4)]
+},
+"grass": {
+"inferred_updates": [Vector2i(-1, 0), Vector2i(0, -1), Vector2i(1, 0), Vector2i(0, 1)]
+}
 }
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wrh38"]
@@ -337,10 +5862,11 @@ tile_size = Vector2i(17, 45)
 sources/0 = SubResource("TileSetAtlasSource_wrh38")
 
 [node name="PatternTileMap" type="TileMap"]
+texture_filter = 3
 tile_set = SubResource("1")
 cell_quadrant_size = 32
 format = 2
-layer_0/tile_data = PackedInt32Array(131073, 2, 1, 131074, 2, 1, 196610, 2, 1)
+layer_0/tile_data = PackedInt32Array(-196595, 65536, 0, -131059, 65536, 0, -65523, 65536, 0, 13, 65536, 0, 65549, 65536, 0, 131085, 65536, 0, 196621, 65536, 0, 0, 65536, 0, 1, 65536, 0, 2, 65536, 0, 3, 65536, 0, 4, 65536, 0, 5, 65536, 0, 65541, 65536, 0, 65542, 65536, 0, 131078, 65536, 0, 131079, 65536, 0, 196615, 65536, 0, 262151, 65536, 0, 327688, 65536, 0, 393224, 65536, 0, 458761, 65536, 0, 524297, 65536, 0)
 layer_1/name = "test"
 layer_1/enabled = true
 layer_1/modulate = Color(1, 1, 1, 1)
@@ -352,13 +5878,18 @@ script = ExtResource("2")
 shape_filled = false
 outline_width = 2.0
 multi_cursor_list = Array[Vector2i]([Vector2i(2, 0)])
-dock_group_selected = "ALL TILES"
-dock_tile_selected = "-1"
+dock_group_selected = "NO GROUP"
+dock_save_selected_tiles = {
+"ALL TILES": "1",
+"NO GROUP": "1",
+"blocks": "40",
+"grass": "363"
+}
 
 [node name="PatternTileMap1" type="TileMap" parent="."]
 tile_set = SubResource("2")
 format = 2
-script = ExtResource("4_eixau")
+script = ExtResource("4_dewfk")
 
 [node name="PatternTileMap12" type="TileMap" parent="."]
 tile_set = SubResource("1")
